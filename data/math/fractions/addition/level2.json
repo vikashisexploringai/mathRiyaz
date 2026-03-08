@@ -2,7 +2,8 @@
   "title": "Fractions Addition - Level 2: Unlike Denominators",
   "description": "Practice adding fractions with different denominators",
   "level": 2,
-  "totalQuestions": 5,
+  "maxPointsPerQuestion": 100,
+  "timePerQuestion": 30,
   "questions": [
     {
       "id": "frac_add_006",
