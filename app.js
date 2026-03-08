@@ -12,6 +12,11 @@ const AppState = {
     progress: {}
 };
 
+let currentQuizData = null;
+let questionTimer = null;
+let timeRemaining = 0;
+let questionStartTime = 0;
+
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', async () => {
     // Load configuration
@@ -225,16 +230,19 @@ function renderQuiz(subjectId, chapterId, subchapterId, level) {
             `;
         });
 }
+
 // ===== GENERIC QUIZ RENDERER =====
 function renderGenericQuiz(quizData) {
     // Store quiz data globally
     currentQuizData = quizData;
+    currentQuizData.currentQuestion = 0;
+    currentQuizData.score = 0;
     
     const content = document.getElementById('main-content');
     const subjectId = AppState.currentSubject;
     const subjectClass = `${subjectId}-quiz`;
     
-    // Get level name from config if available
+    // Get level name from config
     const subject = AppState.config.subjects.find(s => s.id === AppState.currentSubject);
     const chapter = subject.chapters.find(c => c.id === AppState.currentChapter);
     const subchapter = chapter.subchapters.find(s => s.id === AppState.currentSubchapter);
@@ -242,31 +250,30 @@ function renderGenericQuiz(quizData) {
     
     let html = `
         <div class="section-header">
-            <button class="back-button" onclick="renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">← Back</button>
+            <button class="back-button" onclick="if(questionTimer) clearInterval(questionTimer); renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">← Back</button>
             <span class="quiz-level-badge">${levelName}</span>
         </div>
         <div class="quiz-header">
+            <div class="timer-container">
+                <div class="timer-bar" id="timerBar"></div>
+                <div class="timer-text" id="timerText">${currentQuizData.timePerQuestion}s</div>
+            </div>
             <div class="quiz-meta">
-                <span>Question ${quizData.currentQuestion + 1}/${quizData.questions.length}</span>
-                <span>⭐ ${quizData.score || 0}/${quizData.questions.length}</span>
+                <span>Question 1/${currentQuizData.questions.length}</span>
+                <span>⭐ 0/${currentQuizData.questions.length * currentQuizData.maxPointsPerQuestion}</span>
             </div>
         </div>
-        <div class="question-container ${subjectClass}">
-            <div class="question-text">${quizData.questions[0].question}</div>
-            <div class="options-grid-2col">
-                ${quizData.questions[0].options.map(opt => `
-                    <button class="option-btn" onclick="checkAnswer('${opt}', this)">
-                        ${opt}
-                    </button>
-                `).join('')}
-            </div>
+        <div class="question-container ${subjectClass}" id="questionContainer">
+            ${renderQuestion(currentQuizData.questions[0])}
         </div>
     `;
     
     content.innerHTML = html;
     updateHeader(`Level ${AppState.currentLevel}`);
+    
+    // Start timer for first question
+    startTimerForQuestion();
 }
-
 // ===== ANSWER CHECKING WITH VISUAL FEEDBACK =====
 let currentQuizData = null;
 
@@ -657,6 +664,286 @@ function showProfile() {
 
 function showSettings() {
     alert('Settings view coming soon!');
+}
+
+// ===== RENDER SINGLE QUESTION =====
+function renderQuestion(question) {
+    return `
+        <div class="question-text">${question.question}</div>
+        <div class="options-grid-2col">
+            ${shuffleArray(question.options).map(opt => `
+                <button class="option-btn" onclick="checkAnswer('${opt}', this)">
+                    ${opt}
+                </button>
+            `).join('')}
+        </div>
+    `;
+}
+
+// ===== SHUFFLE ARRAY (for randomizing options) =====
+function shuffleArray(array) {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+}
+
+// ===== START TIMER FOR CURRENT QUESTION =====
+function startTimerForQuestion() {
+    // Clear any existing timer
+    if (questionTimer) {
+        clearInterval(questionTimer);
+    }
+    
+    // Set initial time
+    timeRemaining = currentQuizData.timePerQuestion;
+    questionStartTime = Date.now();
+    
+    const timerBar = document.getElementById('timerBar');
+    const timerText = document.getElementById('timerText');
+    
+    if (!timerBar || !timerText) return;
+    
+    // Reset timer bar
+    timerBar.style.width = '100%';
+    timerBar.style.backgroundColor = '#3b82f6';
+    
+    // Update every 100ms for smooth animation
+    questionTimer = setInterval(() => {
+        timeRemaining -= 0.1;
+        
+        if (timeRemaining <= 0) {
+            // Time's up!
+            clearInterval(questionTimer);
+            timerBar.style.width = '0%';
+            timerText.textContent = '0s';
+            
+            // Auto-move to next question with 0 points
+            handleTimeOut();
+            return;
+        }
+        
+        // Update timer bar width
+        const percentage = (timeRemaining / currentQuizData.timePerQuestion) * 100;
+        timerBar.style.width = `${percentage}%`;
+        
+        // Change color as time runs out
+        if (percentage < 25) {
+            timerBar.style.backgroundColor = '#ef4444'; // Red
+        } else if (percentage < 50) {
+            timerBar.style.backgroundColor = '#f59e0b'; // Orange
+        }
+        
+        // Update timer text
+        timerText.textContent = `${Math.ceil(timeRemaining)}s`;
+        
+    }, 100);
+}
+
+// ===== HANDLE TIME OUT =====
+function handleTimeOut() {
+    // Disable all buttons
+    disableAllButtons();
+    
+    // Show timeout message
+    showFeedback('⏰ Time\'s up! Moving to next question...', 'error');
+    
+    // Add 0 points for this question
+    // (no points added to score)
+    
+    // Move to next question after delay
+    setTimeout(() => {
+        moveToNextQuestion();
+    }, 1500);
+}
+
+// ===== CALCULATE POINTS FOR ANSWER =====
+function calculatePoints(timeTaken) {
+    const maxPoints = currentQuizData.maxPointsPerQuestion;
+    const timeLimit = currentQuizData.timePerQuestion;
+    
+    // Formula: points = maxPoints * (1 - (timeTaken / timeLimit) * 0.5)
+    // This gives:
+    // - Instant answer: full points
+    // - At time limit: half points
+    // - Very slow: minimum 10 points
+    
+    let points = maxPoints * (1 - (timeTaken / timeLimit) * 0.5);
+    
+    // Round to nearest integer
+    points = Math.round(points);
+    
+    // Ensure minimum points (10% of max)
+    const minPoints = Math.round(maxPoints * 0.1);
+    
+    return Math.max(minPoints, points);
+}
+
+// ===== UPDATED ANSWER CHECKING =====
+function checkAnswer(selectedOption, buttonElement) {
+    // Stop the timer
+    if (questionTimer) {
+        clearInterval(questionTimer);
+    }
+    
+    // Calculate time taken
+    const timeTaken = (Date.now() - questionStartTime) / 1000; // in seconds
+    
+    // Get current question
+    const question = currentQuizData.questions[currentQuizData.currentQuestion];
+    
+    // Check if answer is correct
+    const isCorrect = (selectedOption === question.correct);
+    
+    // Calculate points earned
+    let pointsEarned = 0;
+    
+    if (isCorrect) {
+        pointsEarned = calculatePoints(timeTaken);
+        buttonElement.classList.add('correct');
+        showFeedback(`✅ Correct! +${pointsEarned} points`, 'success');
+    } else {
+        buttonElement.classList.add('wrong');
+        showFeedback(`❌ Wrong. Correct: ${question.correct}`, 'error');
+        highlightCorrectAnswer(question.correct);
+    }
+    
+    // Update score
+    currentQuizData.score += pointsEarned;
+    
+    // Update score display
+    updateScoreDisplay();
+    
+    // Disable all buttons
+    disableAllButtons();
+    
+    // Move to next question after delay
+    setTimeout(() => {
+        moveToNextQuestion();
+    }, 1500);
+}
+
+// ===== UPDATE SCORE DISPLAY =====
+function updateScoreDisplay() {
+    const quizMeta = document.querySelector('.quiz-meta');
+    if (quizMeta) {
+        const totalPossible = currentQuizData.questions.length * currentQuizData.maxPointsPerQuestion;
+        quizMeta.innerHTML = `
+            <span>Question ${currentQuizData.currentQuestion + 1}/${currentQuizData.questions.length}</span>
+            <span>⭐ ${currentQuizData.score}/${totalPossible}</span>
+        `;
+    }
+}
+
+// ===== MOVE TO NEXT QUESTION =====
+function moveToNextQuestion() {
+    // Clear any existing timer
+    if (questionTimer) {
+        clearInterval(questionTimer);
+    }
+    
+    // Check if there are more questions
+    if (currentQuizData.currentQuestion + 1 < currentQuizData.questions.length) {
+        // Move to next question
+        currentQuizData.currentQuestion++;
+        
+        // Get next question (randomize from remaining pool if needed)
+        const nextQuestion = currentQuizData.questions[currentQuizData.currentQuestion];
+        
+        // Update question container
+        const questionContainer = document.getElementById('questionContainer');
+        if (questionContainer) {
+            questionContainer.innerHTML = renderQuestion(nextQuestion);
+        }
+        
+        // Update question counter
+        updateScoreDisplay();
+        
+        // Re-enable buttons
+        enableAllButtons();
+        
+        // Start timer for new question
+        startTimerForQuestion();
+        
+    } else {
+        // Quiz completed
+        showQuizComplete();
+    }
+}
+
+// ===== SHOW QUIZ COMPLETE =====
+function showQuizComplete() {
+    // Clear any timer
+    if (questionTimer) {
+        clearInterval(questionTimer);
+    }
+    
+    const totalPossible = currentQuizData.questions.length * currentQuizData.maxPointsPerQuestion;
+    const percentage = Math.round((currentQuizData.score / totalPossible) * 100);
+    
+    const content = document.getElementById('main-content');
+    content.innerHTML = `
+        <div class="section-header">
+            <button class="back-button" onclick="renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">← Back to levels</button>
+        </div>
+        <div class="quiz-complete">
+            <div class="completion-icon">🏆</div>
+            <h2>Quiz Complete!</h2>
+            <div class="score-display">
+                <span class="score">${currentQuizData.score}</span>
+                <span class="percentage">${percentage}%</span>
+            </div>
+            <div class="feedback-message">
+                ${getFeedbackMessage(percentage)}
+            </div>
+            <button class="restart-btn" onclick="restartQuiz()">Try Again</button>
+            <button class="continue-btn" onclick="renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">Choose Another Level</button>
+        </div>
+    `;
+    
+    // Save progress to Firebase (will implement later)
+    saveProgressToFirebase();
+}
+
+// ===== RESTART QUIZ =====
+function restartQuiz() {
+    // Reset to first question
+    currentQuizData.currentQuestion = 0;
+    currentQuizData.score = 0;
+    
+    // Re-render the quiz
+    const subjectClass = `${AppState.currentSubject}-quiz`;
+    const content = document.getElementById('main-content');
+    
+    const subject = AppState.config.subjects.find(s => s.id === AppState.currentSubject);
+    const chapter = subject.chapters.find(c => c.id === AppState.currentChapter);
+    const subchapter = chapter.subchapters.find(s => s.id === AppState.currentSubchapter);
+    const levelName = subchapter.levelNames?.[AppState.currentLevel] || `Level ${AppState.currentLevel}`;
+    
+    content.innerHTML = `
+        <div class="section-header">
+            <button class="back-button" onclick="renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">← Back</button>
+            <span class="quiz-level-badge">${levelName}</span>
+        </div>
+        <div class="quiz-header">
+            <div class="timer-container">
+                <div class="timer-bar" id="timerBar"></div>
+                <div class="timer-text" id="timerText">${currentQuizData.timePerQuestion}s</div>
+            </div>
+            <div class="quiz-meta">
+                <span>Question 1/${currentQuizData.questions.length}</span>
+                <span>⭐ 0/${currentQuizData.questions.length * currentQuizData.maxPointsPerQuestion}</span>
+            </div>
+        </div>
+        <div class="question-container ${subjectClass}" id="questionContainer">
+            ${renderQuestion(currentQuizData.questions[0])}
+        </div>
+    `;
+    
+    // Start timer for first question
+    startTimerForQuestion();
 }
 
 // Make functions globally available
