@@ -2,7 +2,8 @@
   "title": "Fractions Addition - Level 4: Word Problems",
   "description": "Solve real-world problems involving fraction addition",
   "level": 4,
-  "totalQuestions": 5,
+  "maxPointsPerQuestion": 100,
+  "timePerQuestion": 30,
   "questions": [
     {
       "id": "frac_add_016",
