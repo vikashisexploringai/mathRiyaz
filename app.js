@@ -318,6 +318,12 @@ function moveToNextQuestion() {
 
 // ===== VIEW RENDERING =====
 function renderHome() {
+    // Show the header on home screen
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) {
+        appHeader.style.display = 'flex';
+    }
+    
     if (!AppState.config) return;
     
     AppState.currentView = 'home';
@@ -359,6 +365,12 @@ function renderHome() {
 }
 
 function renderChapters(subjectId) {
+    // Show the header on chapters screen
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) {
+        appHeader.style.display = 'flex';
+    }
+    
     if (!AppState.config) return;
     
     AppState.currentView = 'chapters';
@@ -406,6 +418,12 @@ function renderChapters(subjectId) {
 }
 
 function renderLevels(subjectId, chapterId, subchapterId) {
+    // Show the header on levels screen
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) {
+        appHeader.style.display = 'flex';
+    }
+    
     if (!AppState.config) return;
     
     AppState.currentView = 'levels';
@@ -495,6 +513,12 @@ function renderQuiz(subjectId, chapterId, subchapterId, level) {
 }
 
 function renderGenericQuiz(quizData) {
+    // HIDE THE PURPLE HEADER DURING QUIZ
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) {
+        appHeader.style.display = 'none';
+    }
+    
     currentQuizData = quizData;
     currentQuizData.currentQuestion = 0;
     currentQuizData.score = 0;
