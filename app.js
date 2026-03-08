@@ -35,7 +35,7 @@ async function loadConfig() {
     }
 }
 
-// ===== HELPER FUNCTIONS (DEFINED FIRST) =====
+// ===== HELPER FUNCTIONS =====
 function shuffleArray(array) {
     const newArray = [...array];
     for (let i = newArray.length - 1; i > 0; i--) {
@@ -45,17 +45,12 @@ function shuffleArray(array) {
     return newArray;
 }
 
-function renderQuestion(question) {
-    return `
-        <div class="question-text">${question.question}</div>
-        <div class="options-grid-2col">
-            ${shuffleArray(question.options).map(opt => `
-                <button class="option-btn" onclick="checkAnswer('${opt.replace(/'/g, "\\'")}', this)">
-                    ${opt}
-                </button>
-            `).join('')}
-        </div>
-    `;
+function renderLargeOptions(question) {
+    return shuffleArray(question.options).map(opt => `
+        <button class="quiz-option-large" onclick="checkAnswer('${opt.replace(/'/g, "\\'")}', this)">
+            ${opt}
+        </button>
+    `).join('');
 }
 
 function showFeedback(message, type) {
@@ -66,7 +61,7 @@ function showFeedback(message, type) {
     feedback.className = `quiz-feedback ${type}`;
     feedback.textContent = message;
     
-    const questionContainer = document.querySelector('.question-container');
+    const questionContainer = document.querySelector('.quiz-question');
     if (questionContainer) {
         questionContainer.parentNode.insertBefore(feedback, questionContainer.nextSibling);
     }
@@ -77,7 +72,7 @@ function showFeedback(message, type) {
 }
 
 function disableAllButtons() {
-    const allButtons = document.querySelectorAll('.option-btn');
+    const allButtons = document.querySelectorAll('.quiz-option-large');
     allButtons.forEach(btn => {
         btn.disabled = true;
         btn.style.opacity = '0.7';
@@ -86,7 +81,7 @@ function disableAllButtons() {
 }
 
 function enableAllButtons() {
-    const allButtons = document.querySelectorAll('.option-btn');
+    const allButtons = document.querySelectorAll('.quiz-option-large');
     allButtons.forEach(btn => {
         btn.disabled = false;
         btn.style.opacity = '1';
@@ -96,23 +91,12 @@ function enableAllButtons() {
 }
 
 function highlightCorrectAnswer(correctAnswer) {
-    const allButtons = document.querySelectorAll('.option-btn');
+    const allButtons = document.querySelectorAll('.quiz-option-large');
     allButtons.forEach(btn => {
         if (btn.textContent.trim() === correctAnswer) {
             btn.classList.add('correct');
         }
     });
-}
-
-function updateScoreDisplay() {
-    const quizMeta = document.querySelector('.quiz-meta');
-    if (quizMeta && currentQuizData) {
-        const totalPossible = currentQuizData.questions.length * currentQuizData.maxPointsPerQuestion;
-        quizMeta.innerHTML = `
-            <span>Question ${currentQuizData.currentQuestion + 1}/${currentQuizData.questions.length}</span>
-            <span>⭐ ${currentQuizData.score}/${totalPossible}</span>
-        `;
-    }
 }
 
 function calculatePoints(timeTaken) {
@@ -190,24 +174,26 @@ function showError(message) {
     }
 }
 
-// ===== TIMER FUNCTIONS =====
-function startTimerForQuestion() {
+// ===== CIRCULAR TIMER =====
+function startCircularTimer() {
+    if (!currentQuizData) return;
+    
     if (questionTimer) {
         clearInterval(questionTimer);
     }
     
-    if (!currentQuizData) return;
-    
     timeRemaining = currentQuizData.timePerQuestion;
     questionStartTime = Date.now();
     
-    const timerBar = document.getElementById('timerBar');
     const timerText = document.getElementById('timerText');
+    const timerCircle = document.getElementById('timerCircleProgress');
+    const totalTime = currentQuizData.timePerQuestion;
     
-    if (!timerBar || !timerText) return;
+    if (!timerText || !timerCircle) return;
     
-    timerBar.style.width = '100%';
-    timerBar.style.backgroundColor = '#3b82f6';
+    const circumference = 2 * Math.PI * 16;
+    timerCircle.style.strokeDasharray = circumference;
+    timerCircle.style.strokeDashoffset = '0';
     
     questionTimer = setInterval(() => {
         if (!currentQuizData) {
@@ -219,22 +205,26 @@ function startTimerForQuestion() {
         
         if (timeRemaining <= 0) {
             clearInterval(questionTimer);
-            timerBar.style.width = '0%';
-            timerText.textContent = '0s';
+            timerText.textContent = '0';
+            timerCircle.style.stroke = '#ef4444';
             handleTimeOut();
             return;
         }
         
-        const percentage = (timeRemaining / currentQuizData.timePerQuestion) * 100;
-        timerBar.style.width = `${percentage}%`;
+        timerText.textContent = Math.ceil(timeRemaining);
         
-        if (percentage < 25) {
-            timerBar.style.backgroundColor = '#ef4444';
-        } else if (percentage < 50) {
-            timerBar.style.backgroundColor = '#f59e0b';
+        const progress = timeRemaining / totalTime;
+        const dashOffset = circumference * (1 - progress);
+        timerCircle.style.strokeDashoffset = dashOffset;
+        
+        if (progress < 0.25) {
+            timerCircle.style.stroke = '#ef4444';
+        } else if (progress < 0.5) {
+            timerCircle.style.stroke = '#f59e0b';
+        } else {
+            timerCircle.style.stroke = '#3b82f6';
         }
         
-        timerText.textContent = `${Math.ceil(timeRemaining)}s`;
     }, 100);
 }
 
@@ -284,16 +274,31 @@ function renderCurrentQuestion() {
     if (!currentQuizData) return;
     
     const question = currentQuizData.questions[currentQuizData.currentQuestion];
-    const subjectClass = `${AppState.currentSubject}-quiz`;
     
-    const quizContainer = document.getElementById('questionContainer');
-    if (quizContainer) {
-        quizContainer.innerHTML = renderQuestion(question);
+    const questionEl = document.getElementById('quizQuestion');
+    if (questionEl) {
+        questionEl.textContent = question.question;
+    }
+    
+    const optionsEl = document.getElementById('quizOptions');
+    if (optionsEl) {
+        optionsEl.innerHTML = renderLargeOptions(question);
+    }
+    
+    const progressEl = document.querySelector('.quiz-progress');
+    if (progressEl) {
+        progressEl.textContent = `${currentQuizData.currentQuestion + 1}/${currentQuizData.questions.length}`;
     }
     
     updateScoreDisplay();
-    enableAllButtons();
-    startTimerForQuestion();
+    startCircularTimer();
+}
+
+function updateScoreDisplay() {
+    const scoreEl = document.getElementById('quizScore');
+    if (scoreEl && currentQuizData) {
+        scoreEl.textContent = currentQuizData.score;
+    }
 }
 
 function moveToNextQuestion() {
@@ -496,36 +501,43 @@ function renderGenericQuiz(quizData) {
     
     const content = document.getElementById('main-content');
     const subjectId = AppState.currentSubject;
-    const subjectClass = `${subjectId}-quiz`;
     
     const subject = AppState.config.subjects.find(s => s.id === AppState.currentSubject);
     const chapter = subject.chapters.find(c => c.id === AppState.currentChapter);
     const subchapter = chapter.subchapters.find(s => s.id === AppState.currentSubchapter);
-    const levelName = subchapter.levelNames?.[AppState.currentLevel] || `Level ${AppState.currentLevel}`;
+    const levelName = `${chapter.name} (Level ${AppState.currentLevel})`;
     
     let html = `
-        <div class="section-header">
-            <button class="back-button" onclick="if(questionTimer) clearInterval(questionTimer); renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">← Back</button>
-            <span class="quiz-level-badge">${levelName}</span>
-        </div>
-        <div class="quiz-header">
-            <div class="timer-container">
-                <div class="timer-bar" id="timerBar"></div>
-                <div class="timer-text" id="timerText">${currentQuizData.timePerQuestion}s</div>
+        <div class="quiz-header-compact">
+            <div class="quiz-header-left">
+                <button class="quiz-back-btn" onclick="if(questionTimer) clearInterval(questionTimer); renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">←</button>
+                <span class="quiz-level-name">${levelName}</span>
             </div>
-            <div class="quiz-meta">
-                <span>Question 1/${currentQuizData.questions.length}</span>
-                <span>⭐ 0/${currentQuizData.questions.length * currentQuizData.maxPointsPerQuestion}</span>
+            <div class="quiz-header-right">
+                <span class="quiz-progress">1/${quizData.questions.length}</span>
+                <div class="circular-timer" id="circularTimer">
+                    <svg width="36" height="36" viewBox="0 0 40 40">
+                        <circle class="timer-circle-bg" cx="20" cy="20" r="16"></circle>
+                        <circle class="timer-circle-progress" id="timerCircleProgress" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="0"></circle>
+                    </svg>
+                    <div class="timer-circle-text" id="timerText">${quizData.timePerQuestion}</div>
+                </div>
             </div>
         </div>
-        <div class="question-container ${subjectClass}" id="questionContainer">
-            ${renderQuestion(currentQuizData.questions[0])}
+
+        <div class="quiz-score" id="quizScore">0</div>
+
+        <div class="quiz-question" id="quizQuestion">
+            ${quizData.questions[0].question}
+        </div>
+
+        <div class="quiz-options-large" id="quizOptions">
+            ${renderLargeOptions(quizData.questions[0])}
         </div>
     `;
     
     content.innerHTML = html;
-    updateHeader(`Level ${AppState.currentLevel}`);
-    startTimerForQuestion();
+    startCircularTimer();
 }
 
 function showQuizComplete() {
@@ -567,35 +579,43 @@ function restartQuiz() {
     currentQuizData.currentQuestion = 0;
     currentQuizData.score = 0;
     
-    const subjectClass = `${AppState.currentSubject}-quiz`;
     const content = document.getElementById('main-content');
     
     const subject = AppState.config.subjects.find(s => s.id === AppState.currentSubject);
     const chapter = subject.chapters.find(c => c.id === AppState.currentChapter);
     const subchapter = chapter.subchapters.find(s => s.id === AppState.currentSubchapter);
-    const levelName = subchapter.levelNames?.[AppState.currentLevel] || `Level ${AppState.currentLevel}`;
+    const levelName = `${chapter.name} (Level ${AppState.currentLevel})`;
     
     content.innerHTML = `
-        <div class="section-header">
-            <button class="back-button" onclick="renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">← Back</button>
-            <span class="quiz-level-badge">${levelName}</span>
-        </div>
-        <div class="quiz-header">
-            <div class="timer-container">
-                <div class="timer-bar" id="timerBar"></div>
-                <div class="timer-text" id="timerText">${currentQuizData.timePerQuestion}s</div>
+        <div class="quiz-header-compact">
+            <div class="quiz-header-left">
+                <button class="quiz-back-btn" onclick="if(questionTimer) clearInterval(questionTimer); renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">←</button>
+                <span class="quiz-level-name">${levelName}</span>
             </div>
-            <div class="quiz-meta">
-                <span>Question 1/${currentQuizData.questions.length}</span>
-                <span>⭐ 0/${currentQuizData.questions.length * currentQuizData.maxPointsPerQuestion}</span>
+            <div class="quiz-header-right">
+                <span class="quiz-progress">1/${currentQuizData.questions.length}</span>
+                <div class="circular-timer" id="circularTimer">
+                    <svg width="36" height="36" viewBox="0 0 40 40">
+                        <circle class="timer-circle-bg" cx="20" cy="20" r="16"></circle>
+                        <circle class="timer-circle-progress" id="timerCircleProgress" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="0"></circle>
+                    </svg>
+                    <div class="timer-circle-text" id="timerText">${currentQuizData.timePerQuestion}</div>
+                </div>
             </div>
         </div>
-        <div class="question-container ${subjectClass}" id="questionContainer">
-            ${renderQuestion(currentQuizData.questions[0])}
+
+        <div class="quiz-score" id="quizScore">0</div>
+
+        <div class="quiz-question" id="quizQuestion">
+            ${currentQuizData.questions[0].question}
+        </div>
+
+        <div class="quiz-options-large" id="quizOptions">
+            ${renderLargeOptions(currentQuizData.questions[0])}
         </div>
     `;
     
-    startTimerForQuestion();
+    startCircularTimer();
 }
 
 // ===== DATA LOADING =====
