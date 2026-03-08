@@ -2,7 +2,8 @@
   "title": "Fractions Addition - Level 3: Mixed Numbers",
   "description": "Practice adding mixed numbers and improper fractions",
   "level": 3,
-  "totalQuestions": 5,
+  "maxPointsPerQuestion": 100,
+  "timePerQuestion": 30,
   "questions": [
     {
       "id": "frac_add_011",
