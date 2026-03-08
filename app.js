@@ -225,13 +225,13 @@ function renderQuiz(subjectId, chapterId, subchapterId, level) {
             `;
         });
 }
-
-// ===== GENERIC QUIZ RENDERER - WORKS FOR ALL SUBJECTS =====
+// ===== GENERIC QUIZ RENDERER =====
 function renderGenericQuiz(quizData) {
+    // Store quiz data globally
+    currentQuizData = quizData;
+    
     const content = document.getElementById('main-content');
     const subjectId = AppState.currentSubject;
-    
-    // Add subject-specific class to question container for CSS styling
     const subjectClass = `${subjectId}-quiz`;
     
     let html = `
@@ -239,17 +239,17 @@ function renderGenericQuiz(quizData) {
             <button class="back-button" onclick="renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">← Back to levels</button>
         </div>
         <div class="quiz-header">
-            <div class="subchapter-title">Quiz - Level ${AppState.currentLevel}</div>
+            <div class="subchapter-title">${quizData.title || `Quiz - Level ${AppState.currentLevel}`}</div>
             <div class="quiz-meta">
-                <span>Question ${quizData.currentQuestion + 1}/${quizData.questions.length}</span>
-                <span>⭐ Score: ${quizData.score || 0}/${quizData.questions.length}</span>
+                <span>Question 1/${quizData.questions.length}</span>
+                <span>⭐ Score: 0/${quizData.questions.length}</span>
             </div>
         </div>
         <div class="question-container ${subjectClass}">
-            <div class="question-text">${quizData.questions[quizData.currentQuestion].question}</div>
+            <div class="question-text">${quizData.questions[0].question}</div>
             <div class="options-grid-2col">
-                ${quizData.questions[quizData.currentQuestion].options.map(opt => `
-                    <button class="option-btn" onclick="checkAnswer('${opt}')">
+                ${quizData.questions[0].options.map(opt => `
+                    <button class="option-btn" onclick="checkAnswer('${opt}', this)">
                         ${opt}
                     </button>
                 `).join('')}
@@ -261,10 +261,200 @@ function renderGenericQuiz(quizData) {
     updateHeader(`Level ${AppState.currentLevel}`);
 }
 
-// ===== ANSWER CHECKING =====
-function checkAnswer(selectedOption) {
-    // This will be implemented with actual answer checking
-    alert(`Selected: ${selectedOption}`);
+// ===== ANSWER CHECKING WITH VISUAL FEEDBACK =====
+let currentQuizData = null;
+
+function checkAnswer(selectedOption, buttonElement) {
+    // Get current question
+    const question = currentQuizData.questions[currentQuizData.currentQuestion];
+    
+    // Check if answer is correct
+    const isCorrect = (selectedOption === question.correct);
+    
+    // Visual feedback on the clicked button
+    if (isCorrect) {
+        buttonElement.classList.add('correct');
+        
+        // Update score
+        currentQuizData.score++;
+        
+        // Show success message (non-intrusive)
+        showFeedback('✅ Correct!', 'success');
+    } else {
+        buttonElement.classList.add('wrong');
+        
+        // Show correct answer
+        showFeedback(`❌ Wrong. Correct answer: ${question.correct}`, 'error');
+        
+        // Highlight the correct answer (optional)
+        highlightCorrectAnswer(question.correct);
+    }
+    
+    // Disable all buttons to prevent multiple answers
+    disableAllButtons();
+    
+    // Move to next question after delay
+    setTimeout(() => {
+        moveToNextQuestion();
+    }, 1500);
+}
+
+function showFeedback(message, type) {
+    // Remove any existing feedback
+    const existingFeedback = document.querySelector('.quiz-feedback');
+    if (existingFeedback) existingFeedback.remove();
+    
+    // Create feedback element
+    const feedback = document.createElement('div');
+    feedback.className = `quiz-feedback ${type}`;
+    feedback.textContent = message;
+    
+    // Insert after question container
+    const questionContainer = document.querySelector('.question-container');
+    questionContainer.parentNode.insertBefore(feedback, questionContainer.nextSibling);
+    
+    // Auto remove after 2 seconds
+    setTimeout(() => {
+        feedback.remove();
+    }, 2000);
+}
+
+function highlightCorrectAnswer(correctAnswer) {
+    // Find and highlight the correct answer button
+    const allButtons = document.querySelectorAll('.option-btn');
+    allButtons.forEach(btn => {
+        if (btn.textContent.trim() === correctAnswer) {
+            btn.classList.add('correct');
+        }
+    });
+}
+
+function disableAllButtons() {
+    const allButtons = document.querySelectorAll('.option-btn');
+    allButtons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+        btn.style.cursor = 'not-allowed';
+    });
+}
+
+function enableAllButtons() {
+    const allButtons = document.querySelectorAll('.option-btn');
+    allButtons.forEach(btn => {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+        btn.classList.remove('correct', 'wrong');
+    });
+}
+
+function moveToNextQuestion() {
+    // Check if there are more questions
+    if (currentQuizData.currentQuestion + 1 < currentQuizData.questions.length) {
+        // Move to next question
+        currentQuizData.currentQuestion++;
+        
+        // Re-render the quiz with next question
+        renderCurrentQuestion();
+    } else {
+        // Quiz completed
+        showQuizComplete();
+    }
+}
+
+function renderCurrentQuestion() {
+    const question = currentQuizData.questions[currentQuizData.currentQuestion];
+    const subjectClass = `${AppState.currentSubject}-quiz`;
+    
+    const quizContainer = document.querySelector('.question-container');
+    
+    quizContainer.innerHTML = `
+        <div class="question-text">${question.question}</div>
+        <div class="options-grid-2col">
+            ${question.options.map(opt => `
+                <button class="option-btn" onclick="checkAnswer('${opt}', this)">
+                    ${opt}
+                </button>
+            `).join('')}
+        </div>
+    `;
+    
+    // Update question counter
+    const quizMeta = document.querySelector('.quiz-meta');
+    if (quizMeta) {
+        quizMeta.innerHTML = `
+            <span>Question ${currentQuizData.currentQuestion + 1}/${currentQuizData.questions.length}</span>
+            <span>⭐ Score: ${currentQuizData.score}/${currentQuizData.questions.length}</span>
+        `;
+    }
+    
+    // Re-enable buttons for new question
+    enableAllButtons();
+}
+
+function showQuizComplete() {
+    const percentage = Math.round((currentQuizData.score / currentQuizData.questions.length) * 100);
+    
+    const content = document.getElementById('main-content');
+    content.innerHTML = `
+        <div class="section-header">
+            <button class="back-button" onclick="renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">← Back to levels</button>
+        </div>
+        <div class="quiz-complete">
+            <div class="completion-icon">🏆</div>
+            <h2>Quiz Complete!</h2>
+            <div class="score-display">
+                <span class="score">${currentQuizData.score}/${currentQuizData.questions.length}</span>
+                <span class="percentage">${percentage}%</span>
+            </div>
+            <div class="feedback-message">
+                ${getFeedbackMessage(percentage)}
+            </div>
+            <button class="restart-btn" onclick="restartQuiz()">Try Again</button>
+            <button class="continue-btn" onclick="renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">Choose Another Level</button>
+        </div>
+    `;
+    
+    // Save progress to Firebase (will implement later)
+    saveProgressToFirebase();
+}
+
+function getFeedbackMessage(percentage) {
+    if (percentage >= 90) return "Excellent! You've mastered this level! 🎉";
+    if (percentage >= 70) return "Good job! You're doing great! 👍";
+    if (percentage >= 50) return "Keep practicing! You'll get better! 💪";
+    return "Don't give up! Try again to improve! 🌱";
+}
+
+function restartQuiz() {
+    // Reset to first question
+    currentQuizData.currentQuestion = 0;
+    currentQuizData.score = 0;
+    
+    // Re-render the quiz
+    const subjectClass = `${AppState.currentSubject}-quiz`;
+    const content = document.getElementById('main-content');
+    
+    content.innerHTML = `
+        <div class="section-header">
+            <button class="back-button" onclick="renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">← Back to levels</button>
+        </div>
+        <div class="quiz-header">
+            <div class="subchapter-title">Quiz - Level ${AppState.currentLevel}</div>
+            <div class="quiz-meta">
+                <span>Question 1/${currentQuizData.questions.length}</span>
+                <span>⭐ Score: 0/${currentQuizData.questions.length}</span>
+            </div>
+        </div>
+        <div class="question-container ${subjectClass}"></div>
+    `;
+    
+    renderCurrentQuestion();
+}
+
+function saveProgressToFirebase() {
+    // Placeholder - will implement with Firebase later
+    console.log('Progress saved for level', AppState.currentLevel, 'Score:', currentQuizData.score);
 }
 
 // ===== LOAD QUIZ DATA FROM JSON FILES =====
