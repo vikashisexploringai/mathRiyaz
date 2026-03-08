@@ -452,3 +452,141 @@ body {
 .mb-20 {
     margin-bottom: 20px;
 }
+
+
+/* ===== QUIZ FEEDBACK ===== */
+.quiz-feedback {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 400px;
+    width: 90%;
+    padding: 16px 24px;
+    border-radius: 50px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    animation: slideDown 0.3s ease;
+}
+
+.quiz-feedback.success {
+    background: #22c55e;
+    color: white;
+}
+
+.quiz-feedback.error {
+    background: #ef4444;
+    color: white;
+}
+
+@keyframes slideDown {
+    from {
+        top: 20px;
+        opacity: 0;
+    }
+    to {
+        top: 80px;
+        opacity: 1;
+    }
+}
+
+/* ===== QUIZ COMPLETE ===== */
+.quiz-complete {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.completion-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    animation: bounce 1s ease;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+.quiz-complete h2 {
+    font-size: 28px;
+    color: #0f172a;
+    margin-bottom: 20px;
+}
+
+.score-display {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.score-display .score {
+    font-size: 48px;
+    font-weight: 700;
+    color: #3b82f6;
+}
+
+.score-display .percentage {
+    font-size: 24px;
+    color: #64748b;
+}
+
+.feedback-message {
+    font-size: 18px;
+    color: #475569;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 12px;
+}
+
+.restart-btn, .continue-btn {
+    padding: 16px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    margin: 0 10px;
+    transition: all 0.2s;
+}
+
+.restart-btn {
+    background: #3b82f6;
+    color: white;
+}
+
+.restart-btn:hover {
+    background: #2563eb;
+}
+
+.continue-btn {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.continue-btn:hover {
+    background: #e2e8f0;
+}
+
+/* Disabled button state */
+.option-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.option-btn.correct {
+    background: #22c55e !important;
+    border-color: #22c55e !important;
+    color: white !important;
+}
+
+.option-btn.wrong {
+    background: #ef4444 !important;
+    border-color: #ef4444 !important;
+    color: white !important;
+}
