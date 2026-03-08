@@ -1,0 +1,258 @@
+{
+  "appName": "mathRiyaz",
+  "version": "1.0.0",
+  "subjects": [
+    {
+      "id": "math",
+      "name": "Mathematics",
+      "icon": "📐",
+      "color": "#2563eb",
+      "description": "Fractions, square roots, algebra and more",
+      "chapters": [
+        {
+          "id": "fractions",
+          "name": "Fractions",
+          "icon": "¼",
+          "subchapters": [
+            {
+              "id": "addition",
+              "name": "Addition",
+              "levels": 4,
+              "levelNames": {
+                "1": "Like Denominators",
+                "2": "Unlike Denominators",
+                "3": "Mixed Numbers",
+                "4": "Word Problems"
+              }
+            },
+            {
+              "id": "subtraction",
+              "name": "Subtraction",
+              "levels": 3,
+              "levelNames": {
+                "1": "Simple Subtraction",
+                "2": "Borrowing",
+                "3": "Mixed Numbers"
+              }
+            },
+            {
+              "id": "multiplication",
+              "name": "Multiplication",
+              "levels": 3,
+              "levelNames": {
+                "1": "Basic Multiplication",
+                "2": "Fraction × Fraction",
+                "3": "Mixed Numbers"
+              }
+            },
+            {
+              "id": "division",
+              "name": "Division",
+              "levels": 3,
+              "levelNames": {
+                "1": "Basic Division",
+                "2": "Reciprocals",
+                "3": "Mixed Numbers"
+              }
+            }
+          ]
+        },
+        {
+          "id": "squareroots",
+          "name": "Square Roots",
+          "icon": "√",
+          "subchapters": [
+            {
+              "id": "perfect",
+              "name": "Perfect Squares",
+              "levels": 3,
+              "levelNames": {
+                "1": "Small Numbers (1-100)",
+                "2": "Medium Numbers (100-400)",
+                "3": "Large Numbers (400-1000)"
+              }
+            },
+            {
+              "id": "imperfect",
+              "name": "Imperfect Squares",
+              "levels": 3,
+              "levelNames": {
+                "1": "Approximation Basics",
+                "2": "Nearest Integer",
+                "3": "Decimal Places"
+              }
+            }
+          ]
+        },
+        {
+          "id": "algebra",
+          "name": "Algebra Basics",
+          "icon": "x²",
+          "subchapters": [
+            {
+              "id": "equations",
+              "name": "Simple Equations",
+              "levels": 3,
+              "levelNames": {
+                "1": "One-step equations",
+                "2": "Two-step equations",
+                "3": "Variables on both sides"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "english",
+      "name": "English",
+      "icon": "📚",
+      "color": "#16a34a",
+      "description": "Vocabulary, grammar, reading comprehension",
+      "chapters": [
+        {
+          "id": "vocabulary",
+          "name": "Vocabulary",
+          "icon": "📖",
+          "subchapters": [
+            {
+              "id": "beginner",
+              "name": "Beginner Words",
+              "levels": 3,
+              "levelNames": {
+                "1": "Basic Nouns",
+                "2": "Common Verbs",
+                "3": "Everyday Adjectives"
+              }
+            },
+            {
+              "id": "intermediate",
+              "name": "Intermediate Words",
+              "levels": 3,
+              "levelNames": {
+                "1": "Academic Words",
+                "2": "Descriptive Words",
+                "3": "Abstract Concepts"
+              }
+            },
+            {
+              "id": "advanced",
+              "name": "Advanced Words",
+              "levels": 2,
+              "levelNames": {
+                "1": "Literary Terms",
+                "2": "Technical Vocabulary"
+              }
+            }
+          ]
+        },
+        {
+          "id": "grammar",
+          "name": "Grammar",
+          "icon": "📝",
+          "subchapters": [
+            {
+              "id": "tenses",
+              "name": "Verb Tenses",
+              "levels": 4,
+              "levelNames": {
+                "1": "Present Tense",
+                "2": "Past Tense",
+                "3": "Future Tense",
+                "4": "Perfect Tenses"
+              }
+            },
+            {
+              "id": "parts-of-speech",
+              "name": "Parts of Speech",
+              "levels": 3,
+              "levelNames": {
+                "1": "Nouns & Pronouns",
+                "2": "Verbs & Adverbs",
+                "3": "Adjectives & Prepositions"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "science",
+      "name": "Science",
+      "icon": "🔬",
+      "color": "#dc2626",
+      "description": "Biology, physics, chemistry fundamentals",
+      "chapters": [
+        {
+          "id": "biology",
+          "name": "Biology",
+          "icon": "🧬",
+          "subchapters": [
+            {
+              "id": "cells",
+              "name": "Cell Biology",
+              "levels": 3,
+              "levelNames": {
+                "1": "Cell Structure",
+                "2": "Cell Functions",
+                "3": "Cell Division"
+              }
+            },
+            {
+              "id": "human-body",
+              "name": "Human Body",
+              "levels": 3,
+              "levelNames": {
+                "1": "Organs",
+                "2": "Systems",
+                "3": "Health & Nutrition"
+              }
+            }
+          ]
+        },
+        {
+          "id": "physics",
+          "name": "Physics",
+          "icon": "⚡",
+          "subchapters": [
+            {
+              "id": "forces",
+              "name": "Forces & Motion",
+              "levels": 3,
+              "levelNames": {
+                "1": "Basic Forces",
+                "2": "Newton's Laws",
+                "3": "Applications"
+              }
+            },
+            {
+              "id": "energy",
+              "name": "Energy",
+              "levels": 2,
+              "levelNames": {
+                "1": "Types of Energy",
+                "2": "Energy Transfer"
+              }
+            }
+          ]
+        },
+        {
+          "id": "chemistry",
+          "name": "Chemistry",
+          "icon": "⚗️",
+          "subchapters": [
+            {
+              "id": "elements",
+              "name": "Elements & Compounds",
+              "levels": 2,
+              "levelNames": {
+                "1": "Periodic Table Basics",
+                "2": "Common Compounds"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
