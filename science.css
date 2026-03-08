@@ -1,0 +1,42 @@
+/* ===== SCIENCE-SPECIFIC STYLES ===== */
+.science-quiz .term {
+    font-size: 24px;
+    font-weight: 600;
+    color: #0f172a;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.science-quiz .definition {
+    font-size: 16px;
+    color: #475569;
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+.science-quiz .diagram-placeholder {
+    background: #f1f5f9;
+    border: 2px dashed #94a3b8;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #64748b;
+}
+
+.science-quiz .formula {
+    font-size: 20px;
+    font-family: monospace;
+    background: #1e293b;
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.science-quiz .unit {
+    font-size: 14px;
+    color: #64748b;
+    margin-left: 4px;
+}
