@@ -2,7 +2,8 @@
   "title": "Fractions Addition - Level 1: Like Denominators",
   "description": "Practice adding fractions with the same denominator",
   "level": 1,
-  "totalQuestions": 5,
+  "maxPointsPerQuestion": 100,
+  "timePerQuestion": 30,
   "questions": [
     {
       "id": "frac_add_001",
