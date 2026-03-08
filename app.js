@@ -267,30 +267,53 @@ function checkAnswer(selectedOption) {
     alert(`Selected: ${selectedOption}`);
 }
 
-// ===== HELPER FUNCTIONS =====
-function loadQuizData(subjectId, chapterId, subchapterId, level) {
-    // This would fetch from JSON file
-    // For now, return mock data
-    return new Promise(resolve => {
-        setTimeout(() => {
-            resolve({
-                questions: [
-                    {
-                        question: "1/4 + 2/4 = ?",
-                        options: ["3/4", "3/8", "1/2", "2/4"],
-                        correct: "3/4"
-                    },
-                    {
-                        question: "1/3 + 1/3 = ?",
-                        options: ["2/3", "1/6", "2/6", "3/3"],
-                        correct: "2/3"
-                    }
-                ],
-                currentQuestion: 0,
-                score: 0
-            });
-        }, 500);
-    });
+// ===== LOAD QUIZ DATA FROM JSON FILES =====
+async function loadQuizData(subjectId, chapterId, subchapterId, level) {
+    try {
+        // Construct the path to the JSON file
+        // Example: data/math/fractions/addition/level1.json
+        const path = `data/${subjectId}/${chapterId}/${subchapterId}/level${level}.json`;
+        
+        console.log('Loading quiz from:', path);
+        
+        const response = await fetch(path);
+        
+        if (!response.ok) {
+            throw new Error(`Failed to load: ${response.status}`);
+        }
+        
+        const quizData = await response.json();
+        
+        // Add current question index and score if not present
+        quizData.currentQuestion = 0;
+        quizData.score = 0;
+        
+        return quizData;
+        
+    } catch (error) {
+        console.error('Error loading quiz data:', error);
+        
+        // Return fallback data for testing
+        return {
+            title: "Sample Quiz",
+            level: level,
+            totalQuestions: 2,
+            questions: [
+                {
+                    question: "1/4 + 2/4 = ?",
+                    options: ["3/4", "3/8", "1/2", "2/4"],
+                    correct: "3/4"
+                },
+                {
+                    question: "1/3 + 1/3 = ?",
+                    options: ["2/3", "1/6", "2/6", "3/3"],
+                    correct: "2/3"
+                }
+            ],
+            currentQuestion: 0,
+            score: 0
+        };
+    }
 }
 
 function calculateSubjectProgress(subjectId) {
