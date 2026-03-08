@@ -1,0 +1,36 @@
+/* ===== ENGLISH-SPECIFIC STYLES ===== */
+.english-quiz .word {
+    font-size: 32px;
+    font-weight: 700;
+    color: #0f172a;
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    line-height: 1.3;
+}
+
+.english-quiz .sentence {
+    font-size: 18px;
+    color: #334155;
+    text-align: center;
+    margin-bottom: 24px;
+    font-style: italic;
+    line-height: 1.6;
+}
+
+.english-quiz .definition {
+    font-size: 16px;
+    color: #475569;
+    margin-bottom: 20px;
+    padding: 12px;
+    background: #f1f5f9;
+    border-radius: 8px;
+}
+
+.english-quiz .part-of-speech {
+    font-size: 14px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
