@@ -234,15 +234,21 @@ function renderGenericQuiz(quizData) {
     const subjectId = AppState.currentSubject;
     const subjectClass = `${subjectId}-quiz`;
     
+    // Get level name from config if available
+    const subject = AppState.config.subjects.find(s => s.id === AppState.currentSubject);
+    const chapter = subject.chapters.find(c => c.id === AppState.currentChapter);
+    const subchapter = chapter.subchapters.find(s => s.id === AppState.currentSubchapter);
+    const levelName = subchapter.levelNames?.[AppState.currentLevel] || `Level ${AppState.currentLevel}`;
+    
     let html = `
         <div class="section-header">
-            <button class="back-button" onclick="renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">← Back to levels</button>
+            <button class="back-button" onclick="renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">← Back</button>
+            <span class="quiz-level-badge">${levelName}</span>
         </div>
         <div class="quiz-header">
-            <div class="subchapter-title">${quizData.title || `Quiz - Level ${AppState.currentLevel}`}</div>
             <div class="quiz-meta">
-                <span>Question 1/${quizData.questions.length}</span>
-                <span>⭐ Score: 0/${quizData.questions.length}</span>
+                <span>Question ${quizData.currentQuestion + 1}/${quizData.questions.length}</span>
+                <span>⭐ ${quizData.score || 0}/${quizData.questions.length}</span>
             </div>
         </div>
         <div class="question-container ${subjectClass}">
@@ -360,6 +366,36 @@ function moveToNextQuestion() {
         // Quiz completed
         showQuizComplete();
     }
+}
+
+function renderCurrentQuestion() {
+    const question = currentQuizData.questions[currentQuizData.currentQuestion];
+    const subjectClass = `${AppState.currentSubject}-quiz`;
+    
+    const quizContainer = document.querySelector('.question-container');
+    
+    quizContainer.innerHTML = `
+        <div class="question-text">${question.question}</div>
+        <div class="options-grid-2col">
+            ${question.options.map(opt => `
+                <button class="option-btn" onclick="checkAnswer('${opt}', this)">
+                    ${opt}
+                </button>
+            `).join('')}
+        </div>
+    `;
+    
+    // Update question counter only (simplified)
+    const quizMeta = document.querySelector('.quiz-meta');
+    if (quizMeta) {
+        quizMeta.innerHTML = `
+            <span>Question ${currentQuizData.currentQuestion + 1}/${currentQuizData.questions.length}</span>
+            <span>⭐ ${currentQuizData.score}/${currentQuizData.questions.length}</span>
+        `;
+    }
+    
+    // Re-enable buttons for new question
+    enableAllButtons();
 }
 
 function renderCurrentQuestion() {
