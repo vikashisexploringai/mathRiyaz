@@ -47,6 +47,7 @@ body {
     justify-content: center;
     align-items: center;
     position: relative;
+    padding-top: 48px; 
 }
 
 .app-header h1 {
@@ -65,6 +66,7 @@ body {
     font-weight: 500;
     position: relative;
     width: 100%;
+    padding-top: 48px;
 }
 
 .chapters-header .back-btn {
