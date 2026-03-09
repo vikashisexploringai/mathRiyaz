@@ -1,0 +1,44 @@
+{
+  "title": "Fractions Subtraction - Level 3: Mixed Numbers",
+  "description": "Practice subtracting mixed numbers and fractions",
+  "level": 3,
+  "maxPointsPerQuestion": 100,
+  "timePerQuestion": 35,
+  "questions": [
+    {
+      "id": "frac_sub_011",
+      "question": "3 1/2 - 1 1/2 = ?",
+      "options": ["2", "1 1/2", "2 1/2", "1"],
+      "correct": "2",
+      "explanation": "Subtract whole numbers: 3-1=2. Subtract fractions: 1/2-1/2=0. Total: 2"
+    },
+    {
+      "id": "frac_sub_012",
+      "question": "4 2/3 - 1 1/3 = ?",
+      "options": ["3 1/3", "2 1/3", "3 2/3", "2 2/3"],
+      "correct": "3 1/3",
+      "explanation": "Subtract whole numbers: 4-1=3. Subtract fractions: 2/3-1/3=1/3. Total: 3 1/3"
+    },
+    {
+      "id": "frac_sub_013",
+      "question": "5 1/4 - 2 3/4 = ?",
+      "options": ["2 1/2", "3 1/2", "2 1/4", "3 1/4"],
+      "correct": "2 1/2",
+      "explanation": "Need to borrow: 5 1/4 = 4 5/4. Then 4 5/4 - 2 3/4 = 2 2/4 = 2 1/2"
+    },
+    {
+      "id": "frac_sub_014",
+      "question": "3 1/5 - 1 4/5 = ?",
+      "options": ["1 2/5", "2 2/5", "1 3/5", "2 3/5"],
+      "correct": "1 2/5",
+      "explanation": "Borrow: 3 1/5 = 2 6/5. Then 2 6/5 - 1 4/5 = 1 2/5"
+    },
+    {
+      "id": "frac_sub_015",
+      "question": "6 - 2 3/8 = ?",
+      "options": ["3 5/8", "4 5/8", "3 3/8", "4 3/8"],
+      "correct": "3 5/8",
+      "explanation": "Borrow: 6 = 5 8/8. Then 5 8/8 - 2 3/8 = 3 5/8"
+    }
+  ]
+}
