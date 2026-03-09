@@ -260,10 +260,10 @@ function checkAnswer(selectedOption, buttonElement) {
     if (isCorrect) {
         pointsEarned = calculatePoints(timeTaken);
         buttonElement.classList.add('correct');
-        showFeedback(`✅ Correct! +${pointsEarned} points`, 'success');
+//        showFeedback(`✅ Correct! +${pointsEarned} points`, 'success');
     } else {
         buttonElement.classList.add('wrong');
-        showFeedback(`❌ Wrong. Correct: ${question.correct}`, 'error');
+//        showFeedback(`❌ Wrong. Correct: ${question.correct}`, 'error');
         highlightCorrectAnswer(question.correct);
     }
     
