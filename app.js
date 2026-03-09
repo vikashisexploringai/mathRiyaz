@@ -128,13 +128,19 @@ function loadSubjectCSS(subjectId) {
     document.head.appendChild(link);
 }
 
-function updateHeader(title) {
+function updateHeader(title, showBackButton = false, backFunction = null) {
     const header = document.getElementById('app-header');
-    if (header) {
+    if (!header) return;
+    
+    if (showBackButton) {
         header.innerHTML = `
-            <h1>${title}</h1>
-            <div class="streak-badge">🔥 0 day streak</div>
+            <div class="chapters-header">
+                <button class="back-btn" onclick="${backFunction}">←</button>
+                ${title}
+            </div>
         `;
+    } else {
+        header.innerHTML = `<h1>${title}</h1>`;
     }
 }
 
@@ -318,7 +324,6 @@ function moveToNextQuestion() {
 
 // ===== VIEW RENDERING =====
 function renderHome() {
-    // Show the header on home screen
     const appHeader = document.getElementById('app-header');
     if (appHeader) {
         appHeader.style.display = 'flex';
@@ -360,12 +365,11 @@ function renderHome() {
     `;
     
     content.innerHTML = html;
-    updateHeader('mathRiyaz');
+    updateHeader('Math Riyaz');
     updateBottomNav('home');
 }
 
 function renderChapters(subjectId) {
-    // Show the header on chapters screen
     const appHeader = document.getElementById('app-header');
     if (appHeader) {
         appHeader.style.display = 'flex';
@@ -381,13 +385,7 @@ function renderChapters(subjectId) {
     
     loadSubjectCSS(subjectId);
     
-    let html = `
-        <div class="section-header">
-            <button class="back-button" onclick="renderHome()">← Back to subjects</button>
-            <span style="color: #2563eb; font-weight: 500;">${subject.name}</span>
-        </div>
-        <div class="chapters-list">
-    `;
+    let html = `<div class="chapters-list">`;
     
     subject.chapters.forEach(chapter => {
         const progress = calculateChapterProgress(subjectId, chapter.id);
@@ -413,12 +411,11 @@ function renderChapters(subjectId) {
     
     html += `</div>`;
     content.innerHTML = html;
-    updateHeader(subject.name);
+    updateHeader(subject.name, true, 'renderHome()');
     updateBottomNav('subjects');
 }
 
 function renderLevels(subjectId, chapterId, subchapterId) {
-    // Show the header on levels screen
     const appHeader = document.getElementById('app-header');
     if (appHeader) {
         appHeader.style.display = 'flex';
@@ -513,7 +510,6 @@ function renderQuiz(subjectId, chapterId, subchapterId, level) {
 }
 
 function renderGenericQuiz(quizData) {
-    // HIDE THE PURPLE HEADER DURING QUIZ
     const appHeader = document.getElementById('app-header');
     if (appHeader) {
         appHeader.style.display = 'none';
