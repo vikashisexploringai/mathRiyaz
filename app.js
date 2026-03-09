@@ -322,6 +322,73 @@ function moveToNextQuestion() {
     }
 }
 
+// ===== RENDER SUBCHAPTERS (NEW) =====
+function renderSubchapters(subjectId, chapterId) {
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) {
+        appHeader.style.display = 'flex';
+    }
+    
+    if (!AppState.config) return;
+    
+    AppState.currentView = 'subchapters';
+    AppState.currentSubject = subjectId;
+    AppState.currentChapter = chapterId;
+    
+    const subject = AppState.config.subjects.find(s => s.id === subjectId);
+    const chapter = subject.chapters.find(c => c.id === chapterId);
+    const content = document.getElementById('main-content');
+    
+    let html = `
+        <div class="section-header">
+            <button class="back-button" onclick="renderChapters('${subjectId}')">← Back to chapters</button>
+        </div>
+        <div class="subchapter-header">
+            <div class="subchapter-title">${chapter.name}</div>
+            <div class="subchapter-path">${subject.name} / ${chapter.name}</div>
+        </div>
+        <div class="subchapters-grid">
+    `;
+    
+    chapter.subchapters.forEach(subchapter => {
+        const progress = calculateSubchapterProgress(subjectId, chapterId, subchapter.id);
+        
+        html += `
+            <div class="subchapter-card" onclick="navigateToSubchapter('${subjectId}', '${chapterId}', '${subchapter.id}')">
+                <div class="subchapter-card-header">
+                    <span class="subchapter-card-name">${subchapter.name}</span>
+                    <span class="subchapter-card-icon">→</span>
+                </div>
+                <div class="subchapter-card-stats">
+                    <span class="levels-count">${subchapter.levels} levels</span>
+                    <span class="progress-badge-small">${progress.completed}/${subchapter.levels}</span>
+                </div>
+                <div class="progress-bar-container" style="margin-top: 12px;">
+                    <div class="progress-bar" style="width: ${progress.percentage}%"></div>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += `</div>`;
+    content.innerHTML = html;
+    updateHeader(`${chapter.name} - ${subject.name}`);
+    updateBottomNav('subjects');
+}
+
+// ===== HELPER FUNCTION FOR SUBCHAPTER PROGRESS =====
+function calculateSubchapterProgress(subjectId, chapterId, subchapterId) {
+    const subject = AppState.config.subjects.find(s => s.id === subjectId);
+    const chapter = subject.chapters.find(c => c.id === chapterId);
+    const subchapter = chapter.subchapters.find(s => s.id === subchapterId);
+    
+    const completed = 0; // Will come from Firebase
+    const total = subchapter.levels;
+    const percentage = total > 0 ? (completed / total) * 100 : 0;
+    
+    return { completed, total, percentage };
+}
+
 // ===== VIEW RENDERING =====
 function renderHome() {
     const appHeader = document.getElementById('app-header');
@@ -436,7 +503,7 @@ function renderLevels(subjectId, chapterId, subchapterId) {
     
     let html = `
         <div class="section-header">
-            <button class="back-button" onclick="renderChapters('${subjectId}')">← Back to chapters</button>
+            <button class="back-button" onclick="renderSubchapters('${subjectId}', '${chapterId}')">← Back to ${chapter.name}</button>
         </div>
         <div class="subchapter-header">
             <div class="subchapter-title">${chapter.name} → ${subchapter.name}</div>
@@ -709,11 +776,11 @@ window.navigateToSubject = function(subjectId) {
 };
 
 window.navigateToChapter = function(subjectId, chapterId) {
-    const subject = AppState.config.subjects.find(s => s.id === subjectId);
-    const chapter = subject.chapters.find(c => c.id === chapterId);
-    if (chapter.subchapters.length > 0) {
-        renderLevels(subjectId, chapterId, chapter.subchapters[0].id);
-    }
+    renderSubchapters(subjectId, chapterId);
+};
+
+window.navigateToSubchapter = function(subjectId, chapterId, subchapterId) {
+    renderLevels(subjectId, chapterId, subchapterId);
 };
 
 window.navigateToQuiz = function(subjectId, chapterId, subchapterId, level) {
