@@ -92,6 +92,8 @@ body {
     background: rgba(255,255,255,0.1);
 }
 
+
+
 /* ===== BOTTOM NAVIGATION ===== */
 .bottom-nav {
     position: fixed;
@@ -704,4 +706,68 @@ body {
 
 .mb-20 {
     margin-bottom: 20px;
+}
+
+/* ===== SUBCHAPTERS GRID ===== */
+.subchapters-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.subchapter-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.subchapter-card:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59,130,246,0.1);
+    transform: translateY(-2px);
+}
+
+.subchapter-card:active {
+    transform: scale(0.98);
+}
+
+.subchapter-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.subchapter-card-name {
+    font-weight: 600;
+    color: #0f172a;
+    font-size: 18px;
+}
+
+.subchapter-card-icon {
+    color: #3b82f6;
+    font-size: 18px;
+}
+
+.subchapter-card-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.levels-count {
+    color: #475569;
+}
+
+.progress-badge-small {
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 12px;
 }
