@@ -473,7 +473,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 16px;
+    padding: 8px 16px;
     background: white;
     border-bottom: 1px solid #f0f0f0;
 }
@@ -555,22 +555,22 @@ body {
 /* ===== QUIZ SCORE ===== */
 .quiz-score {
     text-align: center;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 400;
     color: #1e293b;
-    margin: 20px 16px 10px 16px;
+    margin: 12px 16px 8px 16px;
     letter-spacing: 1px;
 }
 
-/* ===== QUIZ QUESTION - IMPROVED ===== */
+/* ===== QUIZ QUESTION ===== */
 .quiz-question {
     text-align: center;
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 500;
     color: #0f172a;
-    margin: 20px 16px 30px 16px;
+    margin: 8px 16px 16px 16px;
     padding: 0;
-    line-height: 1.4;
+    line-height: 1.3;
 }
 
 .quiz-question .fraction {
@@ -592,60 +592,61 @@ body {
     padding: 0 4px;
 }
 
-/* ===== LARGE OPTION BUTTONS - TRUE FULL WIDTH ===== */
+/* ===== LARGE OPTION BUTTONS - SEAMLESS GRID ===== */
 .quiz-options-large {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    grid-template-rows: 1fr 1fr;
+    gap: 0;
     padding: 0;
-    margin: 20px 0 0 0;
+    margin: 0;
     width: 100%;
+    height: calc(100vh - 280px);
+    min-height: 400px;
     box-sizing: border-box;
+    border-top: 1px solid #e2e8f0;
+    border-left: 1px solid #e2e8f0;
 }
 
 .quiz-option-large {
     background: #3b82f6;
     border: none;
-    border-radius: 16px;
-    padding: 24px 0;
-    font-size: 28px;
+    border-right: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    border-radius: 0;
+    padding: 0;
+    font-size: 32px;
     font-weight: 700;
     color: white;
     cursor: pointer;
-    transition: all 0.2s;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-    min-height: 110px;
+    transition: background 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
+    height: 100%;
     margin: 0;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
     -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
 }
 
 .quiz-option-large:hover {
     background: #2563eb;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
 }
 
 .quiz-option-large:active {
-    transform: scale(0.97);
     background: #1d4ed8;
 }
 
 .quiz-option-large.correct {
     background: #22c55e !important;
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
 }
 
 .quiz-option-large.wrong {
     background: #ef4444 !important;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 .quiz-option-large:disabled {
@@ -653,23 +654,23 @@ body {
     cursor: not-allowed;
 }
 
-/* ===== FRACTION STYLES - ENSURED BOLD ===== */
+/* ===== FRACTION STYLES FOR SEAMLESS BUTTONS ===== */
 .quiz-option-large .fraction {
     display: inline-flex;
     flex-direction: column;
     align-items: center;
-    font-size: 32px;
+    font-size: 36px;
     font-weight: 700;
     line-height: 1.2;
 }
 
 .quiz-option-large .numerator {
     border-bottom: 3px solid white;
-    padding: 0 6px;
+    padding: 0 8px;
 }
 
 .quiz-option-large .denominator {
-    padding: 0 6px;
+    padding: 0 8px;
 }
 
 .quiz-option-large, 
@@ -680,17 +681,16 @@ body {
 /* ===== RESPONSIVE ADJUSTMENTS ===== */
 @media (max-width: 400px) {
     .quiz-options-large {
-        gap: 12px;
+        height: calc(100vh - 240px);
+        min-height: 350px;
     }
     
     .quiz-option-large {
-        padding: 20px 0;
-        font-size: 24px;
-        min-height: 100px;
+        font-size: 28px;
     }
     
     .quiz-option-large .fraction {
-        font-size: 28px;
+        font-size: 32px;
     }
     
     .level-card {
