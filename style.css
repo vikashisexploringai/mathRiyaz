@@ -136,9 +136,29 @@ body {
     padding: 20px;
 }
 
-/* Remove padding on quiz screen */
+/* Remove padding on quiz screen but keep bottom nav space */
 .main-content:has(.quiz-options-large) {
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 80px); /* Account for bottom nav */
+}
+
+/* Push options to bottom */
+.main-content:has(.quiz-options-large) .quiz-header-compact {
+    flex-shrink: 0;
+}
+
+.main-content:has(.quiz-options-large) .quiz-score {
+    flex-shrink: 0;
+}
+
+.main-content:has(.quiz-options-large) .quiz-question {
+    flex-shrink: 0;
+}
+
+.main-content:has(.quiz-options-large) .quiz-options-large {
+    margin-top: auto;  /* Push to bottom */
 }
 
 /* Keep padding for other screens */
@@ -592,27 +612,24 @@ body {
     padding: 0 4px;
 }
 
-/* ===== LARGE OPTION BUTTONS - SEAMLESS GRID ===== */
+/* ===== LARGE OPTION BUTTONS - SQUARE SHAPE WITH MARGINS ===== */
 .quiz-options-large {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
-    gap: 0;
-    padding: 0;
-    margin: 20px 0 0 0;
+    gap: 16px;  /* Increased gap between buttons */
+    padding: 0 20px 30px 20px;  /* Left/right padding, bottom padding */
+    margin: 0;
     width: 100%;
-    height: 300px;
+    height: auto;
     box-sizing: border-box;
-    border-top: 1px solid #e2e8f0;
-    border-left: 1px solid #e2e8f0;
+    border: none;  /* Remove outer borders */
 }
 
 .quiz-option-large {
     background: #3b82f6;
     border: none;
-    border-right: 1px solid #e2e8f0;
-    border-bottom: 1px solid #e2e8f0;
-    border-radius: 0;
+    border-radius: 0;  /* Keep square corners */
     padding: 0;
     font-size: 32px;
     font-weight: 700;
@@ -623,7 +640,7 @@ body {
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 100%;
+    aspect-ratio: 1 / 1;  /* Makes buttons square */
     margin: 0;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -653,7 +670,7 @@ body {
     cursor: not-allowed;
 }
 
-/* ===== FRACTION STYLES FOR SEAMLESS BUTTONS ===== */
+/* ===== FRACTION STYLES FOR SQUARE BUTTONS ===== */
 .quiz-option-large .fraction {
     display: inline-flex;
     flex-direction: column;
@@ -680,8 +697,8 @@ body {
 /* ===== RESPONSIVE ADJUSTMENTS ===== */
 @media (max-width: 400px) {
     .quiz-options-large {
-        height: 260px;
-        margin-top: 16px;
+        gap: 12px;
+        padding: 0 16px 25px 16px;
     }
     
     .quiz-option-large {
