@@ -141,7 +141,7 @@ body {
     padding: 0;
     display: flex;
     flex-direction: column;
-    min-height: calc(100vh - 80px); /* Account for bottom nav */
+    min-height: calc(100vh - 80px);
 }
 
 /* Push options to bottom */
@@ -158,7 +158,7 @@ body {
 }
 
 .main-content:has(.quiz-options-large) .quiz-options-large {
-    margin-top: auto;  /* Push to bottom */
+    margin-top: auto;
 }
 
 /* Keep padding for other screens */
@@ -617,37 +617,37 @@ body {
     padding: 0 4px;
 }
 
-/* ===== LARGE OPTION BUTTONS - SQUARE SHAPE WITH MARGINS ===== */
+/* ===== LARGE OPTION BUTTONS - WHITE WITH BLUE TEXT ===== */
 .quiz-options-large {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
-    gap: 12px;  /* Increased gap between buttons */
-    padding: 0 20px 30px 20px;  /* Left/right padding, bottom padding */
+    gap: 0;  /* No gap between buttons */
+    padding: 0;
     margin: 0;
     width: 100%;
     height: auto;
     box-sizing: border-box;
-    border: none;  /* Remove outer borders */
+    border: none;
 }
 
 .quiz-option-large {
-    background: #3b82f6;
+    background: white;
     border: none;
     border-right: 1px solid #e2e8f0;  /* Grey border on right */
     border-bottom: 1px solid #e2e8f0;  /* Grey border on bottom */
-    border-radius: 0;  /* Keep square corners */
+    border-radius: 0;
     padding: 0;
     font-size: 32px;
     font-weight: 700;
-    color: white;
+    color: #3b82f6;  /* Blue text */
     cursor: pointer;
     transition: background 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
-    aspect-ratio: 1 / 1;  /* Makes buttons square */
+    aspect-ratio: 1 / 1;
     margin: 0;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -657,19 +657,21 @@ body {
 }
 
 .quiz-option-large:hover {
-    background: #2563eb;
+    background: #f8fafc;
 }
 
 .quiz-option-large:active {
-    background: #1d4ed8;
+    background: #f1f5f9;
 }
 
 .quiz-option-large.correct {
     background: #22c55e !important;
+    color: white !important;
 }
 
 .quiz-option-large.wrong {
     background: #ef4444 !important;
+    color: white !important;
 }
 
 .quiz-option-large:disabled {
@@ -677,7 +679,7 @@ body {
     cursor: not-allowed;
 }
 
-/* ===== FRACTION STYLES FOR SQUARE BUTTONS ===== */
+/* ===== FRACTION STYLES FOR WHITE BUTTONS ===== */
 .quiz-option-large .fraction {
     display: inline-flex;
     flex-direction: column;
@@ -685,11 +687,22 @@ body {
     font-size: 32px;
     font-weight: 700;
     line-height: 1.2;
+    color: #3b82f6;  /* Blue text */
+}
+
+.quiz-option-large.correct .fraction,
+.quiz-option-large.wrong .fraction {
+    color: white;  /* White text on colored background */
 }
 
 .quiz-option-large .numerator {
-    border-bottom: 3px solid white;
+    border-bottom: 3px solid #3b82f6;  /* Blue border */
     padding: 0 8px;
+}
+
+.quiz-option-large.correct .numerator,
+.quiz-option-large.wrong .numerator {
+    border-bottom: 3px solid white;  /* White border on colored background */
 }
 
 .quiz-option-large .denominator {
@@ -703,11 +716,6 @@ body {
 
 /* ===== RESPONSIVE ADJUSTMENTS ===== */
 @media (max-width: 400px) {
-    .quiz-options-large {
-        gap: 12px;
-        padding: 0 16px 25px 16px;
-    }
-    
     .quiz-option-large {
         font-size: 28px;
     }
@@ -805,7 +813,6 @@ body {
     border-radius: 20px;
     font-size: 12px;
 }
-
 
 /* ===== NEW TWO-ROW QUIZ HEADER ===== */
 .quiz-header-blue {
