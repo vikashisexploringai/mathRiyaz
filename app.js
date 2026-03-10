@@ -619,13 +619,13 @@ function renderGenericQuiz(quizData) {
         <div class="quiz-level">Level ${AppState.currentLevel}</div>
         <div class="quiz-score-header" id="quizScoreHeader">0</div>
         <div class="quiz-timer-row">
-            <div class="circular-timer" id="circularTimer">
-                <svg width="30" height="30" viewBox="0 0 40 40">
-                    <circle class="timer-circle-bg" cx="20" cy="20" r="16"></circle>
-                    <circle class="timer-circle-progress" id="timerCircleProgress" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="0"></circle>
-                </svg>
-                <div class="timer-circle-text" id="timerText">${quizData.timePerQuestion}</div>
-            </div>
+           <div class="circular-timer" id="circularTimer">
+    <svg width="36" height="36" viewBox="0 0 40 40">
+        <circle class="timer-circle-bg" cx="20" cy="20" r="16"></circle>
+        <circle class="timer-circle-progress" id="timerCircleProgress" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="0"></circle>
+    </svg>
+    <div class="timer-circle-text" id="timerText">${currentQuizData.timePerQuestion}</div>
+</div>
         </div>
     </div>
 
@@ -704,13 +704,13 @@ function restartQuiz() {
             <div class="quiz-level">Level ${AppState.currentLevel}</div>
             <div class="quiz-score-header" id="quizScoreHeader">0</div>
             <div class="quiz-timer-row">
-                <div class="circular-timer" id="circularTimer">
-                    <svg width="30" height="30" viewBox="0 0 40 40">
-                        <circle class="timer-circle-bg" cx="20" cy="20" r="16"></circle>
-                        <circle class="timer-circle-progress" id="timerCircleProgress" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="0"></circle>
-                    </svg>
-                    <div class="timer-circle-text" id="timerText">${currentQuizData.timePerQuestion}</div>
-                </div>
+              <div class="circular-timer" id="circularTimer">
+    <svg width="36" height="36" viewBox="0 0 40 40">
+        <circle class="timer-circle-bg" cx="20" cy="20" r="16"></circle>
+        <circle class="timer-circle-progress" id="timerCircleProgress" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="0"></circle>
+    </svg>
+    <div class="timer-circle-text" id="timerText">${currentQuizData.timePerQuestion}</div>
+</div>
             </div>
         </div>
 
