@@ -798,3 +798,102 @@ body {
     border-radius: 20px;
     font-size: 12px;
 }
+
+
+/* ===== NEW TWO-ROW QUIZ HEADER ===== */
+.quiz-header-blue {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.quiz-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.quiz-back-btn-white {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: white;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.quiz-back-btn-white:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.quiz-subchapter-name {
+    font-weight: 500;
+    font-size: 18px;
+    color: white;
+}
+
+.quiz-progress-white {
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.quiz-header-white {
+    background: white;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.quiz-level {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 16px;
+    flex: 1;
+    text-align: left;
+}
+
+.quiz-score-header {
+    font-weight: 600;
+    color: #3b82f6;
+    font-size: 18px;
+    flex: 1;
+    text-align: center;
+}
+
+.quiz-timer-row {
+    flex: 1;
+    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* Adjust main content selector to work with new header */
+.main-content:has(.quiz-header-blue) {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 80px);
+}
+
+.main-content:has(.quiz-header-blue) .quiz-header-blue,
+.main-content:has(.quiz-header-blue) .quiz-header-white,
+.main-content:has(.quiz-header-blue) .quiz-question {
+    flex-shrink: 0;
+}
+
+.main-content:has(.quiz-header-blue) .quiz-options-large {
+    margin-top: auto;
+}
