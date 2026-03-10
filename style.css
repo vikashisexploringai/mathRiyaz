@@ -544,6 +544,7 @@ body {
     width: 36px;
     height: 36px;
     position: relative;
+    display: inline-block;
 }
 
 .timer-circle-bg {
@@ -567,9 +568,13 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
     color: #1e293b;
+    text-align: center;
+    line-height: 1;
+    width: 100%;
+    pointer-events: none;
 }
 
 /* ===== QUIZ SCORE ===== */
