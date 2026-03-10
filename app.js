@@ -291,16 +291,24 @@ function renderCurrentQuestion() {
         optionsEl.innerHTML = renderLargeOptions(question);
     }
     
-    const progressEl = document.querySelector('.quiz-progress');
-    if (progressEl) {
-        progressEl.textContent = `${currentQuizData.currentQuestion + 1}/${currentQuizData.questions.length}`;
-    }
+    // Update progress in blue header
+const progressEl = document.querySelector('.quiz-progress-white');
+if (progressEl) {
+    progressEl.textContent = `${currentQuizData.currentQuestion + 1}/${currentQuizData.questions.length}`;
+}
     
     updateScoreDisplay();
     startCircularTimer();
 }
 
 function updateScoreDisplay() {
+    // Update the score in the header (second row)
+    const scoreHeaderEl = document.getElementById('quizScoreHeader');
+    if (scoreHeaderEl && currentQuizData) {
+        scoreHeaderEl.textContent = currentQuizData.score;
+    }
+    
+    // Also update the old quizScore element if it exists (for backward compatibility)
     const scoreEl = document.getElementById('quizScore');
     if (scoreEl && currentQuizData) {
         scoreEl.textContent = currentQuizData.score;
@@ -594,34 +602,41 @@ function renderGenericQuiz(quizData) {
     const subchapter = chapter.subchapters.find(s => s.id === AppState.currentSubchapter);
     const levelName = `${chapter.name} (Level ${AppState.currentLevel})`;
     
-    let html = `
-        <div class="quiz-header-compact">
-            <div class="quiz-header-left">
-                <button class="quiz-back-btn" onclick="if(questionTimer) clearInterval(questionTimer); renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">←</button>
-                <span class="quiz-level-name">${levelName}</span>
+  let html = `
+    <!-- First Row - Blue -->
+    <div class="quiz-header-blue">
+        <div class="quiz-header-left">
+            <button class="quiz-back-btn-white" onclick="if(questionTimer) clearInterval(questionTimer); renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">←</button>
+            <span class="quiz-subchapter-name">${subchapter.name}</span>
+        </div>
+        <div class="quiz-header-right">
+            <span class="quiz-progress-white">1/${quizData.questions.length}</span>
+        </div>
+    </div>
+
+    <!-- Second Row - White with Level, Score, Timer -->
+    <div class="quiz-header-white">
+        <div class="quiz-level">Level ${AppState.currentLevel}</div>
+        <div class="quiz-score-header" id="quizScoreHeader">0</div>
+        <div class="quiz-timer-row">
+            <div class="circular-timer" id="circularTimer">
+                <svg width="30" height="30" viewBox="0 0 40 40">
+                    <circle class="timer-circle-bg" cx="20" cy="20" r="16"></circle>
+                    <circle class="timer-circle-progress" id="timerCircleProgress" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="0"></circle>
+                </svg>
+                <div class="timer-circle-text" id="timerText">${quizData.timePerQuestion}</div>
             </div>
-            <div class="quiz-header-right">
-                <span class="quiz-progress">1/${quizData.questions.length}</span>
-                <div class="circular-timer" id="circularTimer">
-                    <svg width="36" height="36" viewBox="0 0 40 40">
-                        <circle class="timer-circle-bg" cx="20" cy="20" r="16"></circle>
-                        <circle class="timer-circle-progress" id="timerCircleProgress" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="0"></circle>
-                    </svg>
-                    <div class="timer-circle-text" id="timerText">${quizData.timePerQuestion}</div>
-                </div>
-            </div>
         </div>
+    </div>
 
-        <div class="quiz-score" id="quizScore">0</div>
+    <div class="quiz-question" id="quizQuestion">
+        ${quizData.questions[0].question}
+    </div>
 
-        <div class="quiz-question" id="quizQuestion">
-            ${quizData.questions[0].question}
-        </div>
-
-        <div class="quiz-options-large" id="quizOptions">
-            ${renderLargeOptions(quizData.questions[0])}
-        </div>
-    `;
+    <div class="quiz-options-large" id="quizOptions">
+        ${renderLargeOptions(quizData.questions[0])}
+    </div>
+`;
     
     content.innerHTML = html;
     startCircularTimer();
@@ -671,18 +686,26 @@ function restartQuiz() {
     const subject = AppState.config.subjects.find(s => s.id === AppState.currentSubject);
     const chapter = subject.chapters.find(c => c.id === AppState.currentChapter);
     const subchapter = chapter.subchapters.find(s => s.id === AppState.currentSubchapter);
-    const levelName = `${chapter.name} (Level ${AppState.currentLevel})`;
     
     content.innerHTML = `
-        <div class="quiz-header-compact">
+        <!-- First Row - Blue -->
+        <div class="quiz-header-blue">
             <div class="quiz-header-left">
-                <button class="quiz-back-btn" onclick="if(questionTimer) clearInterval(questionTimer); renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">←</button>
-                <span class="quiz-level-name">${levelName}</span>
+                <button class="quiz-back-btn-white" onclick="if(questionTimer) clearInterval(questionTimer); renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">←</button>
+                <span class="quiz-subchapter-name">${subchapter.name}</span>
             </div>
             <div class="quiz-header-right">
-                <span class="quiz-progress">1/${currentQuizData.questions.length}</span>
+                <span class="quiz-progress-white">1/${currentQuizData.questions.length}</span>
+            </div>
+        </div>
+
+        <!-- Second Row - White with Level, Score, Timer -->
+        <div class="quiz-header-white">
+            <div class="quiz-level">Level ${AppState.currentLevel}</div>
+            <div class="quiz-score-header" id="quizScoreHeader">0</div>
+            <div class="quiz-timer-row">
                 <div class="circular-timer" id="circularTimer">
-                    <svg width="36" height="36" viewBox="0 0 40 40">
+                    <svg width="30" height="30" viewBox="0 0 40 40">
                         <circle class="timer-circle-bg" cx="20" cy="20" r="16"></circle>
                         <circle class="timer-circle-progress" id="timerCircleProgress" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="0"></circle>
                     </svg>
@@ -690,8 +713,6 @@ function restartQuiz() {
                 </div>
             </div>
         </div>
-
-        <div class="quiz-score" id="quizScore">0</div>
 
         <div class="quiz-question" id="quizQuestion">
             ${currentQuizData.questions[0].question}
