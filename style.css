@@ -47,6 +47,7 @@ body {
     justify-content: center;
     align-items: center;
     position: relative;
+   /* padding-top: env(safe-area-inset-top, 48px); */
 }
 
 .app-header h1 {
@@ -65,6 +66,7 @@ body {
     font-weight: 500;
     position: relative;
     width: 100%;
+/*    padding-top: env(safe-area-inset-top, 48px); */
 }
 
 .chapters-header .back-btn {
@@ -142,11 +144,12 @@ body {
     min-height: calc(100vh - 80px);
 }
 
+/* Push options to bottom */
 .main-content:has(.quiz-header-blue) .quiz-header-blue {
     flex-shrink: 0;
 }
 
-.main-content:has(.quiz-header-blue) .quiz-header-white {
+.main-content:has(.quiz-header-blue) .quiz-level-row {
     flex-shrink: 0;
 }
 
@@ -485,9 +488,7 @@ body {
     background: #e2e8f0;
 }
 
-/* ===== QUIZ HEADER - TWO ROW DESIGN ===== */
-
-/* First Row - Blue */
+/* ===== NEW QUIZ HEADER - BLUE BAR ===== */
 .quiz-header-blue {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -528,19 +529,58 @@ body {
     color: white;
 }
 
+.quiz-header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
 .quiz-progress-white {
     color: white;
     font-size: 16px;
     font-weight: 500;
 }
 
-/* Second Row - White */
-.quiz-header-white {
-    background: white;
-    padding: 12px 16px;
+/* White circular timer */
+.quiz-timer-white {
+    width: 36px;
+    height: 36px;
+    position: relative;
+}
+
+.quiz-timer-white .timer-circle-bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.3);
+    stroke-width: 3;
+}
+
+.quiz-timer-white .timer-circle-progress {
+    fill: none;
+    stroke: white;
+    stroke-width: 3;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dashoffset 0.1s linear;
+}
+
+.quiz-timer-white .timer-circle-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+    font-weight: 600;
+    color: white;
+}
+
+/* Level row below blue bar */
+.quiz-level-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 12px 16px;
+    background: white;
     border-bottom: 1px solid #f0f0f0;
 }
 
@@ -548,75 +588,67 @@ body {
     font-weight: 600;
     color: #1e293b;
     font-size: 16px;
-    flex: 1;
-    text-align: left;
 }
 
 .quiz-score-header {
     font-weight: 600;
     color: #3b82f6;
     font-size: 18px;
-    flex: 1;
-    text-align: center;
 }
 
-.quiz-timer-row {
-    flex: 1;
-    text-align: right;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 4px;
-}
-
-.quiz-timer-row .timer-text {
-    font-size: 16px;
-    font-weight: 500;
-    color: #1e293b;
-}
-
-.quiz-timer-row .timer-icon {
-    font-size: 18px;
-}
-
-/* Simple timer display */
-.timer-simple {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-/* ===== QUIZ QUESTION ===== */
+/* ===== QUIZ QUESTION - PROMINENT ===== */
 .quiz-question {
     text-align: center;
-    font-size: 32px;
+    font-size: 32px;  /* Increased size */
     font-weight: 600;
     color: #0f172a;
-    margin: 40px 16px;
+    margin: 30px 16px 30px 16px;
     padding: 0;
     line-height: 1.4;
 }
 
-/* ===== OPTION BUTTONS ===== */
+.quiz-question .fraction {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 36px;  /* Larger fractions */
+    font-weight: 600;
+    margin: 0 6px;
+    vertical-align: middle;
+}
+
+.quiz-question .numerator {
+    border-bottom: 2px solid #0f172a;
+    padding: 0 6px;
+}
+
+.quiz-question .denominator {
+    padding: 0 6px;
+}
+
+/* Remove question mark - handled in JS */
+
+/* ===== OPTION BUTTONS - WHITE WITH BLUE TEXT ===== */
 .quiz-options-large {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
-    gap: 12px;
+    gap: 12px;  /* Slightly reduced gap */
     padding: 0 20px 30px 20px;
     margin: 0;
     width: 100%;
+    height: auto;
     box-sizing: border-box;
 }
 
 .quiz-option-large {
     background: white;
     border: none;
-    border-radius: 12px;
+    border-radius: 12px;  /* Slightly rounded corners */
     padding: 0;
     font-size: 32px;
     font-weight: 700;
-    color: #3b82f6;
+    color: #3b82f6;  /* Blue text */
     cursor: pointer;
     transition: all 0.2s;
     display: flex;
@@ -624,7 +656,8 @@ body {
     justify-content: center;
     width: 100%;
     aspect-ratio: 1 / 1;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);  /* Grey shadow */
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -659,6 +692,41 @@ body {
     cursor: not-allowed;
 }
 
+/* ===== FRACTION STYLES FOR WHITE BUTTONS ===== */
+.quiz-option-large .fraction {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #3b82f6;  /* Blue text */
+}
+
+.quiz-option-large.correct .fraction,
+.quiz-option-large.wrong .fraction {
+    color: white;  /* White text on colored background */
+}
+
+.quiz-option-large .numerator {
+    border-bottom: 3px solid #3b82f6;  /* Blue border */
+    padding: 0 8px;
+}
+
+.quiz-option-large.correct .numerator,
+.quiz-option-large.wrong .numerator {
+    border-bottom: 3px solid white;  /* White border on colored background */
+}
+
+.quiz-option-large .denominator {
+    padding: 0 8px;
+}
+
+.quiz-option-large, 
+.quiz-option-large * {
+    font-weight: 700 !important;
+}
+
 /* ===== RESPONSIVE ADJUSTMENTS ===== */
 @media (max-width: 400px) {
     .quiz-options-large {
@@ -670,9 +738,17 @@ body {
         font-size: 28px;
     }
     
+    .quiz-option-large .fraction {
+        font-size: 28px;
+    }
+    
     .quiz-question {
         font-size: 28px;
-        margin: 30px 16px;
+        margin: 25px 16px 25px 16px;
+    }
+    
+    .quiz-question .fraction {
+        font-size: 32px;
     }
     
     .level-card {
