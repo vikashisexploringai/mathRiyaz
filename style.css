@@ -618,12 +618,13 @@ body {
 }
 
 /* ===== LARGE OPTION BUTTONS - WHITE WITH BLUE TEXT ===== */
+/* ===== LARGE OPTION BUTTONS - WHITE WITH BLUE TEXT ===== */
 .quiz-options-large {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
-    gap: 8px;  /* No gap between buttons */
-    padding: 0;
+    gap: 12px;  /* Add gap back for shadow visibility */
+    padding: 0 20px 30px 20px;
     margin: 0;
     width: 100%;
     height: auto;
@@ -634,21 +635,20 @@ body {
 .quiz-option-large {
     background: white;
     border: none;
-    border-right: 1px solid #e2e8f0;  /* Grey border on right */
-    border-bottom: 1px solid #e2e8f0;  /* Grey border on bottom */
-    border-radius: 0;
+    border-radius: 8px;  /* Slight rounding for shadow effect */
     padding: 0;
     font-size: 32px;
     font-weight: 700;
-    color: #3b82f6;  /* Blue text */
+    color: #3b82f6;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
     aspect-ratio: 1 / 1;
     margin: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.05);  /* Subtle shadow */
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -658,20 +658,26 @@ body {
 
 .quiz-option-large:hover {
     background: #f8fafc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.1);  /* Deeper on hover */
+    transform: translateY(-1px);
 }
 
 .quiz-option-large:active {
     background: #f1f5f9;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);  /* Flatter when pressed */
+    transform: translateY(1px);
 }
 
 .quiz-option-large.correct {
     background: #22c55e !important;
     color: white !important;
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
 }
 
 .quiz-option-large.wrong {
     background: #ef4444 !important;
     color: white !important;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 .quiz-option-large:disabled {
@@ -716,20 +722,18 @@ body {
 
 /* ===== RESPONSIVE ADJUSTMENTS ===== */
 @media (max-width: 400px) {
+    .quiz-options-large {
+        gap: 10px;
+        padding: 0 16px 25px 16px;
+    }
+    
     .quiz-option-large {
         font-size: 28px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     
     .quiz-option-large .fraction {
         font-size: 28px;
-    }
-    
-    .level-card {
-        padding: 12px;
-    }
-    
-    .level-number {
-        font-size: 20px;
     }
 }
 
