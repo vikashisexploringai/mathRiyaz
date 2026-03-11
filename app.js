@@ -180,6 +180,22 @@ function showError(message) {
     }
 }
 
+function goToNextLevel() {
+    const nextLevel = AppState.currentLevel + 1;
+    const subchapter = AppState.config.subjects
+        .find(s => s.id === AppState.currentSubject)
+        .chapters.find(c => c.id === AppState.currentChapter)
+        .subchapters.find(s => s.id === AppState.currentSubchapter);
+    
+    if (nextLevel <= subchapter.levels) {
+        // Next level exists
+        renderQuiz(AppState.currentSubject, AppState.currentChapter, AppState.currentSubchapter, nextLevel);
+    } else {
+        // No next level, go back to levels
+        renderLevels(AppState.currentSubject, AppState.currentChapter, AppState.currentSubchapter);
+    }
+}
+
 // ===== CIRCULAR TIMER =====
 function startCircularTimer() {
     if (!currentQuizData) return;
@@ -647,7 +663,7 @@ function showQuizComplete() {
     }
     
     const totalPossible = currentQuizData.questions.length * currentQuizData.maxPointsPerQuestion;
-    const percentage = Math.round((currentQuizData.score / totalPossible) * 100);
+    const correctAnswers = currentQuizData.score / (totalPossible / currentQuizData.questions.length); // Approximate correct count
     
     const content = document.getElementById('main-content');
     content.innerHTML = `
@@ -656,16 +672,12 @@ function showQuizComplete() {
         </div>
         <div class="quiz-complete">
             <div class="completion-icon">🏆</div>
-            <h2>Quiz Complete!</h2>
-            <div class="score-display">
-                <span class="score">${currentQuizData.score}</span>
-                <span class="percentage">${percentage}%</span>
+            <div class="score-display">${currentQuizData.score}</div>
+            <div class="questions-correct">${currentQuizData.currentQuestion + 1}/${currentQuizData.questions.length}</div>
+            <div class="button-row">
+                <button class="try-again-btn" onclick="restartQuiz()">Try Again</button>
+                <button class="next-level-btn" onclick="goToNextLevel()">Next Level</button>
             </div>
-            <div class="feedback-message">
-                ${getFeedbackMessage(percentage)}
-            </div>
-            <button class="restart-btn" onclick="restartQuiz()">Try Again</button>
-            <button class="continue-btn" onclick="renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">Choose Another Level</button>
         </div>
     `;
     
