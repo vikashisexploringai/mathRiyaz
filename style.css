@@ -503,7 +503,7 @@ body {
 .quiz-header-left {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 4px;  /* Reduced gap between back button and text */
 }
 
 .quiz-back-btn {
@@ -870,16 +870,18 @@ body {
 .quiz-back-btn-white {
     background: none;
     border: none;
-    font-size: 24px;
+    font-size: 28px;  /* Slightly larger */
     cursor: pointer;
     color: white;
     padding: 0;
-    width: 32px;
-    height: 32px;
+    width: 28px;  /* Slightly shorter width */
+    height: 28px;  /* Slightly shorter height */
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
+    line-height: 1;  /* Better vertical alignment */
+    margin-right: -2px;  /* Pull it closer to the text */
 }
 
 .quiz-back-btn-white:hover {
@@ -890,6 +892,8 @@ body {
     font-weight: 500;
     font-size: 18px;
     color: white;
+    line-height: 1;  /* Better vertical alignment */
+    padding-top: 2px;  /* Fine-tune vertical position */
 }
 
 .quiz-progress-white {
