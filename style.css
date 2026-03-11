@@ -960,3 +960,66 @@ body {
         max-width: 280px;
     }
 }
+
+/* ===== LEVELS LIST - VERTICAL BUTTONS ===== */
+.levels-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    margin-top: 8px;
+}
+
+.level-button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 20px 24px;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #1e293b;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.level-button:hover {
+    border-color: #3b82f6;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(59,130,246,0.15);
+}
+
+.level-button:active {
+    transform: translateY(0);
+}
+
+.level-button.locked {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #f8fafc;
+}
+
+.level-button.locked:hover {
+    border-color: #e2e8f0;
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.level-button span:first-child {
+    font-weight: 600;
+}
+
+.level-button span:last-child {
+    font-size: 20px;
+}
+
+@media (max-width: 400px) {
+    .level-button {
+        padding: 16px 20px;
+        font-size: 16px;
+    }
+}
