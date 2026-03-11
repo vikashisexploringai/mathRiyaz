@@ -57,54 +57,19 @@ body {
     padding: 16px 20px;
 }
 
-/* Chapters screen header with back button */
-.chapters-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 16px 20px;
-    text-align: center;
-    font-size: 20px;
-    font-weight: 500;
-    position: relative;
-    width: 100%;
-}
-
-.chapters-header .back-btn {
-    position: absolute;
-    left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: white;
-    font-size: 24px;
-    cursor: pointer;
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
-
-.chapters-header .back-btn:hover {
-    background: rgba(255,255,255,0.1);
-}
-
-/* ===== PATH HEADER (for levels and other screens) ===== */
-.path-header {
+/* ===== CENTERED HEADER ===== */
+.centered-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     padding: 16px 20px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between;
     width: 100%;
     height: 100%;
 }
 
-.path-back-btn {
+.header-back-btn {
     background: none;
     border: none;
     color: white;
@@ -117,16 +82,27 @@ body {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
+    flex-shrink: 0;
 }
 
-.path-back-btn:hover {
+.header-back-btn:hover {
     background: rgba(255,255,255,0.2);
 }
 
-.path-text {
-    font-size: 18px;
-    font-weight: 500;
+.header-title {
+    font-size: 20px;
+    font-weight: 600;
     color: white;
+    text-align: center;
+    flex: 1;
+    margin: 0 10px;
+}
+
+.header-placeholder {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    visibility: hidden;
 }
 
 /* ===== BOTTOM NAVIGATION ===== */
@@ -302,40 +278,6 @@ body {
 .subject-description {
     color: #64748b;
     font-size: 14px;
-    margin-bottom: 16px;
-    padding-left: 60px;
-}
-
-.subject-stats {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-left: 60px;
-}
-
-.progress-badge {
-    background: #f1f5f9;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 13px;
-    color: #475569;
-}
-
-.progress-bar-container {
-    flex: 1;
-    height: 6px;
-    background: #e2e8f0;
-    border-radius: 3px;
-    margin-left: 12px;
-    overflow: hidden;
-}
-
-.progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
-    border-radius: 3px;
-    width: 0%;
-    transition: width 0.3s ease;
 }
 
 /* ===== CHAPTERS LIST ===== */
@@ -346,64 +288,8 @@ body {
 }
 
 .chapter-card {
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 16px;
-    cursor: pointer;
-}
-
-.chapter-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.chapter-name {
-    font-weight: 600;
-    color: #0f172a;
-    font-size: 16px;
-}
-
-.chapter-icon {
-    color: #64748b;
-}
-
-.subchapters-preview {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-.subchapter-tag {
-    background: #f1f5f9;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    color: #475569;
-}
-
-/* ===== SUBCHAPTERS PAGE - CLEAN DESIGN ===== */
-.subchapters-header {
-    font-size: 24px;
-    font-weight: 600;
-    color: #0f172a;
-    padding: 20px 20px 16px 20px;
-    margin: 0;
-}
-
-.subchapters-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 0 20px 20px 20px;
-}
-
-.subchapter-card {
-    background: white;
-    border: 1px solid #e2e8f0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
     border-radius: 12px;
     padding: 18px 20px;
     display: flex;
@@ -411,13 +297,53 @@ body {
     align-items: center;
     cursor: pointer;
     transition: all 0.2s;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.chapter-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 12px rgba(102, 126, 234, 0.3);
+}
+
+.chapter-card:active {
+    transform: translateY(0);
+}
+
+.chapter-name {
+    font-size: 18px;
+    font-weight: 500;
+    color: white;
+}
+
+.chapter-arrow {
+    font-size: 20px;
+    color: white;
+    font-weight: 300;
+}
+
+/* ===== SUBCHAPTERS LIST ===== */
+.subchapters-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.subchapter-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .subchapter-card:hover {
-    border-color: #3b82f6;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(59,130,246,0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 12px rgba(102, 126, 234, 0.3);
 }
 
 .subchapter-card:active {
@@ -427,23 +353,20 @@ body {
 .subchapter-name {
     font-size: 18px;
     font-weight: 500;
-    color: #1e293b;
+    color: white;
 }
 
 .subchapter-arrow {
     font-size: 20px;
-    color: #3b82f6;
+    color: white;
     font-weight: 300;
 }
 
-/* ===== LEVELS LIST - VERTICAL BUTTONS ===== */
+/* ===== LEVELS LIST ===== */
 .levels-list {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    padding: 20px;
-    background: #f8fafc;
-    min-height: calc(100vh - 140px);
 }
 
 .level-button {
@@ -862,16 +785,13 @@ body {
         font-size: 32px;
     }
     
-    /* Subchapters page */
-    .subchapters-header {
-        font-size: 22px;
-        padding: 16px 16px 12px 16px;
-    }
-    
+    /* Cards */
+    .chapter-card,
     .subchapter-card {
         padding: 16px 18px;
     }
     
+    .chapter-name,
     .subchapter-name {
         font-size: 16px;
     }
@@ -885,8 +805,8 @@ body {
         font-size: 16px;
     }
     
-    .path-text {
-        font-size: 16px;
+    .header-title {
+        font-size: 18px;
     }
     
     /* Quiz complete */
