@@ -42,17 +42,19 @@ body {
 .app-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 16px 20px;
+    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
+    width: 100%;
 }
 
 .app-header h1 {
     font-size: 22px;
     font-weight: 600;
     margin: 0;
+    padding: 16px 20px;
 }
 
 /* Chapters screen header with back button */
@@ -88,6 +90,43 @@ body {
 
 .chapters-header .back-btn:hover {
     background: rgba(255,255,255,0.1);
+}
+
+/* ===== PATH HEADER (for levels and other screens) ===== */
+.path-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    height: 100%;
+}
+
+.path-back-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.path-back-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.path-text {
+    font-size: 18px;
+    font-weight: 500;
+    color: white;
 }
 
 /* ===== BOTTOM NAVIGATION ===== */
@@ -410,42 +449,7 @@ body {
     font-size: 12px;
 }
 
-/* ===== LEVELS PAGE - PURPLE THEME ===== */
-.levels-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-}
-
-.levels-back-btn {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 28px;
-    cursor: pointer;
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
-
-.levels-back-btn:hover {
-    background: rgba(255,255,255,0.2);
-}
-
-.levels-path {
-    font-size: 18px;
-    font-weight: 500;
-    color: white;
-}
-
+/* ===== LEVELS LIST - VERTICAL BUTTONS ===== */
 .levels-list {
     display: flex;
     flex-direction: column;
@@ -880,7 +884,7 @@ body {
         font-size: 16px;
     }
     
-    .levels-path {
+    .path-text {
         font-size: 16px;
     }
     
