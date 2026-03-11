@@ -527,51 +527,29 @@ function renderLevels(subjectId, chapterId, subchapterId) {
     
     let html = `
         <div class="section-header">
-            <button class="back-button" onclick="renderSubchapters('${subjectId}', '${chapterId}')">← Back to ${chapter.name}</button>
+            <button class="back-button" onclick="renderSubchapters('${subjectId}', '${chapterId}')">← Back to ${subchapter.name}</button>
         </div>
-        <div class="subchapter-header">
-            <div class="subchapter-title">${chapter.name} → ${subchapter.name}</div>
-            <div class="subchapter-path">${subject.name} / ${chapter.name} / ${subchapter.name}</div>
-        </div>
-        <div class="levels-grid">
+        <div class="levels-list">
     `;
     
     for (let level = 1; level <= subchapter.levels; level++) {
-        const levelName = subchapter.levelNames?.[level] || `Level ${level}`;
         const progress = getLevelProgress(subjectId, chapterId, subchapterId, level);
         const locked = level > 1 && !isLevelUnlocked(subjectId, chapterId, subchapterId, level);
         
-        let statusClass = '';
-        let statusIcon = '';
-        let progressText = '';
-        
-        if (locked) {
-            statusClass = 'locked';
-            statusIcon = '🔒';
-            progressText = 'Locked';
-        } else if (progress.completed) {
-            statusIcon = '✅';
-            progressText = `Score: ${progress.score}%`;
-        } else if (progress.started) {
-            statusIcon = '⏳';
-            progressText = 'In progress';
-        } else {
-            statusIcon = '🔓';
-            progressText = 'Not started';
-        }
+        let lockIcon = locked ? '🔒' : '🔓';
+        let buttonClass = locked ? 'level-button locked' : 'level-button';
         
         html += `
-            <div class="level-card ${statusClass}" onclick="navigateToQuiz('${subjectId}', '${chapterId}', '${subchapterId}', ${level})">
-                <div class="level-number">${level}</div>
-                <div class="level-name">${levelName}</div>
-                <div class="level-progress">${statusIcon} ${progressText}</div>
-            </div>
+            <button class="${buttonClass}" onclick="${!locked ? `navigateToQuiz('${subjectId}', '${chapterId}', '${subchapterId}', ${level})` : ''}">
+                <span>Level ${level}</span>
+                <span>${lockIcon}</span>
+            </button>
         `;
     }
     
     html += `</div>`;
     content.innerHTML = html;
-    updateHeader(`${chapter.name} - ${subchapter.name}`);
+    updateHeader(''); // Clear header
     updateBottomNav('chapters');
 }
 
