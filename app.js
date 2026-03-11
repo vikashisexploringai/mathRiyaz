@@ -236,11 +236,11 @@ function startCircularTimer() {
 
 function handleTimeOut() {
     disableAllButtons();
-    showFeedback('⏰ Time\'s up! Moving to next question...', 'error');
+    // Removed popup message
     
     setTimeout(() => {
         moveToNextQuestion();
-    }, 1500);
+    }, 500); // Reduced from 1500ms to 500ms
 }
 
 // ===== QUIZ FUNCTIONS =====
@@ -260,10 +260,10 @@ function checkAnswer(selectedOption, buttonElement) {
     if (isCorrect) {
         pointsEarned = calculatePoints(timeTaken);
         buttonElement.classList.add('correct');
-//        showFeedback(`✅ Correct! +${pointsEarned} points`, 'success');
+        // Removed success popup
     } else {
         buttonElement.classList.add('wrong');
-//        showFeedback(`❌ Wrong. Correct: ${question.correct}`, 'error');
+        // Removed error popup
         highlightCorrectAnswer(question.correct);
     }
     
@@ -273,7 +273,7 @@ function checkAnswer(selectedOption, buttonElement) {
     
     setTimeout(() => {
         moveToNextQuestion();
-    }, 1500);
+    }, 800); // Reduced from 1500ms to 800ms
 }
 
 function renderCurrentQuestion() {
@@ -600,7 +600,6 @@ function renderGenericQuiz(quizData) {
     const subject = AppState.config.subjects.find(s => s.id === AppState.currentSubject);
     const chapter = subject.chapters.find(c => c.id === AppState.currentChapter);
     const subchapter = chapter.subchapters.find(s => s.id === AppState.currentSubchapter);
-    const levelName = `${chapter.name} (Level ${AppState.currentLevel})`;
     
 let html = `
     <!-- First Row - Blue with back, subchapter, and level -->
@@ -697,7 +696,7 @@ function restartQuiz() {
 
     <!-- Second Row - White with progress, score, timer -->
     <div class="quiz-header-white">
-        <div class="quiz-progress-white">1/${quizData.questions.length}</div>
+        <div class="quiz-progress-white">1/${currentQuizData.questions.length}</div>
         <div class="quiz-score-header" id="quizScoreHeader">0</div>
         <div class="quiz-timer-row">
             <div class="circular-timer" id="circularTimer">
@@ -711,11 +710,11 @@ function restartQuiz() {
     </div>
 
     <div class="quiz-question" id="quizQuestion">
-        ${quizData.questions[0].question}
+        ${currentQuizData.questions[0].question}
     </div>
 
     <div class="quiz-options-large" id="quizOptions">
-        ${renderLargeOptions(quizData.questions[0])}
+        ${renderLargeOptions(currentQuizData.questions[0])}
     </div>
 `;
     
