@@ -525,12 +525,15 @@ function renderLevels(subjectId, chapterId, subchapterId) {
     
     const content = document.getElementById('main-content');
     
-    let html = `
-        <div class="section-header">
-            <button class="back-button" onclick="renderSubchapters('${subjectId}', '${chapterId}')">← Back to ${subchapter.name}</button>
+    // Create purple gradient header with back button and path
+    const headerHtml = `
+        <div class="levels-header">
+            <button class="levels-back-btn" onclick="renderSubchapters('${subjectId}', '${chapterId}')">←</button>
+            <span class="levels-path">${chapter.name} › ${subchapter.name}</span>
         </div>
-        <div class="levels-list">
     `;
+    
+    let levelsHtml = `<div class="levels-list">`;
     
     for (let level = 1; level <= subchapter.levels; level++) {
         const progress = getLevelProgress(subjectId, chapterId, subchapterId, level);
@@ -539,7 +542,7 @@ function renderLevels(subjectId, chapterId, subchapterId) {
         let lockIcon = locked ? '🔒' : '🔓';
         let buttonClass = locked ? 'level-button locked' : 'level-button';
         
-        html += `
+        levelsHtml += `
             <button class="${buttonClass}" onclick="${!locked ? `navigateToQuiz('${subjectId}', '${chapterId}', '${subchapterId}', ${level})` : ''}">
                 <span>Level ${level}</span>
                 <span>${lockIcon}</span>
@@ -547,9 +550,13 @@ function renderLevels(subjectId, chapterId, subchapterId) {
         `;
     }
     
-    html += `</div>`;
-    content.innerHTML = html;
-    updateHeader(''); // Clear header
+    levelsHtml += `</div>`;
+    
+    // Combine header and levels
+    content.innerHTML = headerHtml + levelsHtml;
+    
+    // Clear the main app header since we have our own
+    updateHeader('');
     updateBottomNav('chapters');
 }
 
