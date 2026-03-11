@@ -363,6 +363,7 @@ function moveToNextQuestion() {
 }
 
 // ===== RENDER SUBCHAPTERS (NEW) =====
+// ===== RENDER SUBCHAPTERS - CLEAN DESIGN =====
 function renderSubchapters(subjectId, chapterId) {
     const appHeader = document.getElementById('app-header');
     if (appHeader) {
@@ -379,40 +380,25 @@ function renderSubchapters(subjectId, chapterId) {
     const chapter = subject.chapters.find(c => c.id === chapterId);
     const content = document.getElementById('main-content');
     
+    // Update header with back button to subject and show chapter name
+    updateHeaderWithPath(`← ${subject.name}`, true, `renderChapters('${subjectId}')`);
+    
     let html = `
-        <div class="section-header">
-            <button class="back-button" onclick="renderChapters('${subjectId}')">← Back to chapters</button>
-        </div>
-        <div class="subchapter-header">
-            <div class="subchapter-title">${chapter.name}</div>
-            <div class="subchapter-path">${subject.name} / ${chapter.name}</div>
-        </div>
-        <div class="subchapters-grid">
+        <div class="subchapters-header">${chapter.name}</div>
+        <div class="subchapters-list">
     `;
     
     chapter.subchapters.forEach(subchapter => {
-        const progress = calculateSubchapterProgress(subjectId, chapterId, subchapter.id);
-        
         html += `
             <div class="subchapter-card" onclick="navigateToSubchapter('${subjectId}', '${chapterId}', '${subchapter.id}')">
-                <div class="subchapter-card-header">
-                    <span class="subchapter-card-name">${subchapter.name}</span>
-                    <span class="subchapter-card-icon">→</span>
-                </div>
-                <div class="subchapter-card-stats">
-                    <span class="levels-count">${subchapter.levels} levels</span>
-                    <span class="progress-badge-small">${progress.completed}/${subchapter.levels}</span>
-                </div>
-                <div class="progress-bar-container" style="margin-top: 12px;">
-                    <div class="progress-bar" style="width: ${progress.percentage}%"></div>
-                </div>
+                <span class="subchapter-name">${subchapter.name}</span>
+                <span class="subchapter-arrow">→</span>
             </div>
         `;
     });
     
     html += `</div>`;
     content.innerHTML = html;
-    updateHeader(`${chapter.name} - ${subject.name}`);
     updateBottomNav('subjects');
 }
 
