@@ -134,9 +134,10 @@ function updateHeader(title, showBackButton = false, backFunction = null) {
     
     if (showBackButton) {
         header.innerHTML = `
-            <div class="chapters-header">
-                <button class="back-btn" onclick="${backFunction}">←</button>
-                ${title}
+            <div class="centered-header">
+                <button class="header-back-btn" onclick="${backFunction}">←</button>
+                <span class="header-title">${title}</span>
+                <div class="header-placeholder"></div>
             </div>
         `;
     } else {
@@ -196,22 +197,6 @@ function goToNextLevel() {
     }
 }
 
-function updateHeaderWithPath(path, showBackButton = false, backFunction = null) {
-    const header = document.getElementById('app-header');
-    if (!header) return;
-    
-    if (showBackButton) {
-        header.innerHTML = `
-            <div class="path-header">
-                <button class="path-back-btn" onclick="${backFunction}">←</button>
-                <span class="path-text">${path.replace('←', '')}</span>
-            </div>
-        `;
-    } else {
-        header.innerHTML = `<h1>${path}</h1>`;
-    }
-}
-
 // ===== CIRCULAR TIMER =====
 function startCircularTimer() {
     if (!currentQuizData) return;
@@ -268,11 +253,10 @@ function startCircularTimer() {
 
 function handleTimeOut() {
     disableAllButtons();
-    // Removed popup message
     
     setTimeout(() => {
         moveToNextQuestion();
-    }, 500); // Reduced from 1500ms to 500ms
+    }, 500);
 }
 
 // ===== QUIZ FUNCTIONS =====
@@ -292,10 +276,8 @@ function checkAnswer(selectedOption, buttonElement) {
     if (isCorrect) {
         pointsEarned = calculatePoints(timeTaken);
         buttonElement.classList.add('correct');
-        // Removed success popup
     } else {
         buttonElement.classList.add('wrong');
-        // Removed error popup
         highlightCorrectAnswer(question.correct);
     }
     
@@ -305,7 +287,7 @@ function checkAnswer(selectedOption, buttonElement) {
     
     setTimeout(() => {
         moveToNextQuestion();
-    }, 500); // Reduced from 1500ms to 800ms
+    }, 500);
 }
 
 function renderCurrentQuestion() {
@@ -323,24 +305,21 @@ function renderCurrentQuestion() {
         optionsEl.innerHTML = renderLargeOptions(question);
     }
     
-    // Update progress in blue header
-const progressEl = document.querySelector('.quiz-progress-white');
-if (progressEl) {
-    progressEl.textContent = `${currentQuizData.currentQuestion + 1}/${currentQuizData.questions.length}`;
-}
+    const progressEl = document.querySelector('.quiz-progress-white');
+    if (progressEl) {
+        progressEl.textContent = `${currentQuizData.currentQuestion + 1}/${currentQuizData.questions.length}`;
+    }
     
     updateScoreDisplay();
     startCircularTimer();
 }
 
 function updateScoreDisplay() {
-    // Update the score in the header (second row)
     const scoreHeaderEl = document.getElementById('quizScoreHeader');
     if (scoreHeaderEl && currentQuizData) {
         scoreHeaderEl.textContent = currentQuizData.score;
     }
     
-    // Also update the old quizScore element if it exists (for backward compatibility)
     const scoreEl = document.getElementById('quizScore');
     if (scoreEl && currentQuizData) {
         scoreEl.textContent = currentQuizData.score;
@@ -362,7 +341,6 @@ function moveToNextQuestion() {
     }
 }
 
-// ===== RENDER SUBCHAPTERS (NEW) =====
 // ===== RENDER SUBCHAPTERS - CLEAN DESIGN =====
 function renderSubchapters(subjectId, chapterId) {
     const appHeader = document.getElementById('app-header');
@@ -380,13 +358,10 @@ function renderSubchapters(subjectId, chapterId) {
     const chapter = subject.chapters.find(c => c.id === chapterId);
     const content = document.getElementById('main-content');
     
-    // Update header with back button to subject and show chapter name
-    updateHeaderWithPath(`← ${subject.name}`, true, `renderChapters('${subjectId}')`);
+    // Update header with centered chapter name and back button to subject
+    updateHeader(chapter.name, true, `renderChapters('${subjectId}')`);
     
-    let html = `
-        <div class="subchapters-header">${chapter.name}</div>
-        <div class="subchapters-list">
-    `;
+    let html = `<div class="subchapters-list">`;
     
     chapter.subchapters.forEach(subchapter => {
         html += `
@@ -402,66 +377,7 @@ function renderSubchapters(subjectId, chapterId) {
     updateBottomNav('subjects');
 }
 
-// ===== HELPER FUNCTION FOR SUBCHAPTER PROGRESS =====
-function calculateSubchapterProgress(subjectId, chapterId, subchapterId) {
-    const subject = AppState.config.subjects.find(s => s.id === subjectId);
-    const chapter = subject.chapters.find(c => c.id === chapterId);
-    const subchapter = chapter.subchapters.find(s => s.id === subchapterId);
-    
-    const completed = 0; // Will come from Firebase
-    const total = subchapter.levels;
-    const percentage = total > 0 ? (completed / total) * 100 : 0;
-    
-    return { completed, total, percentage };
-}
-
-// ===== VIEW RENDERING =====
-function renderHome() {
-    const appHeader = document.getElementById('app-header');
-    if (appHeader) {
-        appHeader.style.display = 'flex';
-    }
-    
-    if (!AppState.config) return;
-    
-    AppState.currentView = 'home';
-    const content = document.getElementById('main-content');
-    
-    let html = `<div class="subjects-grid">`;
-    
-    AppState.config.subjects.forEach(subject => {
-        const progress = calculateSubjectProgress(subject.id);
-        
-        html += `
-            <div class="subject-card ${subject.id}" onclick="navigateToSubject('${subject.id}')">
-                <div class="subject-header">
-                    <span class="subject-icon">${subject.icon}</span>
-                    <span class="subject-title">${subject.name}</span>
-                </div>
-                <div class="subject-description">${subject.description}</div>
-                <div class="subject-stats">
-                    <span class="progress-badge">${progress.completed}/${progress.total} levels</span>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar" style="width: ${progress.percentage}%"></div>
-                    </div>
-                </div>
-            </div>
-        `;
-    });
-    
-    html += `</div>`;
-    html += `
-        <h3 style="margin: 30px 0 15px; color: #64748b;">RECENT ACTIVITY</h3>
-        <div style="background: #f8fafc; border-radius: 12px; padding: 16px;">
-            <p style="color: #475569;">▶️ No recent activity</p>
-        </div>
-    `;
-    
-    content.innerHTML = html;
-    updateHeader('Math Riyaz');
-    updateBottomNav('home');
-}
-
+// ===== RENDER CHAPTERS - CLEAN DESIGN =====
 function renderChapters(subjectId) {
     const appHeader = document.getElementById('app-header');
     if (appHeader) {
@@ -478,36 +394,26 @@ function renderChapters(subjectId) {
     
     loadSubjectCSS(subjectId);
     
+    // Update header with centered subject name and back button to home
+    updateHeader(subject.name, true, 'renderHome()');
+    
     let html = `<div class="chapters-list">`;
     
     subject.chapters.forEach(chapter => {
-        const progress = calculateChapterProgress(subjectId, chapter.id);
-        
         html += `
             <div class="chapter-card" onclick="navigateToChapter('${subjectId}', '${chapter.id}')">
-                <div class="chapter-header">
-                    <span class="chapter-name">${chapter.name}</span>
-                    <span class="chapter-icon">→</span>
-                </div>
-                <div class="progress-bar-container" style="margin-bottom: 12px;">
-                    <div class="progress-bar" style="width: ${progress.percentage}%"></div>
-                </div>
-                <div class="subchapters-preview">
+                <span class="chapter-name">${chapter.name}</span>
+                <span class="chapter-arrow">→</span>
+            </div>
         `;
-        
-        chapter.subchapters.forEach(subchapter => {
-            html += `<span class="subchapter-tag">${subchapter.name}</span>`;
-        });
-        
-        html += `</div></div>`;
     });
     
     html += `</div>`;
     content.innerHTML = html;
-    updateHeader(subject.name, true, 'renderHome()');
     updateBottomNav('subjects');
 }
 
+// ===== RENDER LEVELS - CLEAN DESIGN =====
 function renderLevels(subjectId, chapterId, subchapterId) {
     const appHeader = document.getElementById('app-header');
     if (appHeader) {
@@ -525,8 +431,8 @@ function renderLevels(subjectId, chapterId, subchapterId) {
     const chapter = subject.chapters.find(c => c.id === chapterId);
     const subchapter = chapter.subchapters.find(s => s.id === subchapterId);
     
-    // Update the app-header with path and back button
-    updateHeaderWithPath(`← ${chapter.name} › ${subchapter.name}`, true, `renderSubchapters('${subjectId}', '${chapterId}')`);
+    // Update header with centered subchapter name and back button to chapters
+    updateHeader(subchapter.name, true, `renderSubchapters('${subjectId}', '${chapterId}')`);
     
     const content = document.getElementById('main-content');
     
@@ -551,6 +457,54 @@ function renderLevels(subjectId, chapterId, subchapterId) {
     
     content.innerHTML = levelsHtml;
     updateBottomNav('chapters');
+}
+
+// ===== HELPER FUNCTION FOR SUBCHAPTER PROGRESS =====
+function calculateSubchapterProgress(subjectId, chapterId, subchapterId) {
+    const subject = AppState.config.subjects.find(s => s.id === subjectId);
+    const chapter = subject.chapters.find(c => c.id === chapterId);
+    const subchapter = chapter.subchapters.find(s => s.id === subchapterId);
+    
+    const completed = 0;
+    const total = subchapter.levels;
+    const percentage = total > 0 ? (completed / total) * 100 : 0;
+    
+    return { completed, total, percentage };
+}
+
+// ===== VIEW RENDERING =====
+function renderHome() {
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) {
+        appHeader.style.display = 'flex';
+    }
+    
+    if (!AppState.config) return;
+    
+    AppState.currentView = 'home';
+    const content = document.getElementById('main-content');
+    
+    // Update header with app name (no back button)
+    updateHeader('Math Riyaz');
+    
+    let html = `<div class="subjects-grid">`;
+    
+    AppState.config.subjects.forEach(subject => {
+        html += `
+            <div class="subject-card ${subject.id}" onclick="navigateToSubject('${subject.id}')">
+                <div class="subject-header">
+                    <span class="subject-icon">${subject.icon}</span>
+                    <span class="subject-title">${subject.name}</span>
+                </div>
+                <div class="subject-description">${subject.description}</div>
+            </div>
+        `;
+    });
+    
+    html += `</div>`;
+    
+    content.innerHTML = html;
+    updateBottomNav('home');
 }
 
 function renderQuiz(subjectId, chapterId, subchapterId, level) {
@@ -641,7 +595,6 @@ function showQuizComplete() {
     }
     
     const totalPossible = currentQuizData.questions.length * currentQuizData.maxPointsPerQuestion;
-    const correctAnswers = currentQuizData.score / (totalPossible / currentQuizData.questions.length); // Approximate correct count
     
     const content = document.getElementById('main-content');
     content.innerHTML = `
