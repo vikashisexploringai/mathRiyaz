@@ -1,874 +1,824 @@
-/* ===== RESET & BASE ===== */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-body {
-    background-color: #f8fafc;
-    color: #1e293b;
-    line-height: 1.5;
-}
-
-.app-container {
-    max-width: 500px;
-    margin: 0 auto;
-    background-color: white;
-    min-height: 100vh;
-    box-shadow: 0 0 20px rgba(0,0,0,0.05);
-    position: relative;
-    padding-bottom: 80px;
-}
-
-/* ===== LOADING SPINNER ===== */
-.loading-spinner {
-    width: 40px;
-    height: 40px;
-    margin: 50px auto;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3b82f6;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* ===== HEADER ===== */
-.app-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 16px 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-}
-
-.app-header h1 {
-    font-size: 22px;
-    font-weight: 600;
-    margin: 0;
-}
-
-/* Chapters screen header with back button */
-.chapters-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 16px 20px;
-    text-align: center;
-    font-size: 20px;
-    font-weight: 500;
-    position: relative;
-    width: 100%;
-}
-
-.chapters-header .back-btn {
-    position: absolute;
-    left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: white;
-    font-size: 24px;
-    cursor: pointer;
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
-
-.chapters-header .back-btn:hover {
-    background: rgba(255,255,255,0.1);
-}
-
-/* ===== BOTTOM NAVIGATION ===== */
-.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    max-width: 500px;
-    margin: 0 auto;
-    background: white;
-    display: flex;
-    justify-content: space-around;
-    padding: 8px 0 16px;
-    border-top: 1px solid #e2e8f0;
-    box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
-}
-
-.nav-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: none;
-    border: none;
-    color: #94a3b8;
-    font-size: 12px;
-    cursor: pointer;
-    padding: 8px;
-    transition: color 0.2s;
-}
-
-.nav-item.active {
-    color: #3b82f6;
-}
-
-.nav-icon {
-    font-size: 20px;
-    margin-bottom: 4px;
-}
-
-/* ===== MAIN CONTENT ===== */
-.main-content {
-    padding: 20px;
-}
-
-/* Quiz screen specific layout */
-.main-content:has(.quiz-header-blue) {
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    min-height: calc(100vh - 80px);
-}
-
-.main-content:has(.quiz-header-blue) .quiz-header-blue,
-.main-content:has(.quiz-header-blue) .quiz-header-white {
-    flex-shrink: 0;
-}
-
-.main-content:has(.quiz-header-blue) .quiz-question {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-    padding: 0 16px;
-}
-
-.main-content:has(.quiz-header-blue) .quiz-options-large {
-    flex-shrink: 0;
-    margin-top: 0;
-}
-
-/* Keep padding for other screens */
-.main-content:has(.subjects-grid),
-.main-content:has(.chapters-list),
-.main-content:has(.subchapters-grid),
-.main-content:has(.levels-grid) {
-    padding: 20px;
-}
-
-/* ===== SECTION HEADER (for levels screen) ===== */
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.section-header h2 {
-    font-size: 18px;
-    font-weight: 600;
-    color: #0f172a;
-}
-
-.back-button {
-    background: none;
-    border: none;
-    color: #64748b;
-    font-size: 14px;
-    cursor: pointer;
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-/* ===== SUBJECT CARDS (HOME SCREEN) ===== */
-.subjects-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.subject-card {
-    background: white;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    border: 1px solid #e2e8f0;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    position: relative;
-    overflow: hidden;
-}
-
-.subject-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-}
-
-.subject-card:active {
-    transform: scale(0.98);
-}
-
-.subject-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-}
-
-.subject-card.math::before { background: #2563eb; }
-.subject-card.english::before { background: #16a34a; }
-.subject-card.science::before { background: #dc2626; }
-
-.subject-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-}
-
-.subject-icon {
-    font-size: 32px;
-    width: 48px;
-    height: 48px;
-    background: #f1f5f9;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.subject-title {
-    font-size: 20px;
-    font-weight: 600;
-    color: #0f172a;
-}
-
-.subject-description {
-    color: #64748b;
-    font-size: 14px;
-    margin-bottom: 16px;
-    padding-left: 60px;
-}
-
-.subject-stats {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-left: 60px;
-}
-
-.progress-badge {
-    background: #f1f5f9;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 13px;
-    color: #475569;
-}
-
-.progress-bar-container {
-    flex: 1;
-    height: 6px;
-    background: #e2e8f0;
-    border-radius: 3px;
-    margin-left: 12px;
-    overflow: hidden;
-}
-
-.progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
-    border-radius: 3px;
-    width: 0%;
-    transition: width 0.3s ease;
-}
-
-/* ===== CHAPTERS LIST ===== */
-.chapters-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.chapter-card {
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 16px;
-    cursor: pointer;
-}
-
-.chapter-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.chapter-name {
-    font-weight: 600;
-    color: #0f172a;
-    font-size: 16px;
-}
-
-.chapter-icon {
-    color: #64748b;
-}
-
-.subchapters-preview {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-.subchapter-tag {
-    background: #f1f5f9;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    color: #475569;
-}
-
-/* ===== SUBCHAPTER / LEVELS VIEW ===== */
-.subchapter-header {
-    margin-bottom: 20px;
-}
-
-.subchapter-title {
-    font-size: 20px;
-    font-weight: 600;
-    color: #0f172a;
-    margin-bottom: 4px;
-}
-
-.subchapter-path {
-    color: #64748b;
-    font-size: 14px;
-}
-
-.levels-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 12px;
-    margin-top: 20px;
-}
-
-.level-card {
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 16px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.level-card:hover {
-    border-color: #3b82f6;
-    box-shadow: 0 4px 12px rgba(59,130,246,0.1);
-}
-
-.level-card.locked {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.level-number {
-    font-size: 24px;
-    font-weight: 700;
-    color: #3b82f6;
-    margin-bottom: 4px;
-}
-
-.level-name {
-    font-size: 14px;
-    color: #475569;
-    margin-bottom: 12px;
-}
-
-.level-progress {
-    font-size: 12px;
-    color: #94a3b8;
-}
-
-/* ===== QUIZ COMPLETE ===== */
-.quiz-complete {
-    text-align: center;
-    padding: 40px 20px;
-}
-
-.completion-icon {
-    font-size: 80px;
-    margin-bottom: 20px;
-    animation: bounce 1s ease;
-}
-
-@keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-20px); }
-}
-
-.quiz-complete h2 {
-    font-size: 28px;
-    color: #0f172a;
-    margin-bottom: 20px;
-}
-
-.score-display {
-    display: flex;
-    justify-content: center;
-    align-items: baseline;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.score-display .score {
-    font-size: 48px;
-    font-weight: 700;
-    color: #3b82f6;
-}
-
-.score-display .percentage {
-    font-size: 24px;
-    color: #64748b;
-}
-
-.feedback-message {
-    font-size: 18px;
-    color: #475569;
-    margin-bottom: 30px;
-    padding: 20px;
-    background: #f8fafc;
-    border-radius: 12px;
-}
-
-.restart-btn, .continue-btn {
-    padding: 16px 32px;
-    font-size: 16px;
-    font-weight: 600;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    margin: 0 10px;
-    transition: all 0.2s;
-}
-
-.restart-btn {
-    background: #3b82f6;
-    color: white;
-}
-
-.restart-btn:hover {
-    background: #2563eb;
-}
-
-.continue-btn {
-    background: #f1f5f9;
-    color: #475569;
-}
-
-.continue-btn:hover {
-    background: #e2e8f0;
-}
-
-/* ===== CIRCULAR TIMER ===== */
-.circular-timer {
-    width: 36px;
-    height: 36px;
-    position: relative;
-    display: inline-block;
-}
-
-.timer-circle-bg {
-    fill: none;
-    stroke: #e2e8f0;
-    stroke-width: 3;
-}
-
-.timer-circle-progress {
-    fill: none;
-    stroke: #3b82f6;
-    stroke-width: 3;
-    stroke-linecap: round;
-    transform: rotate(-90deg);
-    transform-origin: 50% 50%;
-    transition: stroke-dashoffset 0.1s linear;
-}
-
-.timer-circle-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 12px;
-    font-weight: 600;
-    color: #1e293b;
-    text-align: center;
-    line-height: 1;
-    width: 100%;
-    pointer-events: none;
-}
-
-/* ===== QUIZ QUESTION - CENTERED VERTICALLY ===== */
-.quiz-question {
-    text-align: center;
-    font-size: 32px;
-    font-weight: 600;
-    color: #0f172a;
-    margin: 0;
-    padding: 0;
-    line-height: 1.4;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-}
-
-.quiz-question .fraction {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 36px;
-    font-weight: 600;
-    margin: 0 6px;
-    vertical-align: middle;
-}
-
-.quiz-question .numerator {
-    border-bottom: 2px solid #0f172a;
-    padding: 0 6px;
-}
-
-.quiz-question .denominator {
-    padding: 0 6px;
-}
-
-/* ===== LARGE OPTION BUTTONS ===== */
-.quiz-options-large {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 12px;
-    padding: 0 20px 30px 20px;
-    margin: 0;
-    width: 100%;
-    height: auto;
-    box-sizing: border-box;
-}
-
-.quiz-option-large {
-    background: white;
-    border: none;
-    border-right: 2px solid #d1d5db;
-    border-bottom: 2px solid #d1d5db;
-    border-radius: 8px;
-    padding: 0;
-    font-size: 32px;
-    font-weight: 700;
-    color: #3b82f6;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    margin: 0;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    -webkit-tap-highlight-color: transparent;
-    box-sizing: border-box;
-}
-
-.quiz-option-large:hover {
-    background: #f8fafc;
-    border-right: 2px solid #9ca3af;
-    border-bottom: 2px solid #9ca3af;
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-    transform: translateY(-1px);
-}
-
-.quiz-option-large:active {
-    background: #f1f5f9;
-    border-right: 2px solid #9ca3af;
-    border-bottom: 2px solid #9ca3af;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transform: translateY(1px);
-}
-
-.quiz-option-large.correct {
-    background: #22c55e !important;
-    color: white !important;
-    border-right: 2px solid #16a34a !important;
-    border-bottom: 2px solid #16a34a !important;
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
-}
-
-.quiz-option-large.wrong {
-    background: #ef4444 !important;
-    color: white !important;
-    border-right: 2px solid #dc2626 !important;
-    border-bottom: 2px solid #dc2626 !important;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
-
-.quiz-option-large:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-.quiz-option-large .fraction {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 32px;
-    font-weight: 700;
-    line-height: 1.2;
-    color: #3b82f6;
-}
-
-.quiz-option-large.correct .fraction,
-.quiz-option-large.wrong .fraction {
-    color: white;
-}
-
-.quiz-option-large .numerator {
-    border-bottom: 3px solid #3b82f6;
-    padding: 0 8px;
-}
-
-.quiz-option-large.correct .numerator,
-.quiz-option-large.wrong .numerator {
-    border-bottom: 3px solid white;
-}
-
-.quiz-option-large .denominator {
-    padding: 0 8px;
-}
-
-.quiz-option-large, 
-.quiz-option-large * {
-    font-weight: 700 !important;
-}
-
-/* ===== TWO-ROW QUIZ HEADER - UPDATED ===== */
-.quiz-header-blue {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 12px 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.quiz-header-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.quiz-back-btn-white {
-    background: none;
-    border: none;
-    font-size: 36px;
-    cursor: pointer;
-    color: white;
-    padding: 0;
-    width: 44px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    line-height: 0.7;
-    transform: scaleX(1.2);
-    margin-top: -2px;  /* Raise up to align with text */
-    margin-right: 4px;
-}
-
-.quiz-back-btn-white:hover {
-    background: rgba(255,255,255,0.2);
-}
-
-.quiz-subchapter-name {
-    font-weight: 500;
-    font-size: 18px;
-    color: white;
-    line-height: 1;
-    padding-top: 0;
-}
-
-.quiz-level-blue {
-    font-weight: 500;
-    font-size: 16px;
-    color: white;
-    background: rgba(255,255,255,0.2);
-    padding: 4px 12px;
-    border-radius: 20px;
-    line-height: 1;
-}
-
-.quiz-header-white {
-    background: white;
-    padding: 12px 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.quiz-progress-white {
-    color: #64748b;
-    font-size: 16px;
-    font-weight: 500;
-    flex: 1;
-    text-align: left;
-}
-
-.quiz-score-header {
-    font-weight: 600;
-    color: #3b82f6;
-    font-size: 18px;
-    flex: 1;
-    text-align: center;
-}
-
-.quiz-timer-row {
-    flex: 1;
-    text-align: right;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-}
-
-/* ===== RESPONSIVE ADJUSTMENTS ===== */
-@media (max-width: 400px) {
-    .quiz-options-large {
-        gap: 10px;
-        padding: 0 16px 25px 16px;
+// app.js - Main application controller
+
+// ===== APP STATE =====
+const AppState = {
+    currentUser: null,
+    currentView: 'home',
+    currentSubject: null,
+    currentChapter: null,
+    currentSubchapter: null,
+    currentLevel: null,
+    config: null,
+    progress: {}
+};
+
+let currentQuizData = null;
+let questionTimer = null;
+let timeRemaining = 0;
+let questionStartTime = 0;
+
+// ===== INITIALIZATION =====
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadConfig();
+    renderHome();
+});
+
+// ===== LOAD CONFIGURATION =====
+async function loadConfig() {
+    try {
+        const response = await fetch('config.json');
+        AppState.config = await response.json();
+        console.log('Config loaded:', AppState.config);
+    } catch (error) {
+        console.error('Failed to load config:', error);
+        showError('Failed to load app configuration');
+    }
+}
+
+// ===== HELPER FUNCTIONS =====
+function shuffleArray(array) {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+}
+
+function renderLargeOptions(question) {
+    return shuffleArray(question.options).map(opt => `
+        <button class="quiz-option-large" onclick="checkAnswer('${opt.replace(/'/g, "\\'")}', this)">
+            ${opt}
+        </button>
+    `).join('');
+}
+
+function showFeedback(message, type) {
+    const existingFeedback = document.querySelector('.quiz-feedback');
+    if (existingFeedback) existingFeedback.remove();
+    
+    const feedback = document.createElement('div');
+    feedback.className = `quiz-feedback ${type}`;
+    feedback.textContent = message;
+    
+    const questionContainer = document.querySelector('.quiz-question');
+    if (questionContainer) {
+        questionContainer.parentNode.insertBefore(feedback, questionContainer.nextSibling);
     }
     
-    .quiz-option-large {
-        font-size: 28px;
+    setTimeout(() => {
+        feedback.remove();
+    }, 2000);
+}
+
+function disableAllButtons() {
+    const allButtons = document.querySelectorAll('.quiz-option-large');
+    allButtons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+        btn.style.cursor = 'not-allowed';
+    });
+}
+
+function enableAllButtons() {
+    const allButtons = document.querySelectorAll('.quiz-option-large');
+    allButtons.forEach(btn => {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+        btn.classList.remove('correct', 'wrong');
+    });
+}
+
+function highlightCorrectAnswer(correctAnswer) {
+    const allButtons = document.querySelectorAll('.quiz-option-large');
+    allButtons.forEach(btn => {
+        if (btn.textContent.trim() === correctAnswer) {
+            btn.classList.add('correct');
+        }
+    });
+}
+
+function calculatePoints(timeTaken) {
+    const maxPoints = currentQuizData.maxPointsPerQuestion;
+    const timeLimit = currentQuizData.timePerQuestion;
+    
+    let points = maxPoints * (1 - (timeTaken / timeLimit) * 0.5);
+    points = Math.round(points);
+    const minPoints = Math.round(maxPoints * 0.1);
+    
+    return Math.max(minPoints, points);
+}
+
+function getFeedbackMessage(percentage) {
+    if (percentage >= 90) return "Excellent! You've mastered this level! 🎉";
+    if (percentage >= 70) return "Good job! You're doing great! 👍";
+    if (percentage >= 50) return "Keep practicing! You'll get better! 💪";
+    return "Don't give up! Try again to improve! 🌱";
+}
+
+function loadSubjectCSS(subjectId) {
+    const existing = document.getElementById('subject-css');
+    if (existing) existing.remove();
+    
+    const link = document.createElement('link');
+    link.id = 'subject-css';
+    link.rel = 'stylesheet';
+    link.href = `${subjectId}.css`;
+    document.head.appendChild(link);
+}
+
+function updateHeader(title, showBackButton = false, backFunction = null) {
+    const header = document.getElementById('app-header');
+    if (!header) return;
+    
+    if (showBackButton) {
+        header.innerHTML = `
+            <div class="chapters-header">
+                <button class="back-btn" onclick="${backFunction}">←</button>
+                ${title}
+            </div>
+        `;
+    } else {
+        header.innerHTML = `<h1>${title}</h1>`;
+    }
+}
+
+function updateBottomNav(activeView) {
+    const nav = document.getElementById('bottom-nav');
+    if (nav) {
+        nav.innerHTML = `
+            <button class="nav-item ${activeView === 'home' ? 'active' : ''}" onclick="renderHome()">
+                <span class="nav-icon">🏠</span>
+                <span>Home</span>
+            </button>
+            <button class="nav-item ${activeView === 'progress' ? 'active' : ''}" onclick="showProgress()">
+                <span class="nav-icon">📊</span>
+                <span>Progress</span>
+            </button>
+            <button class="nav-item ${activeView === 'profile' ? 'active' : ''}" onclick="showProfile()">
+                <span class="nav-icon">👤</span>
+                <span>Profile</span>
+            </button>
+            <button class="nav-item ${activeView === 'settings' ? 'active' : ''}" onclick="showSettings()">
+                <span class="nav-icon">⚙️</span>
+                <span>Settings</span>
+            </button>
+        `;
+    }
+}
+
+function showError(message) {
+    const content = document.getElementById('main-content');
+    if (content) {
+        content.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #ef4444;">
+                <p>${message}</p>
+                <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px;">Retry</button>
+            </div>
+        `;
+    }
+}
+
+// ===== CIRCULAR TIMER =====
+function startCircularTimer() {
+    if (!currentQuizData) return;
+    
+    if (questionTimer) {
+        clearInterval(questionTimer);
     }
     
-    .quiz-option-large .fraction {
-        font-size: 28px;
+    timeRemaining = currentQuizData.timePerQuestion;
+    questionStartTime = Date.now();
+    
+    const timerText = document.getElementById('timerText');
+    const timerCircle = document.getElementById('timerCircleProgress');
+    const totalTime = currentQuizData.timePerQuestion;
+    
+    if (!timerText || !timerCircle) return;
+    
+    const circumference = 2 * Math.PI * 16;
+    timerCircle.style.strokeDasharray = circumference;
+    timerCircle.style.strokeDashoffset = '0';
+    
+    questionTimer = setInterval(() => {
+        if (!currentQuizData) {
+            clearInterval(questionTimer);
+            return;
+        }
+        
+        timeRemaining -= 0.1;
+        
+        if (timeRemaining <= 0) {
+            clearInterval(questionTimer);
+            timerText.textContent = '0';
+            timerCircle.style.stroke = '#ef4444';
+            handleTimeOut();
+            return;
+        }
+        
+        timerText.textContent = Math.ceil(timeRemaining);
+        
+        const progress = timeRemaining / totalTime;
+        const dashOffset = circumference * (1 - progress);
+        timerCircle.style.strokeDashoffset = dashOffset;
+        
+        if (progress < 0.25) {
+            timerCircle.style.stroke = '#ef4444';
+        } else if (progress < 0.5) {
+            timerCircle.style.stroke = '#f59e0b';
+        } else {
+            timerCircle.style.stroke = '#3b82f6';
+        }
+        
+    }, 100);
+}
+
+function handleTimeOut() {
+    disableAllButtons();
+    showFeedback('⏰ Time\'s up! Moving to next question...', 'error');
+    
+    setTimeout(() => {
+        moveToNextQuestion();
+    }, 1500);
+}
+
+// ===== QUIZ FUNCTIONS =====
+function checkAnswer(selectedOption, buttonElement) {
+    if (!currentQuizData) return;
+    
+    if (questionTimer) {
+        clearInterval(questionTimer);
     }
     
-    .quiz-question {
-        font-size: 28px;
+    const timeTaken = (Date.now() - questionStartTime) / 1000;
+    const question = currentQuizData.questions[currentQuizData.currentQuestion];
+    const isCorrect = (selectedOption === question.correct);
+    
+    let pointsEarned = 0;
+    
+    if (isCorrect) {
+        pointsEarned = calculatePoints(timeTaken);
+        buttonElement.classList.add('correct');
+//        showFeedback(`✅ Correct! +${pointsEarned} points`, 'success');
+    } else {
+        buttonElement.classList.add('wrong');
+//        showFeedback(`❌ Wrong. Correct: ${question.correct}`, 'error');
+        highlightCorrectAnswer(question.correct);
     }
     
-    .quiz-question .fraction {
-        font-size: 32px;
+    currentQuizData.score += pointsEarned;
+    updateScoreDisplay();
+    disableAllButtons();
+    
+    setTimeout(() => {
+        moveToNextQuestion();
+    }, 1500);
+}
+
+function renderCurrentQuestion() {
+    if (!currentQuizData) return;
+    
+    const question = currentQuizData.questions[currentQuizData.currentQuestion];
+    
+    const questionEl = document.getElementById('quizQuestion');
+    if (questionEl) {
+        questionEl.textContent = question.question;
     }
     
-    .level-card {
-        padding: 12px;
+    const optionsEl = document.getElementById('quizOptions');
+    if (optionsEl) {
+        optionsEl.innerHTML = renderLargeOptions(question);
     }
     
-    .level-number {
-        font-size: 20px;
+    // Update progress in blue header
+const progressEl = document.querySelector('.quiz-progress-white');
+if (progressEl) {
+    progressEl.textContent = `${currentQuizData.currentQuestion + 1}/${currentQuizData.questions.length}`;
+}
+    
+    updateScoreDisplay();
+    startCircularTimer();
+}
+
+function updateScoreDisplay() {
+    // Update the score in the header (second row)
+    const scoreHeaderEl = document.getElementById('quizScoreHeader');
+    if (scoreHeaderEl && currentQuizData) {
+        scoreHeaderEl.textContent = currentQuizData.score;
+    }
+    
+    // Also update the old quizScore element if it exists (for backward compatibility)
+    const scoreEl = document.getElementById('quizScore');
+    if (scoreEl && currentQuizData) {
+        scoreEl.textContent = currentQuizData.score;
     }
 }
 
-/* ===== UTILITY CLASSES ===== */
-.hidden {
-    display: none !important;
+function moveToNextQuestion() {
+    if (!currentQuizData) return;
+    
+    if (questionTimer) {
+        clearInterval(questionTimer);
+    }
+    
+    if (currentQuizData.currentQuestion + 1 < currentQuizData.questions.length) {
+        currentQuizData.currentQuestion++;
+        renderCurrentQuestion();
+    } else {
+        showQuizComplete();
+    }
 }
 
-.text-center {
-    text-align: center;
+// ===== RENDER SUBCHAPTERS (NEW) =====
+function renderSubchapters(subjectId, chapterId) {
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) {
+        appHeader.style.display = 'flex';
+    }
+    
+    if (!AppState.config) return;
+    
+    AppState.currentView = 'subchapters';
+    AppState.currentSubject = subjectId;
+    AppState.currentChapter = chapterId;
+    
+    const subject = AppState.config.subjects.find(s => s.id === subjectId);
+    const chapter = subject.chapters.find(c => c.id === chapterId);
+    const content = document.getElementById('main-content');
+    
+    let html = `
+        <div class="section-header">
+            <button class="back-button" onclick="renderChapters('${subjectId}')">← Back to chapters</button>
+        </div>
+        <div class="subchapter-header">
+            <div class="subchapter-title">${chapter.name}</div>
+            <div class="subchapter-path">${subject.name} / ${chapter.name}</div>
+        </div>
+        <div class="subchapters-grid">
+    `;
+    
+    chapter.subchapters.forEach(subchapter => {
+        const progress = calculateSubchapterProgress(subjectId, chapterId, subchapter.id);
+        
+        html += `
+            <div class="subchapter-card" onclick="navigateToSubchapter('${subjectId}', '${chapterId}', '${subchapter.id}')">
+                <div class="subchapter-card-header">
+                    <span class="subchapter-card-name">${subchapter.name}</span>
+                    <span class="subchapter-card-icon">→</span>
+                </div>
+                <div class="subchapter-card-stats">
+                    <span class="levels-count">${subchapter.levels} levels</span>
+                    <span class="progress-badge-small">${progress.completed}/${subchapter.levels}</span>
+                </div>
+                <div class="progress-bar-container" style="margin-top: 12px;">
+                    <div class="progress-bar" style="width: ${progress.percentage}%"></div>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += `</div>`;
+    content.innerHTML = html;
+    updateHeader(`${chapter.name} - ${subject.name}`);
+    updateBottomNav('subjects');
 }
 
-.mt-20 {
-    margin-top: 20px;
+// ===== HELPER FUNCTION FOR SUBCHAPTER PROGRESS =====
+function calculateSubchapterProgress(subjectId, chapterId, subchapterId) {
+    const subject = AppState.config.subjects.find(s => s.id === subjectId);
+    const chapter = subject.chapters.find(c => c.id === chapterId);
+    const subchapter = chapter.subchapters.find(s => s.id === subchapterId);
+    
+    const completed = 0; // Will come from Firebase
+    const total = subchapter.levels;
+    const percentage = total > 0 ? (completed / total) * 100 : 0;
+    
+    return { completed, total, percentage };
 }
 
-.mb-20 {
-    margin-bottom: 20px;
+// ===== VIEW RENDERING =====
+function renderHome() {
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) {
+        appHeader.style.display = 'flex';
+    }
+    
+    if (!AppState.config) return;
+    
+    AppState.currentView = 'home';
+    const content = document.getElementById('main-content');
+    
+    let html = `<div class="subjects-grid">`;
+    
+    AppState.config.subjects.forEach(subject => {
+        const progress = calculateSubjectProgress(subject.id);
+        
+        html += `
+            <div class="subject-card ${subject.id}" onclick="navigateToSubject('${subject.id}')">
+                <div class="subject-header">
+                    <span class="subject-icon">${subject.icon}</span>
+                    <span class="subject-title">${subject.name}</span>
+                </div>
+                <div class="subject-description">${subject.description}</div>
+                <div class="subject-stats">
+                    <span class="progress-badge">${progress.completed}/${progress.total} levels</span>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: ${progress.percentage}%"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += `</div>`;
+    html += `
+        <h3 style="margin: 30px 0 15px; color: #64748b;">RECENT ACTIVITY</h3>
+        <div style="background: #f8fafc; border-radius: 12px; padding: 16px;">
+            <p style="color: #475569;">▶️ No recent activity</p>
+        </div>
+    `;
+    
+    content.innerHTML = html;
+    updateHeader('Math Riyaz');
+    updateBottomNav('home');
 }
 
-/* ===== SUBCHAPTERS GRID ===== */
-.subchapters-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 20px;
+function renderChapters(subjectId) {
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) {
+        appHeader.style.display = 'flex';
+    }
+    
+    if (!AppState.config) return;
+    
+    AppState.currentView = 'chapters';
+    AppState.currentSubject = subjectId;
+    
+    const subject = AppState.config.subjects.find(s => s.id === subjectId);
+    const content = document.getElementById('main-content');
+    
+    loadSubjectCSS(subjectId);
+    
+    let html = `<div class="chapters-list">`;
+    
+    subject.chapters.forEach(chapter => {
+        const progress = calculateChapterProgress(subjectId, chapter.id);
+        
+        html += `
+            <div class="chapter-card" onclick="navigateToChapter('${subjectId}', '${chapter.id}')">
+                <div class="chapter-header">
+                    <span class="chapter-name">${chapter.name}</span>
+                    <span class="chapter-icon">→</span>
+                </div>
+                <div class="progress-bar-container" style="margin-bottom: 12px;">
+                    <div class="progress-bar" style="width: ${progress.percentage}%"></div>
+                </div>
+                <div class="subchapters-preview">
+        `;
+        
+        chapter.subchapters.forEach(subchapter => {
+            html += `<span class="subchapter-tag">${subchapter.name}</span>`;
+        });
+        
+        html += `</div></div>`;
+    });
+    
+    html += `</div>`;
+    content.innerHTML = html;
+    updateHeader(subject.name, true, 'renderHome()');
+    updateBottomNav('subjects');
 }
 
-.subchapter-card {
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 16px;
-    cursor: pointer;
-    transition: all 0.2s;
+function renderLevels(subjectId, chapterId, subchapterId) {
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) {
+        appHeader.style.display = 'flex';
+    }
+    
+    if (!AppState.config) return;
+    
+    AppState.currentView = 'levels';
+    AppState.currentSubject = subjectId;
+    AppState.currentChapter = chapterId;
+    AppState.currentSubchapter = subchapterId;
+    
+    const subject = AppState.config.subjects.find(s => s.id === subjectId);
+    const chapter = subject.chapters.find(c => c.id === chapterId);
+    const subchapter = chapter.subchapters.find(s => s.id === subchapterId);
+    
+    const content = document.getElementById('main-content');
+    
+    let html = `
+        <div class="section-header">
+            <button class="back-button" onclick="renderSubchapters('${subjectId}', '${chapterId}')">← Back to ${chapter.name}</button>
+        </div>
+        <div class="subchapter-header">
+            <div class="subchapter-title">${chapter.name} → ${subchapter.name}</div>
+            <div class="subchapter-path">${subject.name} / ${chapter.name} / ${subchapter.name}</div>
+        </div>
+        <div class="levels-grid">
+    `;
+    
+    for (let level = 1; level <= subchapter.levels; level++) {
+        const levelName = subchapter.levelNames?.[level] || `Level ${level}`;
+        const progress = getLevelProgress(subjectId, chapterId, subchapterId, level);
+        const locked = level > 1 && !isLevelUnlocked(subjectId, chapterId, subchapterId, level);
+        
+        let statusClass = '';
+        let statusIcon = '';
+        let progressText = '';
+        
+        if (locked) {
+            statusClass = 'locked';
+            statusIcon = '🔒';
+            progressText = 'Locked';
+        } else if (progress.completed) {
+            statusIcon = '✅';
+            progressText = `Score: ${progress.score}%`;
+        } else if (progress.started) {
+            statusIcon = '⏳';
+            progressText = 'In progress';
+        } else {
+            statusIcon = '🔓';
+            progressText = 'Not started';
+        }
+        
+        html += `
+            <div class="level-card ${statusClass}" onclick="navigateToQuiz('${subjectId}', '${chapterId}', '${subchapterId}', ${level})">
+                <div class="level-number">${level}</div>
+                <div class="level-name">${levelName}</div>
+                <div class="level-progress">${statusIcon} ${progressText}</div>
+            </div>
+        `;
+    }
+    
+    html += `</div>`;
+    content.innerHTML = html;
+    updateHeader(`${chapter.name} - ${subchapter.name}`);
+    updateBottomNav('chapters');
 }
 
-.subchapter-card:hover {
-    border-color: #3b82f6;
-    box-shadow: 0 4px 12px rgba(59,130,246,0.1);
-    transform: translateY(-2px);
+function renderQuiz(subjectId, chapterId, subchapterId, level) {
+    AppState.currentView = 'quiz';
+    AppState.currentSubject = subjectId;
+    AppState.currentChapter = chapterId;
+    AppState.currentSubchapter = subchapterId;
+    AppState.currentLevel = level;
+    
+    const content = document.getElementById('main-content');
+    content.innerHTML = `<div class="loading-spinner"></div>`;
+    
+    loadQuizData(subjectId, chapterId, subchapterId, level)
+        .then(quizData => {
+            renderGenericQuiz(quizData);
+        })
+        .catch(error => {
+            console.error('Failed to load quiz:', error);
+            content.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <p style="color: #ef4444;">Failed to load quiz</p>
+                    <button class="back-button" onclick="renderLevels('${subjectId}', '${chapterId}', '${subchapterId}')">← Go Back</button>
+                </div>
+            `;
+        });
 }
 
-.subchapter-card:active {
-    transform: scale(0.98);
+function renderGenericQuiz(quizData) {
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) {
+        appHeader.style.display = 'none';
+    }
+    
+    currentQuizData = quizData;
+    currentQuizData.currentQuestion = 0;
+    currentQuizData.score = 0;
+    
+    const content = document.getElementById('main-content');
+    const subjectId = AppState.currentSubject;
+    
+    const subject = AppState.config.subjects.find(s => s.id === AppState.currentSubject);
+    const chapter = subject.chapters.find(c => c.id === AppState.currentChapter);
+    const subchapter = chapter.subchapters.find(s => s.id === AppState.currentSubchapter);
+    const levelName = `${chapter.name} (Level ${AppState.currentLevel})`;
+    
+let html = `
+    <!-- First Row - Blue with back, subchapter, and level -->
+    <div class="quiz-header-blue">
+        <div class="quiz-header-left">
+            <button class="quiz-back-btn-white" onclick="if(questionTimer) clearInterval(questionTimer); renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">←</button>
+            <span class="quiz-subchapter-name">${subchapter.name}</span>
+        </div>
+        <div class="quiz-level-blue">Level ${AppState.currentLevel}</div>
+    </div>
+
+    <!-- Second Row - White with progress, score, timer -->
+    <div class="quiz-header-white">
+        <div class="quiz-progress-white">1/${quizData.questions.length}</div>
+        <div class="quiz-score-header" id="quizScoreHeader">0</div>
+        <div class="quiz-timer-row">
+            <div class="circular-timer" id="circularTimer">
+                <svg width="36" height="36" viewBox="0 0 40 40">
+                    <circle class="timer-circle-bg" cx="20" cy="20" r="16"></circle>
+                    <circle class="timer-circle-progress" id="timerCircleProgress" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="0"></circle>
+                </svg>
+                <div class="timer-circle-text" id="timerText">${currentQuizData.timePerQuestion}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quiz-question" id="quizQuestion">
+        ${quizData.questions[0].question}
+    </div>
+
+    <div class="quiz-options-large" id="quizOptions">
+        ${renderLargeOptions(quizData.questions[0])}
+    </div>
+`;
+    
+    content.innerHTML = html;
+    startCircularTimer();
 }
 
-.subchapter-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
+function showQuizComplete() {
+    if (!currentQuizData) return;
+    
+    if (questionTimer) {
+        clearInterval(questionTimer);
+    }
+    
+    const totalPossible = currentQuizData.questions.length * currentQuizData.maxPointsPerQuestion;
+    const percentage = Math.round((currentQuizData.score / totalPossible) * 100);
+    
+    const content = document.getElementById('main-content');
+    content.innerHTML = `
+        <div class="section-header">
+            <button class="back-button" onclick="renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">← Back to levels</button>
+        </div>
+        <div class="quiz-complete">
+            <div class="completion-icon">🏆</div>
+            <h2>Quiz Complete!</h2>
+            <div class="score-display">
+                <span class="score">${currentQuizData.score}</span>
+                <span class="percentage">${percentage}%</span>
+            </div>
+            <div class="feedback-message">
+                ${getFeedbackMessage(percentage)}
+            </div>
+            <button class="restart-btn" onclick="restartQuiz()">Try Again</button>
+            <button class="continue-btn" onclick="renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">Choose Another Level</button>
+        </div>
+    `;
+    
+    saveProgressToFirebase();
 }
 
-.subchapter-card-name {
-    font-weight: 600;
-    color: #0f172a;
-    font-size: 18px;
+function restartQuiz() {
+    if (!currentQuizData) return;
+    
+    currentQuizData.currentQuestion = 0;
+    currentQuizData.score = 0;
+    
+    const content = document.getElementById('main-content');
+    
+    const subject = AppState.config.subjects.find(s => s.id === AppState.currentSubject);
+    const chapter = subject.chapters.find(c => c.id === AppState.currentChapter);
+    const subchapter = chapter.subchapters.find(s => s.id === AppState.currentSubchapter);
+    
+    content.innerHTML = `
+    <!-- First Row - Blue with back, subchapter, and level -->
+    <div class="quiz-header-blue">
+        <div class="quiz-header-left">
+            <button class="quiz-back-btn-white" onclick="if(questionTimer) clearInterval(questionTimer); renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">←</button>
+            <span class="quiz-subchapter-name">${subchapter.name}</span>
+        </div>
+        <div class="quiz-level-blue">Level ${AppState.currentLevel}</div>
+    </div>
+
+    <!-- Second Row - White with progress, score, timer -->
+    <div class="quiz-header-white">
+        <div class="quiz-progress-white">1/${quizData.questions.length}</div>
+        <div class="quiz-score-header" id="quizScoreHeader">0</div>
+        <div class="quiz-timer-row">
+            <div class="circular-timer" id="circularTimer">
+                <svg width="36" height="36" viewBox="0 0 40 40">
+                    <circle class="timer-circle-bg" cx="20" cy="20" r="16"></circle>
+                    <circle class="timer-circle-progress" id="timerCircleProgress" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="0"></circle>
+                </svg>
+                <div class="timer-circle-text" id="timerText">${currentQuizData.timePerQuestion}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quiz-question" id="quizQuestion">
+        ${quizData.questions[0].question}
+    </div>
+
+    <div class="quiz-options-large" id="quizOptions">
+        ${renderLargeOptions(quizData.questions[0])}
+    </div>
+`;
+    
+    startCircularTimer();
 }
 
-.subchapter-card-icon {
-    color: #3b82f6;
-    font-size: 18px;
+// ===== DATA LOADING =====
+async function loadQuizData(subjectId, chapterId, subchapterId, level) {
+    try {
+        const path = `data/${subjectId}/${chapterId}/${subchapterId}/level${level}.json`;
+        console.log('Loading quiz from:', path);
+        
+        const response = await fetch(path);
+        
+        if (!response.ok) {
+            throw new Error(`Failed to load: ${response.status}`);
+        }
+        
+        const quizData = await response.json();
+        return quizData;
+        
+    } catch (error) {
+        console.error('Error loading quiz data:', error);
+        return {
+            title: "Sample Quiz",
+            level: level,
+            maxPointsPerQuestion: 100,
+            timePerQuestion: 30,
+            questions: [
+                {
+                    question: "1/4 + 2/4 = ?",
+                    options: ["3/4", "3/8", "1/2", "2/4"],
+                    correct: "3/4"
+                },
+                {
+                    question: "1/3 + 1/3 = ?",
+                    options: ["2/3", "1/6", "2/6", "3/3"],
+                    correct: "2/3"
+                }
+            ]
+        };
+    }
 }
 
-.subchapter-card-stats {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #64748b;
-    font-size: 14px;
+// ===== PROGRESS FUNCTIONS (PLACEHOLDERS) =====
+function calculateSubjectProgress(subjectId) {
+    return { completed: 3, total: 8, percentage: 37.5 };
 }
 
-.levels-count {
-    color: #475569;
+function calculateChapterProgress(subjectId, chapterId) {
+    return { completed: 2, total: 4, percentage: 50 };
 }
 
-.progress-badge-small {
-    background: #f1f5f9;
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-size: 12px;
+function getLevelProgress(subjectId, chapterId, subchapterId, level) {
+    return {
+        completed: level === 1,
+        started: level === 2,
+        score: level === 1 ? 80 : 0
+    };
 }
+
+function isLevelUnlocked(subjectId, chapterId, subchapterId, level) {
+    if (level === 1) return true;
+    const prevLevel = getLevelProgress(subjectId, chapterId, subchapterId, level - 1);
+    return prevLevel.completed;
+}
+
+function saveProgressToFirebase() {
+    console.log('Progress saved for level', AppState.currentLevel, 'Score:', currentQuizData?.score);
+}
+
+// ===== NAVIGATION FUNCTIONS =====
+window.navigateToSubject = function(subjectId) {
+    renderChapters(subjectId);
+};
+
+window.navigateToChapter = function(subjectId, chapterId) {
+    renderSubchapters(subjectId, chapterId);
+};
+
+window.navigateToSubchapter = function(subjectId, chapterId, subchapterId) {
+    renderLevels(subjectId, chapterId, subchapterId);
+};
+
+window.navigateToQuiz = function(subjectId, chapterId, subchapterId, level) {
+    renderQuiz(subjectId, chapterId, subchapterId, level);
+};
+
+// ===== PLACEHOLDER FUNCTIONS =====
+function showProgress() {
+    alert('Progress view coming soon!');
+}
+
+function showProfile() {
+    alert('Profile view coming soon!');
+}
+
+function showSettings() {
+    alert('Settings view coming soon!');
+}
+
+// Make functions globally available
+window.renderHome = renderHome;
+window.renderChapters = renderChapters;
+window.renderLevels = renderLevels;
+window.checkAnswer = checkAnswer;
