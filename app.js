@@ -273,7 +273,7 @@ function checkAnswer(selectedOption, buttonElement) {
     
     setTimeout(() => {
         moveToNextQuestion();
-    }, 800); // Reduced from 1500ms to 800ms
+    }, 500); // Reduced from 1500ms to 800ms
 }
 
 function renderCurrentQuestion() {
