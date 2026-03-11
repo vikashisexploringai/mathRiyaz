@@ -203,7 +203,7 @@ body {
 /* Keep padding for other screens */
 .main-content:has(.subjects-grid),
 .main-content:has(.chapters-list),
-.main-content:has(.subchapters-grid),
+.main-content:has(.subchapters-list),
 .main-content:has(.levels-list) {
     padding: 20px;
 }
@@ -385,68 +385,55 @@ body {
     color: #475569;
 }
 
-/* ===== SUBCHAPTERS GRID ===== */
-.subchapters-grid {
+/* ===== SUBCHAPTERS PAGE - CLEAN DESIGN ===== */
+.subchapters-header {
+    font-size: 24px;
+    font-weight: 600;
+    color: #0f172a;
+    padding: 20px 20px 16px 20px;
+    margin: 0;
+}
+
+.subchapters-list {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    margin-top: 20px;
+    padding: 0 20px 20px 20px;
 }
 
 .subchapter-card {
     background: white;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    padding: 16px;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     cursor: pointer;
     transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .subchapter-card:hover {
     border-color: #3b82f6;
-    box-shadow: 0 4px 12px rgba(59,130,246,0.1);
-    transform: translateY(-2px);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(59,130,246,0.15);
 }
 
 .subchapter-card:active {
-    transform: scale(0.98);
+    transform: translateY(0);
 }
 
-.subchapter-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.subchapter-card-name {
-    font-weight: 600;
-    color: #0f172a;
+.subchapter-name {
     font-size: 18px;
+    font-weight: 500;
+    color: #1e293b;
 }
 
-.subchapter-card-icon {
+.subchapter-arrow {
+    font-size: 20px;
     color: #3b82f6;
-    font-size: 18px;
-}
-
-.subchapter-card-stats {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #64748b;
-    font-size: 14px;
-}
-
-.levels-count {
-    color: #475569;
-}
-
-.progress-badge-small {
-    background: #f1f5f9;
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-size: 12px;
+    font-weight: 300;
 }
 
 /* ===== LEVELS LIST - VERTICAL BUTTONS ===== */
@@ -873,6 +860,20 @@ body {
     
     .quiz-question .fraction {
         font-size: 32px;
+    }
+    
+    /* Subchapters page */
+    .subchapters-header {
+        font-size: 22px;
+        padding: 16px 16px 12px 16px;
+    }
+    
+    .subchapter-card {
+        padding: 16px 18px;
+    }
+    
+    .subchapter-name {
+        font-size: 16px;
     }
     
     /* Levels page */
