@@ -196,6 +196,22 @@ function goToNextLevel() {
     }
 }
 
+function updateHeaderWithPath(path, showBackButton = false, backFunction = null) {
+    const header = document.getElementById('app-header');
+    if (!header) return;
+    
+    if (showBackButton) {
+        header.innerHTML = `
+            <div class="path-header">
+                <button class="path-back-btn" onclick="${backFunction}">←</button>
+                <span class="path-text">${path.replace('←', '')}</span>
+            </div>
+        `;
+    } else {
+        header.innerHTML = `<h1>${path}</h1>`;
+    }
+}
+
 // ===== CIRCULAR TIMER =====
 function startCircularTimer() {
     if (!currentQuizData) return;
@@ -523,15 +539,10 @@ function renderLevels(subjectId, chapterId, subchapterId) {
     const chapter = subject.chapters.find(c => c.id === chapterId);
     const subchapter = chapter.subchapters.find(s => s.id === subchapterId);
     
-    const content = document.getElementById('main-content');
+    // Update the app-header with path and back button
+    updateHeaderWithPath(`← ${chapter.name} › ${subchapter.name}`, true, `renderSubchapters('${subjectId}', '${chapterId}')`);
     
-    // Create purple gradient header with back button and path
-    const headerHtml = `
-        <div class="levels-header">
-            <button class="levels-back-btn" onclick="renderSubchapters('${subjectId}', '${chapterId}')">←</button>
-            <span class="levels-path">${chapter.name} › ${subchapter.name}</span>
-        </div>
-    `;
+    const content = document.getElementById('main-content');
     
     let levelsHtml = `<div class="levels-list">`;
     
@@ -552,11 +563,7 @@ function renderLevels(subjectId, chapterId, subchapterId) {
     
     levelsHtml += `</div>`;
     
-    // Combine header and levels
-    content.innerHTML = headerHtml + levelsHtml;
-    
-    // Clear the main app header since we have our own
-    updateHeader('');
+    content.innerHTML = levelsHtml;
     updateBottomNav('chapters');
 }
 
