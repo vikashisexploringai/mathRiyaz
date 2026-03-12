@@ -73,7 +73,7 @@ body {
     background: none;
     border: none;
     color: white;
-    font-size: 28px;
+    font-size: 32px;
     cursor: pointer;
     padding: 0;
     width: 32px;
@@ -83,6 +83,9 @@ body {
     justify-content: center;
     border-radius: 50%;
     flex-shrink: 0;
+    font-weight: 300;
+    line-height: 1;
+    transform: translateY(-1px);
 }
 
 .header-back-btn:hover {
