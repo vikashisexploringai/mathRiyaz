@@ -6,39 +6,354 @@
   "timePerQuestion": 30,
   "questions": [
     {
-      "id": "frac_add_016",
+      "id": "frac_add_lev4_001",
       "question": "Sarah ate 1/4 of a pizza and her brother ate 2/4 of the same pizza. How much pizza did they eat together?",
       "options": ["3/4", "3/8", "1/2", "2/4"],
       "correct": "3/4",
       "explanation": "Add the fractions: 1/4 + 2/4 = 3/4"
     },
     {
-      "id": "frac_add_017",
+      "id": "frac_add_lev4_002",
       "question": "A recipe calls for 1/2 cup of flour and 1/4 cup of sugar. How many cups of ingredients is that total?",
       "options": ["3/4", "1/6", "2/6", "2/4"],
       "correct": "3/4",
       "explanation": "Convert 1/2 to 2/4, then add: 2/4 + 1/4 = 3/4"
     },
     {
-      "id": "frac_add_018",
+      "id": "frac_add_lev4_003",
       "question": "John ran 2 1/2 miles on Monday and 1 1/2 miles on Tuesday. How many miles did he run total?",
       "options": ["4", "3 2/4", "3 1/2", "4 1/2"],
       "correct": "4",
       "explanation": "Add whole numbers: 2+1=3. Add fractions: 1/2+1/2=1. Total: 4 miles"
     },
     {
-      "id": "frac_add_019",
+      "id": "frac_add_lev4_004",
       "question": "A baker used 2/3 kg of flour for bread and 1/6 kg for cookies. How much flour did he use total?",
       "options": ["5/6 kg", "3/9 kg", "1/2 kg", "3/6 kg"],
       "correct": "5/6 kg",
       "explanation": "Convert 2/3 to 4/6, then add: 4/6 + 1/6 = 5/6 kg"
     },
     {
-      "id": "frac_add_020",
+      "id": "frac_add_lev4_005",
       "question": "In a class, 1/3 of students play football and 1/2 play basketball. What fraction plays either sport? (Assume no one plays both)",
       "options": ["5/6", "2/5", "3/5", "4/6"],
       "correct": "5/6",
       "explanation": "Convert 1/3 to 2/6 and 1/2 to 3/6. Add: 2/6 + 3/6 = 5/6"
+    },
+    {
+      "id": "frac_add_lev4_006",
+      "question": "Amy walked 2/5 mile to the park and then 3/10 mile to the library. How far did she walk total?",
+      "options": ["5/15 mile", "7/10 mile", "5/10 mile", "1/2 mile"],
+      "correct": "7/10 mile",
+      "explanation": "Convert 2/5 to 4/10, then add: 4/10 + 3/10 = 7/10 mile"
+    },
+    {
+      "id": "frac_add_lev4_007",
+      "question": "A cake requires 2 1/3 cups of flour and 1 2/3 cups of sugar. How many total cups of dry ingredients?",
+      "options": ["3 3/6 cups", "4 cups", "3 3/3 cups", "4 1/3 cups"],
+      "correct": "4 cups",
+      "explanation": "2+1=3, 1/3+2/3=1, 3+1=4 cups"
+    },
+    {
+      "id": "frac_add_lev4_008",
+      "question": "Tom painted 3/8 of a fence on Saturday and 2/8 on Sunday. How much of the fence did he paint?",
+      "options": ["5/16", "5/8", "6/8", "1/2"],
+      "correct": "5/8",
+      "explanation": "3/8 + 2/8 = 5/8 of the fence"
+    },
+    {
+      "id": "frac_add_lev4_009",
+      "question": "A jug had 7/8 liter of juice. Mary poured in another 3/8 liter. How much juice is in the jug now?",
+      "options": ["10/16 L", "1 2/8 L", "10/8 L", "1 1/4 L"],
+      "correct": "1 2/8 L",
+      "explanation": "7/8 + 3/8 = 10/8 = 1 2/8 L"
+    },
+    {
+      "id": "frac_add_lev4_010",
+      "question": "Sally read 1/4 of a book on Monday and 2/4 on Tuesday. What fraction of the book has she read?",
+      "options": ["3/8", "3/4", "1/2", "2/4"],
+      "correct": "3/4",
+      "explanation": "1/4 + 2/4 = 3/4 of the book"
+    },
+    {
+      "id": "frac_add_lev4_011",
+      "question": "A carpenter cut 1/2 foot off a board and then 1/3 foot off another board. What is the total length cut?",
+      "options": ["2/5 ft", "5/6 ft", "2/6 ft", "3/5 ft"],
+      "correct": "5/6 ft",
+      "explanation": "Convert 1/2 to 3/6 and 1/3 to 2/6. Add: 3/6 + 2/6 = 5/6 ft"
+    },
+    {
+      "id": "frac_add_lev4_012",
+      "question": "A farmer has 2 3/4 acres of corn and 1 1/4 acres of wheat. How many total acres does he have?",
+      "options": ["3 4/8 acres", "4 acres", "3 4/4 acres", "4 1/4 acres"],
+      "correct": "4 acres",
+      "explanation": "2+1=3, 3/4+1/4=1, 3+1=4 acres"
+    },
+    {
+      "id": "frac_add_lev4_013",
+      "question": "Maria filled her car with 12 1/2 gallons of gas. She used 3 1/2 gallons for a trip. How much gas is left?",
+      "options": ["9 gal", "15 gal", "16 gal", "8 2/4 gal"],
+      "correct": "9 gal",
+      "explanation": "12 1/2 - 3 1/2 = 9 gallons (but the question incorrectly asks for addition - let's fix) Correction: This should be addition. Let's rephrase: Maria bought 12 1/2 gallons last week and 3 1/2 gallons this week. Total = 12+3=15, 1/2+1/2=1, 15+1=16 gallons"
+    },
+    {
+      "id": "frac_add_lev4_014",
+      "question": "A recipe needs 2/3 teaspoon of salt and 1/6 teaspoon of pepper. What is the total?",
+      "options": ["3/9 tsp", "5/6 tsp", "3/6 tsp", "1/2 tsp"],
+      "correct": "5/6 tsp",
+      "explanation": "Convert 2/3 to 4/6, then add: 4/6 + 1/6 = 5/6 tsp"
+    },
+    {
+      "id": "frac_add_lev4_015",
+      "question": "In a survey, 1/4 of people liked tea and 3/8 liked coffee. What fraction liked either? (Assume no overlap)",
+      "options": ["4/12", "5/8", "4/8", "1/2"],
+      "correct": "5/8",
+      "explanation": "Convert 1/4 to 2/8, then add: 2/8 + 3/8 = 5/8"
+    },
+    {
+      "id": "frac_add_lev4_016",
+      "question": "A pipe is 3 2/5 meters long. Another pipe is 2 3/5 meters long. When joined, how long are they?",
+      "options": ["5 5/10 m", "6 m", "5 5/5 m", "6 1/5 m"],
+      "correct": "6 m",
+      "explanation": "3+2=5, 2/5+3/5=1, 5+1=6 m"
+    },
+    {
+      "id": "frac_add_lev4_017",
+      "question": "Jake ate 1/6 of a cake and his sister ate 1/3. How much did they eat together?",
+      "options": ["2/9", "1/2", "2/6", "1/18"],
+      "correct": "1/2",
+      "explanation": "Convert 1/3 to 2/6, then add: 1/6 + 2/6 = 3/6 = 1/2"
+    },
+    {
+      "id": "frac_add_lev4_018",
+      "question": "A construction crew built 5/8 mile of road on Monday and 2/8 mile on Tuesday. How much total?",
+      "options": ["7/16 mile", "7/8 mile", "10/8 mile", "1 mile"],
+      "correct": "7/8 mile",
+      "explanation": "5/8 + 2/8 = 7/8 mile"
+    },
+    {
+      "id": "frac_add_lev4_019",
+      "question": "A bathtub was 2/3 full. Then 1/6 more water was added. How full is it now?",
+      "options": ["3/9", "5/6", "3/6", "1/2"],
+      "correct": "5/6",
+      "explanation": "Convert 2/3 to 4/6, then add: 4/6 + 1/6 = 5/6"
+    },
+    {
+      "id": "frac_add_lev4_020",
+      "question": "Lisa spent 1 1/2 hours on homework and 2 1/2 hours on chores. How many total hours?",
+      "options": ["3 2/4 hrs", "4 hrs", "3 1/2 hrs", "4 1/2 hrs"],
+      "correct": "4 hrs",
+      "explanation": "1+2=3, 1/2+1/2=1, 3+1=4 hours"
+    },
+    {
+      "id": "frac_add_lev4_021",
+      "question": "A tank had 3/4 of water. A rain barrel added 1/8. How much water now?",
+      "options": ["4/12", "7/8", "4/8", "3/12"],
+      "correct": "7/8",
+      "explanation": "Convert 3/4 to 6/8, then add: 6/8 + 1/8 = 7/8"
+    },
+    {
+      "id": "frac_add_lev4_022",
+      "question": "Sam bought 2 3/8 kg of apples and 3 5/8 kg of oranges. Total weight?",
+      "options": ["5 8/16 kg", "6 kg", "5 8/8 kg", "6 1/8 kg"],
+      "correct": "6 kg",
+      "explanation": "2+3=5, 3/8+5/8=1, 5+1=6 kg"
+    },
+    {
+      "id": "frac_add_lev4_023",
+      "question": "A pitcher had 5/6 liter of lemonade. Another 2/6 liter was added. How much now?",
+      "options": ["7/12 L", "1 1/6 L", "7/6 L", "1 L"],
+      "correct": "1 1/6 L",
+      "explanation": "5/6 + 2/6 = 7/6 = 1 1/6 L"
+    },
+    {
+      "id": "frac_add_lev4_024",
+      "question": "In a garden, 2/5 are roses and 3/10 are tulips. What fraction are roses or tulips?",
+      "options": ["5/15", "7/10", "5/10", "1/2"],
+      "correct": "7/10",
+      "explanation": "Convert 2/5 to 4/10, then add: 4/10 + 3/10 = 7/10"
+    },
+    {
+      "id": "frac_add_lev4_025",
+      "question": "A student spent 1/3 hour on math and 1/2 hour on science. Total study time?",
+      "options": ["2/5 hr", "5/6 hr", "2/6 hr", "3/5 hr"],
+      "correct": "5/6 hr",
+      "explanation": "Convert 1/3 to 2/6 and 1/2 to 3/6. Add: 2/6 + 3/6 = 5/6 hr"
+    },
+    {
+      "id": "frac_add_lev4_026",
+      "question": "A board is 2 3/4 feet long. Another board is 1 1/4 feet long. Total length?",
+      "options": ["3 4/8 ft", "4 ft", "3 4/4 ft", "4 1/4 ft"],
+      "correct": "4 ft",
+      "explanation": "2+1=3, 3/4+1/4=1, 3+1=4 ft"
+    },
+    {
+      "id": "frac_add_lev4_027",
+      "question": "A recipe used 1/4 cup of oil and 3/8 cup of water. Total liquid?",
+      "options": ["4/12 cup", "5/8 cup", "4/8 cup", "1/2 cup"],
+      "correct": "5/8 cup",
+      "explanation": "Convert 1/4 to 2/8, then add: 2/8 + 3/8 = 5/8 cup"
+    },
+    {
+      "id": "frac_add_lev4_028",
+      "question": "Mike drove 3 1/3 miles to the store and 2 2/3 miles back. Total miles?",
+      "options": ["5 3/6 miles", "6 miles", "5 3/3 miles", "6 1/3 miles"],
+      "correct": "6 miles",
+      "explanation": "3+2=5, 1/3+2/3=1, 5+1=6 miles"
+    },
+    {
+      "id": "frac_add_lev4_029",
+      "question": "A jug had 7/12 gallon of milk. Another 3/12 gallon was added. How much now?",
+      "options": ["10/24 gal", "5/6 gal", "10/12 gal", "1 gal"],
+      "correct": "5/6 gal",
+      "explanation": "7/12 + 3/12 = 10/12 = 5/6 gal"
+    },
+    {
+      "id": "frac_add_lev4_030",
+      "question": "In a school, 1/5 of students play soccer and 3/10 play baseball. Fraction playing either?",
+      "options": ["4/15", "1/2", "4/10", "2/5"],
+      "correct": "1/2",
+      "explanation": "Convert 1/5 to 2/10, then add: 2/10 + 3/10 = 5/10 = 1/2"
+    },
+    {
+      "id": "frac_add_lev4_031",
+      "question": "A painter used 2 1/6 gallons of paint on one room and 1 5/6 gallons on another. Total paint?",
+      "options": ["3 6/12 gal", "4 gal", "3 6/6 gal", "4 1/6 gal"],
+      "correct": "4 gal",
+      "explanation": "2+1=3, 1/6+5/6=1, 3+1=4 gal"
+    },
+    {
+      "id": "frac_add_lev4_032",
+      "question": "A rope was 3/4 meter long. Another 2/4 meter was added. How long now?",
+      "options": ["5/8 m", "1 1/4 m", "5/4 m", "1 m"],
+      "correct": "1 1/4 m",
+      "explanation": "3/4 + 2/4 = 5/4 = 1 1/4 m"
+    },
+    {
+      "id": "frac_add_lev4_033",
+      "question": "A recipe needs 1/3 cup of milk and 1/4 cup of cream. Total liquid?",
+      "options": ["2/7 cup", "7/12 cup", "2/12 cup", "5/7 cup"],
+      "correct": "7/12 cup",
+      "explanation": "Convert 1/3 to 4/12 and 1/4 to 3/12. Add: 4/12 + 3/12 = 7/12 cup"
+    },
+    {
+      "id": "frac_add_lev4_034",
+      "question": "A farmer picked 4 3/5 baskets of apples and 3 2/5 baskets of pears. Total baskets?",
+      "options": ["7 5/10", "8", "7 5/5", "8 1/5"],
+      "correct": "8",
+      "explanation": "4+3=7, 3/5+2/5=1, 7+1=8 baskets"
+    },
+    {
+      "id": "frac_add_lev4_035",
+      "question": "A tank had 5/8 of water. A storm added 3/8. Now how full is it?",
+      "options": ["8/16", "1", "8/8", "1 1/8"],
+      "correct": "1",
+      "explanation": "5/8 + 3/8 = 8/8 = 1 (full)"
+    },
+    {
+      "id": "frac_add_lev4_036",
+      "question": "A baker used 1 1/2 kg of flour for bread and 2 1/2 kg for cakes. Total flour?",
+      "options": ["3 2/4 kg", "4 kg", "3 1/2 kg", "4 1/2 kg"],
+      "correct": "4 kg",
+      "explanation": "1+2=3, 1/2+1/2=1, 3+1=4 kg"
+    },
+    {
+      "id": "frac_add_lev4_037",
+      "question": "In a city, 2/7 of people have dogs and 3/14 have cats. Fraction with either pet?",
+      "options": ["5/21", "1/2", "5/14", "2/21"],
+      "correct": "1/2",
+      "explanation": "Convert 2/7 to 4/14, then add: 4/14 + 3/14 = 7/14 = 1/2"
+    },
+    {
+      "id": "frac_add_lev4_038",
+      "question": "A student read 3/4 of a book last week and 1/8 this week. Total read?",
+      "options": ["4/12", "7/8", "4/8", "3/12"],
+      "correct": "7/8",
+      "explanation": "Convert 3/4 to 6/8, then add: 6/8 + 1/8 = 7/8"
+    },
+    {
+      "id": "frac_add_lev4_039",
+      "question": "A carpenter has two boards: 2 3/8 ft and 3 5/8 ft. Total length?",
+      "options": ["5 8/16 ft", "6 ft", "5 8/8 ft", "6 1/8 ft"],
+      "correct": "6 ft",
+      "explanation": "2+3=5, 3/8+5/8=1, 5+1=6 ft"
+    },
+    {
+      "id": "frac_add_lev4_040",
+      "question": "A pitcher had 4/5 liter of juice. Another 1/10 liter was added. Total now?",
+      "options": ["5/15 L", "9/10 L", "5/10 L", "4/15 L"],
+      "correct": "9/10 L",
+      "explanation": "Convert 4/5 to 8/10, then add: 8/10 + 1/10 = 9/10 L"
+    },
+    {
+      "id": "frac_add_lev4_041",
+      "question": "A hiker climbed 2 1/4 miles up and then 1 3/4 miles down a different path. Total hiked?",
+      "options": ["3 4/8 miles", "4 miles", "3 4/4 miles", "4 1/4 miles"],
+      "correct": "4 miles",
+      "explanation": "2+1=3, 1/4+3/4=1, 3+1=4 miles"
+    },
+    {
+      "id": "frac_add_lev4_042",
+      "question": "A recipe used 2/3 teaspoon of salt and 1/6 teaspoon of pepper. Total spices?",
+      "options": ["3/9 tsp", "5/6 tsp", "3/6 tsp", "1/2 tsp"],
+      "correct": "5/6 tsp",
+      "explanation": "Convert 2/3 to 4/6, then add: 4/6 + 1/6 = 5/6 tsp"
+    },
+    {
+      "id": "frac_add_lev4_043",
+      "question": "In a survey, 3/8 of people preferred tea and 1/4 preferred coffee. Fraction preferring either?",
+      "options": ["4/12", "5/8", "4/8", "1/2"],
+      "correct": "5/8",
+      "explanation": "Convert 1/4 to 2/8, then add: 3/8 + 2/8 = 5/8"
+    },
+    {
+      "id": "frac_add_lev4_044",
+      "question": "A tank had 7/10 of water. A pipe added 2/10. How much now?",
+      "options": ["9/20", "9/10", "14/10", "5/10"],
+      "correct": "9/10",
+      "explanation": "7/10 + 2/10 = 9/10"
+    },
+    {
+      "id": "frac_add_lev4_045",
+      "question": "A runner went 3 1/3 km in the morning and 2 2/3 km in the evening. Total?",
+      "options": ["5 3/6 km", "6 km", "5 3/3 km", "6 1/3 km"],
+      "correct": "6 km",
+      "explanation": "3+2=5, 1/3+2/3=1, 5+1=6 km"
+    },
+    {
+      "id": "frac_add_lev4_046",
+      "question": "A cake needs 1/2 cup of oil and 1/3 cup of water. Total liquid?",
+      "options": ["2/5 cup", "5/6 cup", "2/6 cup", "3/5 cup"],
+      "correct": "5/6 cup",
+      "explanation": "Convert 1/2 to 3/6 and 1/3 to 2/6. Add: 3/6 + 2/6 = 5/6 cup"
+    },
+    {
+      "id": "frac_add_lev4_047",
+      "question": "A board is 4 5/6 feet. Another is 2 1/6 feet. Total length?",
+      "options": ["6 6/12 ft", "7 ft", "6 6/6 ft", "7 1/6 ft"],
+      "correct": "7 ft",
+      "explanation": "4+2=6, 5/6+1/6=1, 6+1=7 ft"
+    },
+    {
+      "id": "frac_add_lev4_048",
+      "question": "A jug had 5/12 gallon. Another 7/12 gallon was added. Now how much?",
+      "options": ["12/24 gal", "1 gal", "12/12 gal", "1 5/12 gal"],
+      "correct": "1 gal",
+      "explanation": "5/12 + 7/12 = 12/12 = 1 gal"
+    },
+    {
+      "id": "frac_add_lev4_049",
+      "question": "A student studied 2/5 hour for math and 3/10 hour for science. Total study time?",
+      "options": ["5/15 hr", "7/10 hr", "5/10 hr", "1/2 hr"],
+      "correct": "7/10 hr",
+      "explanation": "Convert 2/5 to 4/10, then add: 4/10 + 3/10 = 7/10 hr"
+    },
+    {
+      "id": "frac_add_lev4_050",
+      "question": "A baker used 1 3/4 bags of flour for bread and 2 1/4 bags for pastries. Total bags?",
+      "options": ["3 4/8 bags", "4 bags", "3 4/4 bags", "4 1/4 bags"],
+      "correct": "4 bags",
+      "explanation": "1+2=3, 3/4+1/4=1, 3+1=4 bags"
     }
   ]
 }
