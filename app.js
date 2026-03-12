@@ -135,7 +135,7 @@ function updateHeader(title, showBackButton = false, backFunction = null) {
     if (showBackButton) {
         header.innerHTML = `
             <div class="centered-header">
-                <button class="header-back-btn" onclick="${backFunction}">←</button>
+                <button class="header-back-btn" onclick="${backFunction}">‹</button>
                 <span class="header-title">${title}</span>
                 <div class="header-placeholder"></div>
             </div>
@@ -553,7 +553,7 @@ let html = `
     <!-- First Row - Blue with back, subchapter, and level -->
     <div class="quiz-header-blue">
         <div class="quiz-header-left">
-            <button class="quiz-back-btn-white" onclick="if(questionTimer) clearInterval(questionTimer); renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">←</button>
+            <button class="quiz-back-btn-white" onclick="if(questionTimer) clearInterval(questionTimer); renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">‹</button>
             <span class="quiz-subchapter-name">${subchapter.name}</span>
         </div>
         <div class="quiz-level-blue">Level ${AppState.currentLevel}</div>
@@ -631,7 +631,7 @@ function restartQuiz() {
     <!-- First Row - Blue with back, subchapter, and level -->
     <div class="quiz-header-blue">
         <div class="quiz-header-left">
-            <button class="quiz-back-btn-white" onclick="if(questionTimer) clearInterval(questionTimer); renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">←</button>
+            <button class="quiz-back-btn-white" onclick="if(questionTimer) clearInterval(questionTimer); renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">‹</button>
             <span class="quiz-subchapter-name">${subchapter.name}</span>
         </div>
         <div class="quiz-level-blue">Level ${AppState.currentLevel}</div>
