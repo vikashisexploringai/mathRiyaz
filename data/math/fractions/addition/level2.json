@@ -1,359 +1,359 @@
 {
-  "title": "Fractions Addition - Level 1: Like Denominators",
-  "description": "Practice adding fractions with the same denominator",
-  "level": 1,
+  "title": "Fractions Addition - Level 2: Unlike Denominators",
+  "description": "Practice adding fractions with different denominators",
+  "level": 2,
   "maxPointsPerQuestion": 100,
   "timePerQuestion": 30,
   "questions": [
     {
-      "id": "frac_add_lev1_001",
-      "question": "1/4 + 2/4",
-      "options": ["3/4", "3/8", "1/2", "2/4"],
+      "id": "frac_add_lev2_001",
+      "question": "1/2 + 1/4",
+      "options": ["3/4", "2/6", "1/3", "2/4"],
       "correct": "3/4",
-      "explanation": "When denominators are same, add numerators: 1+2=3, keep denominator 4"
+      "explanation": "Convert 1/2 to 2/4, then add: 2/4 + 1/4 = 3/4"
     },
     {
-      "id": "frac_add_lev1_002",
-      "question": "1/3 + 1/3",
-      "options": ["2/3", "1/6", "2/6", "3/3"],
-      "correct": "2/3",
-      "explanation": "1+1=2, denominator stays 3"
+      "id": "frac_add_lev2_002",
+      "question": "1/3 + 1/6",
+      "options": ["1/2", "2/9", "1/9", "2/6"],
+      "correct": "1/2",
+      "explanation": "Convert 1/3 to 2/6, then add: 2/6 + 1/6 = 3/6 = 1/2"
     },
     {
-      "id": "frac_add_lev1_003",
-      "question": "2/5 + 1/5",
-      "options": ["3/5", "3/10", "2/10", "1/5"],
-      "correct": "3/5",
-      "explanation": "2+1=3, denominator stays 5"
+      "id": "frac_add_lev2_003",
+      "question": "2/5 + 1/10",
+      "options": ["1/2", "3/15", "3/10", "2/15"],
+      "correct": "1/2",
+      "explanation": "Convert 2/5 to 4/10, then add: 4/10 + 1/10 = 5/10 = 1/2"
     },
     {
-      "id": "frac_add_lev1_004",
-      "question": "3/8 + 2/8",
-      "options": ["5/8", "5/16", "6/8", "1/2"],
-      "correct": "5/8",
-      "explanation": "3+2=5, denominator stays 8"
-    },
-    {
-      "id": "frac_add_lev1_005",
-      "question": "4/9 + 3/9",
-      "options": ["7/9", "7/18", "12/9", "1/3"],
-      "correct": "7/9",
-      "explanation": "4+3=7, denominator stays 9"
-    },
-    {
-      "id": "frac_add_lev1_006",
-      "question": "2/7 + 3/7",
-      "options": ["5/7", "5/14", "6/7", "1/2"],
-      "correct": "5/7",
-      "explanation": "Add the numerators: 2+3=5, keep the denominator 7."
-    },
-    {
-      "id": "frac_add_lev1_007",
-      "question": "1/6 + 4/6",
-      "options": ["5/12", "5/6", "4/12", "1/2"],
-      "correct": "5/6",
-      "explanation": "1+4=5, denominator stays 6."
-    },
-    {
-      "id": "frac_add_lev1_008",
-      "question": "3/10 + 2/10",
-      "options": ["5/20", "1/2", "5/10", "6/10"],
-      "correct": "5/10",
-      "explanation": "3+2=5, denominator stays 10. (5/10 can be simplified to 1/2, but the direct sum is 5/10)."
-    },
-    {
-      "id": "frac_add_lev1_009",
-      "question": "5/12 + 4/12",
-      "options": ["9/24", "3/4", "9/12", "20/12"],
-      "correct": "9/12",
-      "explanation": "5+4=9, denominator stays 12."
-    },
-    {
-      "id": "frac_add_lev1_010",
-      "question": "2/9 + 5/9",
-      "options": ["7/18", "7/9", "10/9", "3/9"],
-      "correct": "7/9",
-      "explanation": "2+5=7, denominator stays 9."
-    },
-    {
-      "id": "frac_add_lev1_011",
-      "question": "3/7 + 3/7",
-      "options": ["6/14", "6/7", "9/7", "1/7"],
-      "correct": "6/7",
-      "explanation": "3+3=6, denominator stays 7."
-    },
-    {
-      "id": "frac_add_lev1_012",
-      "question": "1/5 + 3/5",
-      "options": ["4/10", "3/25", "4/5", "2/5"],
-      "correct": "4/5",
-      "explanation": "1+3=4, denominator stays 5."
-    },
-    {
-      "id": "frac_add_lev1_013",
-      "question": "4/11 + 2/11",
-      "options": ["6/22", "8/11", "6/11", "2/11"],
-      "correct": "6/11",
-      "explanation": "4+2=6, denominator stays 11."
-    },
-    {
-      "id": "frac_add_lev1_014",
-      "question": "1/8 + 5/8",
-      "options": ["6/16", "3/4", "6/8", "5/8"],
-      "correct": "6/8",
-      "explanation": "1+5=6, denominator stays 8."
-    },
-    {
-      "id": "frac_add_lev1_015",
-      "question": "2/13 + 7/13",
-      "options": ["9/26", "9/13", "14/13", "5/13"],
-      "correct": "9/13",
-      "explanation": "2+7=9, denominator stays 13."
-    },
-    {
-      "id": "frac_add_lev1_016",
-      "question": "5/6 + 1/6",
-      "options": ["6/12", "1", "5/12", "6/6"],
-      "correct": "6/6",
-      "explanation": "5+1=6, denominator stays 6. 6/6 equals 1."
-    },
-    {
-      "id": "frac_add_lev1_017",
-      "question": "3/4 + 1/4",
-      "options": ["4/8", "1", "3/16", "1/2"],
-      "correct": "1",
-      "explanation": "3+1=4, denominator stays 4. 4/4 equals 1."
-    },
-    {
-      "id": "frac_add_lev1_018",
-      "question": "2/3 + 2/3",
-      "options": ["4/3", "4/6", "1", "2/6"],
-      "correct": "4/3",
-      "explanation": "2+2=4, denominator stays 3."
-    },
-    {
-      "id": "frac_add_lev1_019",
-      "question": "7/10 + 2/10",
-      "options": ["9/20", "9/10", "14/10", "5/10"],
-      "correct": "9/10",
-      "explanation": "7+2=9, denominator stays 10."
-    },
-    {
-      "id": "frac_add_lev1_020",
-      "question": "4/15 + 8/15",
-      "options": ["12/30", "12/15", "4/5", "32/15"],
-      "correct": "12/15",
-      "explanation": "4+8=12, denominator stays 15."
-    },
-    {
-      "id": "frac_add_lev1_021",
-      "question": "3/20 + 7/20",
-      "options": ["10/40", "1/2", "10/20", "21/20"],
-      "correct": "10/20",
-      "explanation": "3+7=10, denominator stays 20."
-    },
-    {
-      "id": "frac_add_lev1_022",
-      "question": "5/8 + 2/8",
-      "options": ["7/16", "7/8", "10/8", "3/8"],
+      "id": "frac_add_lev2_004",
+      "question": "3/4 + 1/8",
+      "options": ["7/8", "4/12", "3/8", "1/2"],
       "correct": "7/8",
-      "explanation": "5+2=7, denominator stays 8."
+      "explanation": "Convert 3/4 to 6/8, then add: 6/8 + 1/8 = 7/8"
     },
     {
-      "id": "frac_add_lev1_023",
-      "question": "1/12 + 5/12",
-      "options": ["6/24", "1/2", "6/12", "5/24"],
-      "correct": "6/12",
-      "explanation": "1+5=6, denominator stays 12."
+      "id": "frac_add_lev2_005",
+      "question": "2/3 + 1/9",
+      "options": ["7/9", "3/12", "2/9", "5/9"],
+      "correct": "7/9",
+      "explanation": "Convert 2/3 to 6/9, then add: 6/9 + 1/9 = 7/9"
     },
     {
-      "id": "frac_add_lev1_024",
-      "question": "6/7 + 1/7",
-      "options": ["7/14", "7/7", "1", "6/14"],
-      "correct": "1",
-      "explanation": "6+1=7, denominator stays 7. 7/7 equals 1."
+      "id": "frac_add_lev2_006",
+      "question": "1/4 + 1/8",
+      "options": ["2/12", "3/8", "1/3", "1/2"],
+      "correct": "3/8",
+      "explanation": "Convert 1/4 to 2/8, then add: 2/8 + 1/8 = 3/8"
     },
     {
-      "id": "frac_add_lev1_025",
-      "question": "4/9 + 2/9",
-      "options": ["6/18", "2/3", "6/9", "8/9"],
-      "correct": "6/9",
-      "explanation": "4+2=6, denominator stays 9."
+      "id": "frac_add_lev2_007",
+      "question": "1/5 + 3/10",
+      "options": ["4/15", "2/5", "1/2", "4/10"],
+      "correct": "1/2",
+      "explanation": "Convert 1/5 to 2/10, then add: 2/10 + 3/10 = 5/10 = 1/2"
     },
     {
-      "id": "frac_add_lev1_026",
-      "question": "1/2 + 1/2",
-      "options": ["2/4", "1", "2/2", "1/4"],
-      "correct": "1",
-      "explanation": "1+1=2, denominator stays 2. 2/2 equals 1."
+      "id": "frac_add_lev2_008",
+      "question": "3/5 + 1/10",
+      "options": ["4/15", "7/10", "4/10", "3/10"],
+      "correct": "7/10",
+      "explanation": "Convert 3/5 to 6/10, then add: 6/10 + 1/10 = 7/10"
     },
     {
-      "id": "frac_add_lev1_027",
-      "question": "3/16 + 7/16",
-      "options": ["10/32", "5/8", "10/16", "21/16"],
-      "correct": "10/16",
-      "explanation": "3+7=10, denominator stays 16."
+      "id": "frac_add_lev2_009",
+      "question": "1/6 + 1/3",
+      "options": ["2/9", "1/2", "2/6", "1/18"],
+      "correct": "1/2",
+      "explanation": "Convert 1/3 to 2/6, then add: 1/6 + 2/6 = 3/6 = 1/2"
     },
     {
-      "id": "frac_add_lev1_028",
-      "question": "8/13 + 4/13",
-      "options": ["12/26", "12/13", "32/13", "4/13"],
-      "correct": "12/13",
-      "explanation": "8+4=12, denominator stays 13."
-    },
-    {
-      "id": "frac_add_lev1_029",
-      "question": "2/8 + 3/8",
-      "options": ["5/16", "5/8", "6/8", "1/2"],
-      "correct": "5/8",
-      "explanation": "2+3=5, denominator stays 8."
-    },
-    {
-      "id": "frac_add_lev1_030",
-      "question": "7/15 + 6/15",
-      "options": ["13/30", "13/15", "42/15", "1/15"],
-      "correct": "13/15",
-      "explanation": "7+6=13, denominator stays 15."
-    },
-    {
-      "id": "frac_add_lev1_031",
-      "question": "1/9 + 4/9",
-      "options": ["5/18", "5/9", "4/81", "6/9"],
-      "correct": "5/9",
-      "explanation": "1+4=5, denominator stays 9."
-    },
-    {
-      "id": "frac_add_lev1_032",
-      "question": "5/7 + 2/7",
-      "options": ["7/14", "1", "10/7", "3/7"],
-      "correct": "1",
-      "explanation": "5+2=7, denominator stays 7. 7/7 equals 1."
-    },
-    {
-      "id": "frac_add_lev1_033",
-      "question": "3/5 + 1/5",
-      "options": ["4/10", "4/5", "3/25", "2/5"],
-      "correct": "4/5",
-      "explanation": "3+1=4, denominator stays 5."
-    },
-    {
-      "id": "frac_add_lev1_034",
-      "question": "9/20 + 7/20",
-      "options": ["16/40", "16/20", "4/5", "63/20"],
-      "correct": "16/20",
-      "explanation": "9+7=16, denominator stays 20."
-    },
-    {
-      "id": "frac_add_lev1_035",
-      "question": "4/7 + 2/7",
-      "options": ["6/14", "6/7", "8/7", "2/7"],
-      "correct": "6/7",
-      "explanation": "4+2=6, denominator stays 7."
-    },
-    {
-      "id": "frac_add_lev1_036",
-      "question": "1/10 + 7/10",
-      "options": ["8/20", "4/5", "8/10", "7/100"],
-      "correct": "8/10",
-      "explanation": "1+7=8, denominator stays 10."
-    },
-    {
-      "id": "frac_add_lev1_037",
-      "question": "5/12 + 3/12",
-      "options": ["8/24", "2/3", "8/12", "15/12"],
-      "correct": "8/12",
-      "explanation": "5+3=8, denominator stays 12."
-    },
-    {
-      "id": "frac_add_lev1_038",
-      "question": "2/4 + 1/4",
-      "options": ["3/8", "3/4", "2/16", "1/2"],
-      "correct": "3/4",
-      "explanation": "2+1=3, denominator stays 4."
-    },
-    {
-      "id": "frac_add_lev1_039",
-      "question": "6/11 + 3/11",
-      "options": ["9/22", "9/11", "18/11", "3/11"],
-      "correct": "9/11",
-      "explanation": "6+3=9, denominator stays 11."
-    },
-    {
-      "id": "frac_add_lev1_040",
-      "question": "4/5 + 3/5",
-      "options": ["7/10", "7/5", "12/5", "1/5"],
-      "correct": "7/5",
-      "explanation": "4+3=7, denominator stays 5."
-    },
-    {
-      "id": "frac_add_lev1_041",
-      "question": "1/7 + 2/7",
-      "options": ["3/14", "3/7", "2/49", "4/7"],
-      "correct": "3/7",
-      "explanation": "1+2=3, denominator stays 7."
-    },
-    {
-      "id": "frac_add_lev1_042",
-      "question": "7/12 + 4/12",
-      "options": ["11/24", "11/12", "28/12", "3/12"],
-      "correct": "11/12",
-      "explanation": "7+4=11, denominator stays 12."
-    },
-    {
-      "id": "frac_add_lev1_043",
-      "question": "3/6 + 2/6",
-      "options": ["5/12", "5/6", "1/2", "6/6"],
+      "id": "frac_add_lev2_010",
+      "question": "2/3 + 1/6",
+      "options": ["3/9", "5/6", "3/6", "1/2"],
       "correct": "5/6",
-      "explanation": "3+2=5, denominator stays 6."
+      "explanation": "Convert 2/3 to 4/6, then add: 4/6 + 1/6 = 5/6"
     },
     {
-      "id": "frac_add_lev1_044",
-      "question": "8/9 + 1/9",
-      "options": ["9/18", "1", "8/81", "7/9"],
-      "correct": "1",
-      "explanation": "8+1=9, denominator stays 9. 9/9 equals 1."
+      "id": "frac_add_lev2_011",
+      "question": "1/2 + 1/6",
+      "options": ["2/8", "2/3", "1/3", "1/12"],
+      "correct": "2/3",
+      "explanation": "Convert 1/2 to 3/6, then add: 3/6 + 1/6 = 4/6 = 2/3"
     },
     {
-      "id": "frac_add_lev1_045",
-      "question": "5/14 + 3/14",
-      "options": ["8/28", "8/14", "4/7", "15/14"],
-      "correct": "8/14",
-      "explanation": "5+3=8, denominator stays 14."
+      "id": "frac_add_lev2_012",
+      "question": "3/10 + 2/5",
+      "options": ["5/15", "7/10", "5/10", "6/15"],
+      "correct": "7/10",
+      "explanation": "Convert 2/5 to 4/10, then add: 3/10 + 4/10 = 7/10"
     },
     {
-      "id": "frac_add_lev1_046",
-      "question": "2/2 + 0/2",
-      "options": ["2/4", "1", "0", "1/2"],
-      "correct": "1",
-      "explanation": "2+0=2, denominator stays 2. 2/2 equals 1."
+      "id": "frac_add_lev2_013",
+      "question": "1/8 + 3/4",
+      "options": ["4/12", "7/8", "3/8", "1/2"],
+      "correct": "7/8",
+      "explanation": "Convert 3/4 to 6/8, then add: 1/8 + 6/8 = 7/8"
     },
     {
-      "id": "frac_add_lev1_047",
-      "question": "7/8 + 1/8",
-      "options": ["8/16", "1", "7/64", "6/8"],
-      "correct": "1",
-      "explanation": "7+1=8, denominator stays 8. 8/8 equals 1."
+      "id": "frac_add_lev2_014",
+      "question": "2/9 + 1/3",
+      "options": ["3/12", "5/9", "3/9", "2/12"],
+      "correct": "5/9",
+      "explanation": "Convert 1/3 to 3/9, then add: 2/9 + 3/9 = 5/9"
     },
     {
-      "id": "frac_add_lev1_048",
-      "question": "4/10 + 5/10",
-      "options": ["9/20", "9/10", "20/10", "1/10"],
+      "id": "frac_add_lev2_015",
+      "question": "1/4 + 3/8",
+      "options": ["4/12", "5/8", "4/8", "3/12"],
+      "correct": "5/8",
+      "explanation": "Convert 1/4 to 2/8, then add: 2/8 + 3/8 = 5/8"
+    },
+    {
+      "id": "frac_add_lev2_016",
+      "question": "3/7 + 1/14",
+      "options": ["4/21", "1/2", "7/14", "4/14"],
+      "correct": "1/2",
+      "explanation": "Convert 3/7 to 6/14, then add: 6/14 + 1/14 = 7/14 = 1/2"
+    },
+    {
+      "id": "frac_add_lev2_017",
+      "question": "1/2 + 3/8",
+      "options": ["4/10", "7/8", "4/8", "3/10"],
+      "correct": "7/8",
+      "explanation": "Convert 1/2 to 4/8, then add: 4/8 + 3/8 = 7/8"
+    },
+    {
+      "id": "frac_add_lev2_018",
+      "question": "2/5 + 3/10",
+      "options": ["5/15", "7/10", "5/10", "6/15"],
+      "correct": "7/10",
+      "explanation": "Convert 2/5 to 4/10, then add: 4/10 + 3/10 = 7/10"
+    },
+    {
+      "id": "frac_add_lev2_019",
+      "question": "1/3 + 3/9",
+      "options": ["4/12", "2/3", "4/9", "1/2"],
+      "correct": "2/3",
+      "explanation": "Convert 1/3 to 3/9, then add: 3/9 + 3/9 = 6/9 = 2/3"
+    },
+    {
+      "id": "frac_add_lev2_020",
+      "question": "3/4 + 1/12",
+      "options": ["4/16", "5/6", "10/12", "4/12"],
+      "correct": "5/6",
+      "explanation": "Convert 3/4 to 9/12, then add: 9/12 + 1/12 = 10/12 = 5/6"
+    },
+    {
+      "id": "frac_add_lev2_021",
+      "question": "1/5 + 2/10",
+      "options": ["3/15", "2/5", "3/10", "1/2"],
+      "correct": "2/5",
+      "explanation": "Convert 2/10 to 1/5, then add: 1/5 + 1/5 = 2/5"
+    },
+    {
+      "id": "frac_add_lev2_022",
+      "question": "5/6 + 1/12",
+      "options": ["6/18", "11/12", "6/12", "5/18"],
+      "correct": "11/12",
+      "explanation": "Convert 5/6 to 10/12, then add: 10/12 + 1/12 = 11/12"
+    },
+    {
+      "id": "frac_add_lev2_023",
+      "question": "2/7 + 1/14",
+      "options": ["3/21", "5/14", "3/14", "1/2"],
+      "correct": "5/14",
+      "explanation": "Convert 2/7 to 4/14, then add: 4/14 + 1/14 = 5/14"
+    },
+    {
+      "id": "frac_add_lev2_024",
+      "question": "1/2 + 2/6",
+      "options": ["3/8", "5/6", "3/6", "1/3"],
+      "correct": "5/6",
+      "explanation": "Convert 1/2 to 3/6, then add: 3/6 + 2/6 = 5/6"
+    },
+    {
+      "id": "frac_add_lev2_025",
+      "question": "4/9 + 1/3",
+      "options": ["5/12", "7/9", "5/9", "4/12"],
+      "correct": "7/9",
+      "explanation": "Convert 1/3 to 3/9, then add: 4/9 + 3/9 = 7/9"
+    },
+    {
+      "id": "frac_add_lev2_026",
+      "question": "3/8 + 1/4",
+      "options": ["4/12", "5/8", "4/8", "3/12"],
+      "correct": "5/8",
+      "explanation": "Convert 1/4 to 2/8, then add: 3/8 + 2/8 = 5/8"
+    },
+    {
+      "id": "frac_add_lev2_027",
+      "question": "1/6 + 2/3",
+      "options": ["3/9", "5/6", "3/6", "2/9"],
+      "correct": "5/6",
+      "explanation": "Convert 2/3 to 4/6, then add: 1/6 + 4/6 = 5/6"
+    },
+    {
+      "id": "frac_add_lev2_028",
+      "question": "2/8 + 1/4",
+      "options": ["3/12", "1/2", "3/8", "2/12"],
+      "correct": "1/2",
+      "explanation": "Convert 1/4 to 2/8, then add: 2/8 + 2/8 = 4/8 = 1/2"
+    },
+    {
+      "id": "frac_add_lev2_029",
+      "question": "5/8 + 1/4",
+      "options": ["6/12", "7/8", "6/8", "5/12"],
+      "correct": "7/8",
+      "explanation": "Convert 1/4 to 2/8, then add: 5/8 + 2/8 = 7/8"
+    },
+    {
+      "id": "frac_add_lev2_030",
+      "question": "1/7 + 2/14",
+      "options": ["3/21", "2/7", "3/14", "1/2"],
+      "correct": "2/7",
+      "explanation": "Convert 2/14 to 1/7, then add: 1/7 + 1/7 = 2/7"
+    },
+    {
+      "id": "frac_add_lev2_031",
+      "question": "3/5 + 3/10",
+      "options": ["6/15", "9/10", "6/10", "3/15"],
       "correct": "9/10",
-      "explanation": "4+5=9, denominator stays 10."
+      "explanation": "Convert 3/5 to 6/10, then add: 6/10 + 3/10 = 9/10"
     },
     {
-      "id": "frac_add_lev1_049",
-      "question": "1/13 + 10/13",
-      "options": ["11/26", "11/13", "10/169", "9/13"],
-      "correct": "11/13",
-      "explanation": "1+10=11, denominator stays 13."
+      "id": "frac_add_lev2_032",
+      "question": "1/4 + 5/12",
+      "options": ["6/16", "2/3", "6/12", "5/16"],
+      "correct": "2/3",
+      "explanation": "Convert 1/4 to 3/12, then add: 3/12 + 5/12 = 8/12 = 2/3"
     },
     {
-      "id": "frac_add_lev1_050",
-      "question": "3/3 + 2/3",
-      "options": ["5/6", "5/3", "1", "6/3"],
-      "correct": "5/3",
-      "explanation": "3+2=5, denominator stays 3."
+      "id": "frac_add_lev2_033",
+      "question": "2/3 + 1/12",
+      "options": ["3/15", "3/4", "8/12", "2/15"],
+      "correct": "3/4",
+      "explanation": "Convert 2/3 to 8/12, then add: 8/12 + 1/12 = 9/12 = 3/4"
+    },
+    {
+      "id": "frac_add_lev2_034",
+      "question": "1/2 + 3/10",
+      "options": ["4/12", "4/5", "5/10", "3/12"],
+      "correct": "4/5",
+      "explanation": "Convert 1/2 to 5/10, then add: 5/10 + 3/10 = 8/10 = 4/5"
+    },
+    {
+      "id": "frac_add_lev2_035",
+      "question": "4/5 + 1/10",
+      "options": ["5/15", "9/10", "5/10", "4/15"],
+      "correct": "9/10",
+      "explanation": "Convert 4/5 to 8/10, then add: 8/10 + 1/10 = 9/10"
+    },
+    {
+      "id": "frac_add_lev2_036",
+      "question": "3/8 + 3/4",
+      "options": ["6/12", "1 1/8", "6/8", "3/12"],
+      "correct": "1 1/8",
+      "explanation": "Convert 3/4 to 6/8, then add: 3/8 + 6/8 = 9/8 = 1 1/8"
+    },
+    {
+      "id": "frac_add_lev2_037",
+      "question": "1/3 + 5/12",
+      "options": ["6/15", "3/4", "6/12", "5/15"],
+      "correct": "3/4",
+      "explanation": "Convert 1/3 to 4/12, then add: 4/12 + 5/12 = 9/12 = 3/4"
+    },
+    {
+      "id": "frac_add_lev2_038",
+      "question": "2/4 + 1/8",
+      "options": ["3/12", "5/8", "3/8", "2/12"],
+      "correct": "5/8",
+      "explanation": "Convert 2/4 to 4/8, then add: 4/8 + 1/8 = 5/8"
+    },
+    {
+      "id": "frac_add_lev2_039",
+      "question": "5/12 + 1/6",
+      "options": ["6/18", "7/12", "6/12", "5/18"],
+      "correct": "7/12",
+      "explanation": "Convert 1/6 to 2/12, then add: 5/12 + 2/12 = 7/12"
+    },
+    {
+      "id": "frac_add_lev2_040",
+      "question": "3/10 + 1/5",
+      "options": ["4/15", "1/2", "4/10", "3/15"],
+      "correct": "1/2",
+      "explanation": "Convert 1/5 to 2/10, then add: 3/10 + 2/10 = 5/10 = 1/2"
+    },
+    {
+      "id": "frac_add_lev2_041",
+      "question": "7/10 + 1/5",
+      "options": ["8/15", "9/10", "8/10", "7/15"],
+      "correct": "9/10",
+      "explanation": "Convert 1/5 to 2/10, then add: 7/10 + 2/10 = 9/10"
+    },
+    {
+      "id": "frac_add_lev2_042",
+      "question": "2/6 + 1/3",
+      "options": ["3/9", "2/3", "3/6", "1/2"],
+      "correct": "2/3",
+      "explanation": "Convert 1/3 to 2/6, then add: 2/6 + 2/6 = 4/6 = 2/3"
+    },
+    {
+      "id": "frac_add_lev2_043",
+      "question": "1/4 + 7/12",
+      "options": ["8/16", "5/6", "8/12", "7/16"],
+      "correct": "5/6",
+      "explanation": "Convert 1/4 to 3/12, then add: 3/12 + 7/12 = 10/12 = 5/6"
+    },
+    {
+      "id": "frac_add_lev2_044",
+      "question": "5/7 + 1/14",
+      "options": ["6/21", "11/14", "6/14", "5/21"],
+      "correct": "11/14",
+      "explanation": "Convert 5/7 to 10/14, then add: 10/14 + 1/14 = 11/14"
+    },
+    {
+      "id": "frac_add_lev2_045",
+      "question": "1/8 + 1/4",
+      "options": ["2/12", "3/8", "1/3", "1/2"],
+      "correct": "3/8",
+      "explanation": "Convert 1/4 to 2/8, then add: 1/8 + 2/8 = 3/8"
+    },
+    {
+      "id": "frac_add_lev2_046",
+      "question": "3/7 + 2/14",
+      "options": ["5/21", "4/7", "5/14", "3/21"],
+      "correct": "4/7",
+      "explanation": "Convert 2/14 to 1/7, then add: 3/7 + 1/7 = 4/7"
+    },
+    {
+      "id": "frac_add_lev2_047",
+      "question": "4/9 + 2/18",
+      "options": ["6/27", "5/9", "6/18", "4/27"],
+      "correct": "5/9",
+      "explanation": "Convert 2/18 to 1/9, then add: 4/9 + 1/9 = 5/9"
+    },
+    {
+      "id": "frac_add_lev2_048",
+      "question": "1/2 + 4/10",
+      "options": ["5/12", "9/10", "5/10", "4/12"],
+      "correct": "9/10",
+      "explanation": "Convert 1/2 to 5/10, then add: 5/10 + 4/10 = 9/10"
+    },
+    {
+      "id": "frac_add_lev2_049",
+      "question": "2/4 + 3/8",
+      "options": ["5/12", "7/8", "5/8", "2/12"],
+      "correct": "7/8",
+      "explanation": "Convert 2/4 to 4/8, then add: 4/8 + 3/8 = 7/8"
+    },
+    {
+      "id": "frac_add_lev2_050",
+      "question": "5/9 + 1/3",
+      "options": ["6/12", "8/9", "6/9", "5/12"],
+      "correct": "8/9",
+      "explanation": "Convert 1/3 to 3/9, then add: 5/9 + 3/9 = 8/9"
     }
   ]
 }
