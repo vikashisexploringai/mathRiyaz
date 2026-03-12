@@ -6,39 +6,354 @@
   "timePerQuestion": 30,
   "questions": [
     {
-      "id": "frac_add_011",
+      "id": "frac_add_lev3_001",
       "question": "1 1/2 + 2 1/2",
       "options": ["4", "3 1/2", "3 2/4", "4 1/2"],
       "correct": "4",
       "explanation": "Add whole numbers: 1+2=3. Add fractions: 1/2+1/2=1. 3+1=4"
     },
     {
-      "id": "frac_add_012",
+      "id": "frac_add_lev3_002",
       "question": "2 1/3 + 1 2/3",
       "options": ["4", "3 3/6", "3 3/3", "4 1/3"],
       "correct": "4",
       "explanation": "Add whole numbers: 2+1=3. Add fractions: 1/3+2/3=1. 3+1=4"
     },
     {
-      "id": "frac_add_013",
+      "id": "frac_add_lev3_003",
       "question": "3 1/4 + 1 3/4",
       "options": ["5", "4 4/8", "4 4/4", "5 1/4"],
       "correct": "5",
       "explanation": "Add whole numbers: 3+1=4. Add fractions: 1/4+3/4=1. 4+1=5"
     },
     {
-      "id": "frac_add_014",
+      "id": "frac_add_lev3_004",
       "question": "2 3/5 + 1 4/5",
       "options": ["4 2/5", "3 7/5", "4 7/10", "3 7/10"],
       "correct": "4 2/5",
       "explanation": "Add whole numbers: 2+1=3. Add fractions: 3/5+4/5=7/5=1 2/5. 3 + 1 2/5 = 4 2/5"
     },
     {
-      "id": "frac_add_015",
+      "id": "frac_add_lev3_005",
       "question": "5/3 + 2/3",
       "options": ["7/3", "7/6", "2 1/3", "3/3"],
       "correct": "7/3",
       "explanation": "Add numerators: 5+2=7, denominator stays 3"
+    },
+    {
+      "id": "frac_add_lev3_006",
+      "question": "2 1/2 + 1 1/2",
+      "options": ["3 2/2", "4", "3 1/2", "4 1/2"],
+      "correct": "4",
+      "explanation": "2+1=3, 1/2+1/2=1, 3+1=4"
+    },
+    {
+      "id": "frac_add_lev3_007",
+      "question": "1 3/4 + 2 1/4",
+      "options": ["3 4/8", "4", "3 4/4", "4 1/4"],
+      "correct": "4",
+      "explanation": "1+2=3, 3/4+1/4=1, 3+1=4"
+    },
+    {
+      "id": "frac_add_lev3_008",
+      "question": "4 2/3 + 1 1/3",
+      "options": ["5 3/6", "6", "5 3/3", "6 1/3"],
+      "correct": "6",
+      "explanation": "4+1=5, 2/3+1/3=1, 5+1=6"
+    },
+    {
+      "id": "frac_add_lev3_009",
+      "question": "2 5/6 + 3 1/6",
+      "options": ["5 6/12", "6", "5 6/6", "6 1/6"],
+      "correct": "6",
+      "explanation": "2+3=5, 5/6+1/6=1, 5+1=6"
+    },
+    {
+      "id": "frac_add_lev3_010",
+      "question": "3 3/8 + 2 5/8",
+      "options": ["5 8/8", "6", "5 8/16", "6 1/8"],
+      "correct": "6",
+      "explanation": "3+2=5, 3/8+5/8=1, 5+1=6"
+    },
+    {
+      "id": "frac_add_lev3_011",
+      "question": "1 2/7 + 2 4/7",
+      "options": ["3 6/14", "3 6/7", "4 6/7", "4"],
+      "correct": "3 6/7",
+      "explanation": "1+2=3, 2/7+4/7=6/7, total 3 6/7"
+    },
+    {
+      "id": "frac_add_lev3_012",
+      "question": "2 3/9 + 1 5/9",
+      "options": ["3 8/18", "3 8/9", "4 8/9", "4"],
+      "correct": "3 8/9",
+      "explanation": "2+1=3, 3/9+5/9=8/9, total 3 8/9"
+    },
+    {
+      "id": "frac_add_lev3_013",
+      "question": "4 1/5 + 2 2/5",
+      "options": ["6 3/10", "6 3/5", "7 3/5", "7"],
+      "correct": "6 3/5",
+      "explanation": "4+2=6, 1/5+2/5=3/5, total 6 3/5"
+    },
+    {
+      "id": "frac_add_lev3_014",
+      "question": "3 2/10 + 2 5/10",
+      "options": ["5 7/20", "5 7/10", "6 7/10", "6"],
+      "correct": "5 7/10",
+      "explanation": "3+2=5, 2/10+5/10=7/10, total 5 7/10"
+    },
+    {
+      "id": "frac_add_lev3_015",
+      "question": "5 3/11 + 2 6/11",
+      "options": ["7 9/22", "7 9/11", "8 9/11", "8"],
+      "correct": "7 9/11",
+      "explanation": "5+2=7, 3/11+6/11=9/11, total 7 9/11"
+    },
+    {
+      "id": "frac_add_lev3_016",
+      "question": "2 5/12 + 3 4/12",
+      "options": ["5 9/24", "5 9/12", "6 9/12", "6"],
+      "correct": "5 9/12",
+      "explanation": "2+3=5, 5/12+4/12=9/12, total 5 9/12"
+    },
+    {
+      "id": "frac_add_lev3_017",
+      "question": "1 7/8 + 2 5/8",
+      "options": ["3 12/16", "4 4/8", "3 12/8", "4 1/2"],
+      "correct": "4 4/8",
+      "explanation": "1+2=3, 7/8+5/8=12/8=1 4/8, 3+1 4/8=4 4/8"
+    },
+    {
+      "id": "frac_add_lev3_018",
+      "question": "3 4/7 + 1 6/7",
+      "options": ["4 10/14", "5 3/7", "4 10/7", "5"],
+      "correct": "5 3/7",
+      "explanation": "3+1=4, 4/7+6/7=10/7=1 3/7, 4+1 3/7=5 3/7"
+    },
+    {
+      "id": "frac_add_lev3_019",
+      "question": "2 7/9 + 2 5/9",
+      "options": ["4 12/18", "5 3/9", "4 12/9", "5 1/3"],
+      "correct": "5 3/9",
+      "explanation": "2+2=4, 7/9+5/9=12/9=1 3/9, 4+1 3/9=5 3/9"
+    },
+    {
+      "id": "frac_add_lev3_020",
+      "question": "4 5/6 + 1 4/6",
+      "options": ["5 9/12", "6 3/6", "5 9/6", "6 1/2"],
+      "correct": "6 3/6",
+      "explanation": "4+1=5, 5/6+4/6=9/6=1 3/6, 5+1 3/6=6 3/6"
+    },
+    {
+      "id": "frac_add_lev3_021",
+      "question": "3 5/8 + 2 7/8",
+      "options": ["5 12/16", "6 4/8", "5 12/8", "6 1/2"],
+      "correct": "6 4/8",
+      "explanation": "3+2=5, 5/8+7/8=12/8=1 4/8, 5+1 4/8=6 4/8"
+    },
+    {
+      "id": "frac_add_lev3_022",
+      "question": "8/5 + 4/5",
+      "options": ["12/10", "2 2/5", "12/5", "2"],
+      "correct": "12/5",
+      "explanation": "8+4=12, denominator stays 5"
+    },
+    {
+      "id": "frac_add_lev3_023",
+      "question": "7/4 + 5/4",
+      "options": ["12/8", "3", "12/4", "2 4/4"],
+      "correct": "3",
+      "explanation": "7+5=12, 12/4=3"
+    },
+    {
+      "id": "frac_add_lev3_024",
+      "question": "9/6 + 5/6",
+      "options": ["14/12", "2 2/6", "14/6", "2 1/3"],
+      "correct": "14/6",
+      "explanation": "9+5=14, denominator stays 6"
+    },
+    {
+      "id": "frac_add_lev3_025",
+      "question": "11/8 + 7/8",
+      "options": ["18/16", "2 2/8", "18/8", "2 1/4"],
+      "correct": "18/8",
+      "explanation": "11+7=18, denominator stays 8"
+    },
+    {
+      "id": "frac_add_lev3_026",
+      "question": "1 3/10 + 2 9/10",
+      "options": ["3 12/20", "4 2/10", "3 12/10", "4 1/5"],
+      "correct": "4 2/10",
+      "explanation": "1+2=3, 3/10+9/10=12/10=1 2/10, 3+1 2/10=4 2/10"
+    },
+    {
+      "id": "frac_add_lev3_027",
+      "question": "2 5/12 + 3 11/12",
+      "options": ["5 16/24", "6 4/12", "5 16/12", "6 1/3"],
+      "correct": "6 4/12",
+      "explanation": "2+3=5, 5/12+11/12=16/12=1 4/12, 5+1 4/12=6 4/12"
+    },
+    {
+      "id": "frac_add_lev3_028",
+      "question": "3 7/15 + 1 13/15",
+      "options": ["4 20/30", "5 5/15", "4 20/15", "5 1/3"],
+      "correct": "5 5/15",
+      "explanation": "3+1=4, 7/15+13/15=20/15=1 5/15, 4+1 5/15=5 5/15"
+    },
+    {
+      "id": "frac_add_lev3_029",
+      "question": "4 3/7 + 2 6/7",
+      "options": ["6 9/14", "7 2/7", "6 9/7", "7"],
+      "correct": "7 2/7",
+      "explanation": "4+2=6, 3/7+6/7=9/7=1 2/7, 6+1 2/7=7 2/7"
+    },
+    {
+      "id": "frac_add_lev3_030",
+      "question": "2 8/9 + 1 7/9",
+      "options": ["3 15/18", "4 6/9", "3 15/9", "4 2/3"],
+      "correct": "4 6/9",
+      "explanation": "2+1=3, 8/9+7/9=15/9=1 6/9, 3+1 6/9=4 6/9"
+    },
+    {
+      "id": "frac_add_lev3_031",
+      "question": "3 5/6 + 2 5/6",
+      "options": ["5 10/12", "6 4/6", "5 10/6", "6 2/3"],
+      "correct": "6 4/6",
+      "explanation": "3+2=5, 5/6+5/6=10/6=1 4/6, 5+1 4/6=6 4/6"
+    },
+    {
+      "id": "frac_add_lev3_032",
+      "question": "1 9/10 + 2 8/10",
+      "options": ["3 17/20", "4 7/10", "3 17/10", "4 7/10"],
+      "correct": "4 7/10",
+      "explanation": "1+2=3, 9/10+8/10=17/10=1 7/10, 3+1 7/10=4 7/10"
+    },
+    {
+      "id": "frac_add_lev3_033",
+      "question": "13/8 + 11/8",
+      "options": ["24/16", "3", "24/8", "3 2/8"],
+      "correct": "3",
+      "explanation": "13+11=24, 24/8=3"
+    },
+    {
+      "id": "frac_add_lev3_034",
+      "question": "17/12 + 7/12",
+      "options": ["24/24", "2", "24/12", "2 4/12"],
+      "correct": "2",
+      "explanation": "17+7=24, 24/12=2"
+    },
+    {
+      "id": "frac_add_lev3_035",
+      "question": "19/15 + 11/15",
+      "options": ["30/30", "2", "30/15", "2 5/15"],
+      "correct": "2",
+      "explanation": "19+11=30, 30/15=2"
+    },
+    {
+      "id": "frac_add_lev3_036",
+      "question": "2 3/4 + 1 3/4",
+      "options": ["3 6/8", "4 2/4", "3 6/4", "4 1/2"],
+      "correct": "4 2/4",
+      "explanation": "2+1=3, 3/4+3/4=6/4=1 2/4, 3+1 2/4=4 2/4"
+    },
+    {
+      "id": "frac_add_lev3_037",
+      "question": "3 2/3 + 2 2/3",
+      "options": ["5 4/6", "6 1/3", "5 4/3", "6"],
+      "correct": "6 1/3",
+      "explanation": "3+2=5, 2/3+2/3=4/3=1 1/3, 5+1 1/3=6 1/3"
+    },
+    {
+      "id": "frac_add_lev3_038",
+      "question": "4 1/8 + 3 5/8",
+      "options": ["7 6/16", "7 6/8", "8 6/8", "8"],
+      "correct": "7 6/8",
+      "explanation": "4+3=7, 1/8+5/8=6/8, total 7 6/8"
+    },
+    {
+      "id": "frac_add_lev3_039",
+      "question": "2 3/7 + 4 2/7",
+      "options": ["6 5/14", "6 5/7", "7 5/7", "7"],
+      "correct": "6 5/7",
+      "explanation": "2+4=6, 3/7+2/7=5/7, total 6 5/7"
+    },
+    {
+      "id": "frac_add_lev3_040",
+      "question": "5 1/9 + 2 5/9",
+      "options": ["7 6/18", "7 6/9", "8 6/9", "8"],
+      "correct": "7 6/9",
+      "explanation": "5+2=7, 1/9+5/9=6/9, total 7 6/9"
+    },
+    {
+      "id": "frac_add_lev3_041",
+      "question": "1 5/11 + 3 7/11",
+      "options": ["4 12/22", "4 12/11", "5 1/11", "5"],
+      "correct": "5 1/11",
+      "explanation": "1+3=4, 5/11+7/11=12/11=1 1/11, 4+1 1/11=5 1/11"
+    },
+    {
+      "id": "frac_add_lev3_042",
+      "question": "3 7/13 + 2 9/13",
+      "options": ["5 16/26", "6 3/13", "5 16/13", "6"],
+      "correct": "6 3/13",
+      "explanation": "3+2=5, 7/13+9/13=16/13=1 3/13, 5+1 3/13=6 3/13"
+    },
+    {
+      "id": "frac_add_lev3_043",
+      "question": "21/16 + 11/16",
+      "options": ["32/16", "2", "32/32", "2 4/16"],
+      "correct": "2",
+      "explanation": "21+11=32, 32/16=2"
+    },
+    {
+      "id": "frac_add_lev3_044",
+      "question": "23/20 + 17/20",
+      "options": ["40/40", "2", "40/20", "2 10/20"],
+      "correct": "2",
+      "explanation": "23+17=40, 40/20=2"
+    },
+    {
+      "id": "frac_add_lev3_045",
+      "question": "31/25 + 19/25",
+      "options": ["50/50", "2", "50/25", "2 10/25"],
+      "correct": "2",
+      "explanation": "31+19=50, 50/25=2"
+    },
+    {
+      "id": "frac_add_lev3_046",
+      "question": "4 6/14 + 2 11/14",
+      "options": ["6 17/28", "7 3/14", "6 17/14", "7 3/14"],
+      "correct": "7 3/14",
+      "explanation": "4+2=6, 6/14+11/14=17/14=1 3/14, 6+1 3/14=7 3/14"
+    },
+    {
+      "id": "frac_add_lev3_047",
+      "question": "3 9/12 + 3 7/12",
+      "options": ["6 16/24", "7 4/12", "6 16/12", "7 1/3"],
+      "correct": "7 4/12",
+      "explanation": "3+3=6, 9/12+7/12=16/12=1 4/12, 6+1 4/12=7 4/12"
+    },
+    {
+      "id": "frac_add_lev3_048",
+      "question": "2 11/18 + 1 13/18",
+      "options": ["3 24/36", "4 6/18", "3 24/18", "4 1/3"],
+      "correct": "4 6/18",
+      "explanation": "2+1=3, 11/18+13/18=24/18=1 6/18, 3+1 6/18=4 6/18"
+    },
+    {
+      "id": "frac_add_lev3_049",
+      "question": "5 5/8 + 1 7/8",
+      "options": ["6 12/16", "7 4/8", "6 12/8", "7 1/2"],
+      "correct": "7 4/8",
+      "explanation": "5+1=6, 5/8+7/8=12/8=1 4/8, 6+1 4/8=7 4/8"
+    },
+    {
+      "id": "frac_add_lev3_050",
+      "question": "4 9/16 + 2 13/16",
+      "options": ["6 22/32", "7 6/16", "6 22/16", "7 3/8"],
+      "correct": "7 6/16",
+      "explanation": "4+2=6, 9/16+13/16=22/16=1 6/16, 6+1 6/16=7 6/16"
     }
   ]
 }
