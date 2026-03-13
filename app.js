@@ -677,10 +677,34 @@ async function loadQuizData(subjectId, chapterId, subchapterId, level) {
         }
         
         const quizData = await response.json();
-        return quizData;
+        
+        // Select 10 random questions from the pool
+        const allQuestions = quizData.questions;
+        const totalQuestions = allQuestions.length;
+        const numToSelect = Math.min(10, totalQuestions); // Select 10 or less if pool is smaller
+        
+        // Randomly select questions without repetition
+        const selectedQuestions = [];
+        const usedIndices = new Set();
+        
+        while (selectedQuestions.length < numToSelect) {
+            const randomIndex = Math.floor(Math.random() * totalQuestions);
+            if (!usedIndices.has(randomIndex)) {
+                usedIndices.add(randomIndex);
+                selectedQuestions.push(allQuestions[randomIndex]);
+            }
+        }
+        
+        // Return new quiz object with selected questions
+        return {
+            ...quizData,
+            questions: selectedQuestions,
+            totalQuestions: numToSelect
+        };
         
     } catch (error) {
         console.error('Error loading quiz data:', error);
+        // Return fallback data with 2 questions
         return {
             title: "Sample Quiz",
             level: level,
