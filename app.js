@@ -163,6 +163,9 @@ function renderProfile() {
     AppState.currentView = 'profile';
     const content = document.getElementById('main-content');
     
+    // Update header
+    updateHeader('Profile');
+    
     // Get current user data
     const user = auth.currentUser;
     if (!user) {
@@ -183,19 +186,13 @@ function renderProfile() {
         const dob = userData.dateOfBirth || { day: '?', month: '?', year: '?' };
         const createdAt = userData.createdAt ? new Date(userData.createdAt.toDate()) : new Date();
         
-        // Format date
+        // Format dates
         const joinMonth = createdAt.toLocaleString('default', { month: 'long' });
         const joinYear = createdAt.getFullYear();
-        
-        // Format DOB
         const dobString = `${dob.day} ${new Date(2000, dob.month-1).toLocaleString('default', { month: 'long' })} ${dob.year}`;
         
         const html = `
             <div class="profile-container">
-                <div class="profile-header">
-                    <button class="home-icon-btn" onclick="renderHome()">🏠</button>
-                </div>
-                
                 <div class="profile-avatar">
                     <div class="avatar-circle">
                         <span class="avatar-text">${displayName.charAt(0)}</span>
