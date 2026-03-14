@@ -23,6 +23,9 @@ let currentFormatter = null;
 let passwordResetVerified = false;
 let passwordResetUsername = null;
 let passwordResetEmail = null;
+let passwordResetDay = null;
+let passwordResetMonth = null;
+let passwordResetYear = null;
 
 // ===== FIREBASE CONFIG =====
 // Your Firebase configuration (replace with your actual config)
@@ -862,14 +865,10 @@ function renderForgotPassword() {
 }
 
 async function handleVerifyIdentity() {
-    console.log('✅ handleVerifyIdentity FIRED!');
-    
     const username = document.getElementById('resetUsername')?.value;
     const day = document.getElementById('resetDobDay')?.value;
     const month = document.getElementById('resetDobMonth')?.value;
     const year = document.getElementById('resetDobYear')?.value;
-    
-    console.log('Input values:', { username, day, month, year });
     
     if (!username || !day || !month || !year) {
         alert('Please enter username and date of birth');
@@ -877,61 +876,46 @@ async function handleVerifyIdentity() {
     }
     
     try {
-        console.log('1. Starting verification process');
-        
         const verifyBtn = document.querySelector('.auth-btn');
         verifyBtn.textContent = 'Verifying...';
         verifyBtn.disabled = true;
         
-        console.log('2. Querying Firestore for username:', username);
-        
         const usersRef = db.collection('users');
-        console.log('3. Got usersRef');
-        
         const snapshot = await usersRef
             .where('username', '==', username)
             .get();
         
-        console.log('4. Query complete');
-        console.log('5. Snapshot empty?', snapshot.empty);
-        
         if (snapshot.empty) {
-            console.log('6. No user found with username:', username);
             throw new Error('User not found');
         }
         
-        console.log('7. User found, getting data');
         const userData = snapshot.docs[0].data();
-        console.log('8. User data:', userData);
         
-        console.log('9. Comparing DOB - User DOB:', userData.dateOfBirth);
-        console.log('10. Input DOB:', { day: parseInt(day), month: parseInt(month), year: parseInt(year) });
-        
+        // Verify DOB
         if (userData.dateOfBirth.day !== parseInt(day) ||
             userData.dateOfBirth.month !== parseInt(month) ||
             userData.dateOfBirth.year !== parseInt(year)) {
-            console.log('11. DOB MISMATCH!');
             throw new Error('Date of birth does not match');
         }
         
-        console.log('12. DOB matches! Verification successful');
-
+        // Store verification data
         passwordResetVerified = true;
         passwordResetUsername = username;
-        console.log('13. Calling renderResetPassword()');
+        passwordResetDay = day;
+        passwordResetMonth = month;
+        passwordResetYear = year;
         
+        // Move to password reset step
         renderResetPassword();
         
     } catch (error) {
-        console.error('❌ ERROR CAUGHT:', error);
+        console.error('Verification error:', error);
         alert('Verification failed. Please check your details and try again.');
         
         const verifyBtn = document.querySelector('.auth-btn');
         verifyBtn.textContent = 'Verify Identity';
         verifyBtn.disabled = false;
     }
-    
-    console.log('14. Function completed');
 }
 
 function renderResetPassword() {
@@ -996,24 +980,16 @@ function renderResetPassword() {
 }
 
 async function handleCloudPasswordReset() {
-
-     console.log('🔵 handleCloudPasswordReset started');
-
     const newPassword = document.getElementById('newPassword')?.value;
     const confirmPassword = document.getElementById('confirmNewPassword')?.value;
     
-    console.log('newPassword exists:', !!document.getElementById('newPassword'));
-    console.log('confirmPassword exists:', !!document.getElementById('confirmNewPassword'));
-    console.log('newPassword value:', newPassword ? '****' : 'empty');
-    console.log('confirmPassword value:', confirmPassword ? '****' : 'empty');
-
+    // Use stored values from verification
+    const username = passwordResetUsername;
+    const day = passwordResetDay;
+    const month = passwordResetMonth;
+    const year = passwordResetYear;
     
-    const username = document.getElementById('resetUsername')?.value;
-    const day = document.getElementById('resetDobDay')?.value;
-    const month = document.getElementById('resetDobMonth')?.value;
-    const year = document.getElementById('resetDobYear')?.value;
-    
-    if (!username || !day || !month || !year || !newPassword || !confirmPassword) {
+    if (!username || !newPassword || !confirmPassword) {
         alert('Please fill in all fields');
         return;
     }
@@ -1029,15 +1005,12 @@ async function handleCloudPasswordReset() {
     }
     
     try {
-        // Show loading
         const resetBtn = document.querySelector('.auth-btn');
         resetBtn.textContent = 'Updating...';
         resetBtn.disabled = true;
         
-        // Get your function URL from Firebase Console
         const functionUrl = 'https://us-central1-database-367af.cloudfunctions.net/resetPassword';
         
-        // Call the function
         const response = await fetch(functionUrl, {
             method: 'POST',
             headers: {
@@ -1060,8 +1033,10 @@ async function handleCloudPasswordReset() {
             // Reset state
             passwordResetVerified = false;
             passwordResetUsername = null;
+            passwordResetDay = null;
+            passwordResetMonth = null;
+            passwordResetYear = null;
             
-            // Go to login
             renderLogin();
         } else {
             throw new Error(result.error || 'Failed to reset password');
@@ -1071,7 +1046,6 @@ async function handleCloudPasswordReset() {
         console.error('Password reset error:', error);
         alert(error.message || 'Failed to reset password. Please try again.');
         
-        // Reset button
         const resetBtn = document.querySelector('.auth-btn');
         resetBtn.textContent = 'Update Password';
         resetBtn.disabled = false;
