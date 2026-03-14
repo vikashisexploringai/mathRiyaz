@@ -862,10 +862,14 @@ function renderForgotPassword() {
 }
 
 async function handleVerifyIdentity() {
+    console.log('✅ handleVerifyIdentity FIRED!');
+    console.log('Button was clicked!');
     const username = document.getElementById('resetUsername')?.value;
     const day = document.getElementById('resetDobDay')?.value;
     const month = document.getElementById('resetDobMonth')?.value;
     const year = document.getElementById('resetDobYear')?.value;
+
+     console.log('Input values:', { username, day, month, year });
     
     // Validation
     if (!username || !day || !month || !year) {
