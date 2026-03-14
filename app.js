@@ -73,13 +73,13 @@ function shuffleArray(array) {
 
 function renderLargeOptions(question) {
     // Use formatter to format options if available
-    const options = currentFormatter?.formatOptions 
+    const formattedOptions = currentFormatter?.formatOptions 
         ? currentFormatter.formatOptions(question.options)
-        : question.options;
+        : question.options.map(opt => ({ display: opt, value: opt }));
     
-    return shuffleArray(options).map(opt => `
-        <button class="quiz-option-large" onclick="checkAnswer('${opt.replace(/'/g, "\\'")}', this)">
-            ${opt}
+    return shuffleArray(formattedOptions).map(opt => `
+        <button class="quiz-option-large" onclick="checkAnswer('${opt.value.replace(/'/g, "\\'")}', this)">
+            ${opt.display}
         </button>
     `).join('');
 }
