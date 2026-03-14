@@ -17,6 +17,9 @@ let questionTimer = null;
 let timeRemaining = 0;
 let questionStartTime = 0;
 
+// ===== FORMATTER =====
+let currentFormatter = null;
+
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', async () => {
     await loadConfig();
@@ -35,6 +38,29 @@ async function loadConfig() {
     }
 }
 
+// ===== FORMATTER LOADING =====
+async function loadSubjectFormatter(subjectId) {
+    try {
+        // Dynamically import the formatter for this subject
+        const formatterModule = await import(`./shared/formatters/${subjectId}-formatter.js`);
+        
+        // Store the formatter
+        currentFormatter = formatterModule.default || formatterModule;
+        
+        console.log(`Loaded formatter for ${subjectId}`);
+        return currentFormatter;
+    } catch (error) {
+        console.warn(`No specific formatter for ${subjectId}, using default`);
+        // Use default formatter that just returns the text as-is
+        currentFormatter = {
+            formatQuestion: (text) => text,
+            formatOptions: (options) => options,
+            formatAnswer: (text) => text
+        };
+        return currentFormatter;
+    }
+}
+
 // ===== HELPER FUNCTIONS =====
 function shuffleArray(array) {
     const newArray = [...array];
@@ -46,7 +72,12 @@ function shuffleArray(array) {
 }
 
 function renderLargeOptions(question) {
-    return shuffleArray(question.options).map(opt => `
+    // Use formatter to format options if available
+    const options = currentFormatter?.formatOptions 
+        ? currentFormatter.formatOptions(question.options)
+        : question.options;
+    
+    return shuffleArray(options).map(opt => `
         <button class="quiz-option-large" onclick="checkAnswer('${opt.replace(/'/g, "\\'")}', this)">
             ${opt}
         </button>
@@ -297,7 +328,10 @@ function renderCurrentQuestion() {
     
     const questionEl = document.getElementById('quizQuestion');
     if (questionEl) {
-        questionEl.textContent = question.question;
+        // Use formatter to format the question text
+        questionEl.innerHTML = currentFormatter?.formatQuestion 
+            ? currentFormatter.formatQuestion(question.question)
+            : question.question;
     }
     
     const optionsEl = document.getElementById('quizOptions');
@@ -517,19 +551,22 @@ function renderQuiz(subjectId, chapterId, subchapterId, level) {
     const content = document.getElementById('main-content');
     content.innerHTML = `<div class="loading-spinner"></div>`;
     
-    loadQuizData(subjectId, chapterId, subchapterId, level)
-        .then(quizData => {
-            renderGenericQuiz(quizData);
-        })
-        .catch(error => {
-            console.error('Failed to load quiz:', error);
-            content.innerHTML = `
-                <div style="text-align: center; padding: 40px;">
-                    <p style="color: #ef4444;">Failed to load quiz</p>
-                    <button class="back-button" onclick="renderLevels('${subjectId}', '${chapterId}', '${subchapterId}')">← Go Back</button>
-                </div>
-            `;
-        });
+    // Load the subject formatter first
+    loadSubjectFormatter(subjectId).then(() => {
+        loadQuizData(subjectId, chapterId, subchapterId, level)
+            .then(quizData => {
+                renderGenericQuiz(quizData);
+            })
+            .catch(error => {
+                console.error('Failed to load quiz:', error);
+                content.innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <p style="color: #ef4444;">Failed to load quiz</p>
+                        <button class="back-button" onclick="renderLevels('${subjectId}', '${chapterId}', '${subchapterId}')">← Go Back</button>
+                    </div>
+                `;
+            });
+    });
 }
 
 function renderGenericQuiz(quizData) {
@@ -548,6 +585,11 @@ function renderGenericQuiz(quizData) {
     const subject = AppState.config.subjects.find(s => s.id === AppState.currentSubject);
     const chapter = subject.chapters.find(c => c.id === AppState.currentChapter);
     const subchapter = chapter.subchapters.find(s => s.id === AppState.currentSubchapter);
+    
+    // Format the first question using the formatter
+    const formattedQuestion = currentFormatter?.formatQuestion 
+        ? currentFormatter.formatQuestion(quizData.questions[0].question)
+        : quizData.questions[0].question;
     
 let html = `
     <!-- First Row - Blue with back, subchapter, and level -->
@@ -575,7 +617,7 @@ let html = `
     </div>
 
     <div class="quiz-question" id="quizQuestion">
-        ${quizData.questions[0].question}
+        ${formattedQuestion}
     </div>
 
     <div class="quiz-options-large" id="quizOptions">
@@ -627,6 +669,11 @@ function restartQuiz() {
     const chapter = subject.chapters.find(c => c.id === AppState.currentChapter);
     const subchapter = chapter.subchapters.find(s => s.id === AppState.currentSubchapter);
     
+    // Format the first question using the formatter
+    const formattedQuestion = currentFormatter?.formatQuestion 
+        ? currentFormatter.formatQuestion(currentQuizData.questions[0].question)
+        : currentQuizData.questions[0].question;
+    
     content.innerHTML = `
     <!-- First Row - Blue with back, subchapter, and level -->
     <div class="quiz-header-blue">
@@ -653,7 +700,7 @@ function restartQuiz() {
     </div>
 
     <div class="quiz-question" id="quizQuestion">
-        ${currentQuizData.questions[0].question}
+        ${formattedQuestion}
     </div>
 
     <div class="quiz-options-large" id="quizOptions">
@@ -681,7 +728,7 @@ async function loadQuizData(subjectId, chapterId, subchapterId, level) {
         // Select 10 random questions from the pool
         const allQuestions = quizData.questions;
         const totalQuestions = allQuestions.length;
-        const numToSelect = Math.min(10, totalQuestions); // Select 10 or less if pool is smaller
+        const numToSelect = Math.min(10, totalQuestions);
         
         // Randomly select questions without repetition
         const selectedQuestions = [];
