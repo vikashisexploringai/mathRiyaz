@@ -23,6 +23,55 @@ let currentFormatter = null;
 let passwordResetVerified = false;
 let passwordResetUsername = null;
 
+// ===== FIREBASE CONFIG =====
+// Your Firebase configuration (replace with your actual config)
+const firebaseConfig = {
+  apiKey: "AIzaSyACO39eJRrdbgowWcqgdp0DFkDPUhbQQfQ",
+  authDomain: "database-367af.firebaseapp.com",
+  projectId: "database-367af",
+  storageBucket: "database-367af.firebasestorage.app",
+  messagingSenderId: "246204653332",
+  appId: "1:246204653332:web:8daf25ea24112de940ec01"
+};
+
+// Initialize Firebase (if not already initialized)
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// Set up auth state observer
+auth.onAuthStateChanged(async (user) => {
+    if (user) {
+        // User is signed in
+        console.log('User signed in:', user.email);
+        AppState.currentUser = {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName
+        };
+        
+        // Load user progress from Firestore
+        await loadUserProgress(user.uid);
+        
+        // If current view is login/register, go to home
+        if (['login', 'register', 'forgotUsername', 'forgotPassword', 'resetPassword'].includes(AppState.currentView)) {
+            renderHome();
+        }
+    } else {
+        // User is signed out
+        console.log('User signed out');
+        AppState.currentUser = null;
+        
+        // If not on auth page, go to login
+        if (!['login', 'register', 'forgotUsername', 'forgotPassword', 'resetPassword'].includes(AppState.currentView)) {
+            renderLogin();
+        }
+    }
+});
+
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', async () => {
     await loadConfig();
@@ -293,7 +342,7 @@ function renderLogin() {
     }
 }
 
-function handleLogin() {
+async function handleLogin() {
     const username = document.getElementById('username')?.value;
     const password = document.getElementById('password')?.value;
     const rememberMe = document.getElementById('rememberMe')?.checked;
@@ -303,19 +352,52 @@ function handleLogin() {
         return;
     }
     
-    console.log('Login attempt:', { username, rememberMe });
-    
-    // For now, simulate successful login
-    // Later: Connect to Firebase
-    
-    // Show bottom nav again
-    const bottomNav = document.getElementById('bottom-nav');
-    if (bottomNav) {
-        bottomNav.style.display = 'flex';
+    try {
+        // Show loading state
+        const loginBtn = document.querySelector('.auth-btn');
+        loginBtn.textContent = 'Logging in...';
+        loginBtn.disabled = true;
+        
+        // Create email from username
+        const email = `${username}@mathriyaz.local`;
+        
+        // Set persistence based on Remember Me
+        if (rememberMe) {
+            await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+        } else {
+            await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+        }
+        
+        // Sign in
+        await auth.signInWithEmailAndPassword(email, password);
+        
+        // Auth observer will handle navigation
+        
+    } catch (error) {
+        console.error('Login error:', error);
+        
+        let errorMessage = 'Login failed. ';
+        switch (error.code) {
+            case 'auth/user-not-found':
+                errorMessage += 'Username not found.';
+                break;
+            case 'auth/wrong-password':
+                errorMessage += 'Incorrect password.';
+                break;
+            case 'auth/invalid-email':
+                errorMessage += 'Invalid username format.';
+                break;
+            default:
+                errorMessage += error.message;
+        }
+        
+        alert(errorMessage);
+        
+        // Reset button
+        const loginBtn = document.querySelector('.auth-btn');
+        loginBtn.textContent = 'Login';
+        loginBtn.disabled = false;
     }
-    
-    // Go to home
-    renderHome();
 }
 
 function renderRegister() {
@@ -422,7 +504,7 @@ function renderRegister() {
     }
 }
 
-function handleRegister() {
+async function handleRegister() {
     // Get form values
     const fullName = document.getElementById('fullName')?.value;
     const username = document.getElementById('username')?.value;
@@ -449,31 +531,89 @@ function handleRegister() {
         return;
     }
     
-    // Check username format (alphanumeric + underscore, no spaces)
+    // Check username format
     const usernameRegex = /^[a-zA-Z0-9_]+$/;
     if (!usernameRegex.test(username)) {
         alert('Username can only contain letters, numbers, and underscores');
         return;
     }
     
-    console.log('Register attempt:', { 
-        fullName, 
-        username, 
-        dob: `${day}/${month}/${year}`,
-        rememberMe 
-    });
-    
-    // For now, simulate successful registration
-    alert('Account created successfully! (Demo - will connect to Firebase later)');
-    
-    // Show bottom nav again
-    const bottomNav = document.getElementById('bottom-nav');
-    if (bottomNav) {
-        bottomNav.style.display = 'flex';
+    try {
+        // Show loading state
+        const registerBtn = document.querySelector('.auth-btn');
+        registerBtn.textContent = 'Creating Account...';
+        registerBtn.disabled = true;
+        
+        // Create email from username
+        const email = `${username}@mathriyaz.local`;
+        
+        // Create user in Firebase Auth
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+        
+        // Update profile with display name
+        await user.updateProfile({
+            displayName: fullName
+        });
+        
+        // Set persistence based on Remember Me
+        if (rememberMe) {
+            await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+        } else {
+            await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+        }
+        
+        // Save additional user data to Firestore
+        await db.collection('users').doc(user.uid).set({
+            uid: user.uid,
+            username: username,
+            displayName: fullName,
+            email: email,
+            dateOfBirth: {
+                day: parseInt(day),
+                month: parseInt(month),
+                year: parseInt(year)
+            },
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            overall: {
+                totalPoints: 0,
+                quizzesTaken: 0,
+                totalTimeSpent: 0
+            }
+        });
+        
+        console.log('Account created successfully!');
+        
+        // Show bottom nav
+        const bottomNav = document.getElementById('bottom-nav');
+        if (bottomNav) {
+            bottomNav.style.display = 'flex';
+        }
+        
+        // Go to home (auth observer will handle)
+        
+    } catch (error) {
+        console.error('Registration error:', error);
+        
+        let errorMessage = 'Registration failed. ';
+        switch (error.code) {
+            case 'auth/email-already-in-use':
+                errorMessage += 'Username already taken. Please choose another.';
+                break;
+            case 'auth/weak-password':
+                errorMessage += 'Password is too weak.';
+                break;
+            default:
+                errorMessage += error.message;
+        }
+        
+        alert(errorMessage);
+        
+        // Reset button
+        const registerBtn = document.querySelector('.auth-btn');
+        registerBtn.textContent = 'Create Account';
+        registerBtn.disabled = false;
     }
-    
-    // Go to home
-    renderHome();
 }
 
 function renderForgotUsername() {
@@ -799,6 +939,31 @@ function handleResetPassword() {
     
     // Go to login
     renderLogin();
+}
+
+async function loadUserProgress(uid) {
+    try {
+        const userDoc = await db.collection('users').doc(uid).get();
+        
+        if (userDoc.exists) {
+            const userData = userDoc.data();
+            AppState.progress = userData.progress || {};
+            AppState.userDisplayName = userData.displayName;
+            console.log('User progress loaded:', AppState.progress);
+        }
+    } catch (error) {
+        console.error('Error loading user progress:', error);
+    }
+}
+
+async function handleLogout() {
+    try {
+        await auth.signOut();
+        renderLogin();
+    } catch (error) {
+        console.error('Logout error:', error);
+        alert('Failed to logout. Please try again.');
+    }
 }
 
 // ===== CIRCULAR TIMER =====
