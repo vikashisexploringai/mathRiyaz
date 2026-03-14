@@ -934,6 +934,11 @@ async function handleVerifyIdentity() {
 }
 
 function renderResetPassword() {
+
+     console.log('🎯 renderResetPassword CALLED!');
+    console.log('passwordResetVerified:', passwordResetVerified);
+    console.log('passwordResetUsername:', passwordResetUsername);
+    
     const appHeader = document.getElementById('app-header');
     if (appHeader) {
         appHeader.style.display = 'flex';
