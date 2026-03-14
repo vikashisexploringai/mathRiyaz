@@ -43,6 +43,18 @@ if (!firebase.apps.length) {
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+console.log('Firebase apps:', firebase.apps.length);
+console.log('Auth exists:', !!auth);
+console.log('Firestore exists:', !!db);
+
+// Try to force Firestore initialization
+try {
+    const test = db.collection('test');
+    console.log('Firestore test passed');
+} catch (e) {
+    console.error('Firestore test failed:', e);
+}
+
 // Set up auth state observer
 auth.onAuthStateChanged(async (user) => {
     if (user) {
