@@ -152,6 +152,106 @@ function renderLargeOptions(question) {
     `).join('');
 }
 
+
+// ===== PROFILE PAGE =====
+function renderProfile() {
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) {
+        appHeader.style.display = 'flex';
+    }
+    
+    AppState.currentView = 'profile';
+    const content = document.getElementById('main-content');
+    
+    // Get current user data
+    const user = auth.currentUser;
+    if (!user) {
+        renderLogin();
+        return;
+    }
+    
+    // Fetch user details from Firestore
+    db.collection('users').doc(user.uid).get().then(doc => {
+        if (!doc.exists) {
+            console.error('User document not found');
+            return;
+        }
+        
+        const userData = doc.data();
+        const displayName = userData.displayName || 'User';
+        const username = userData.username || 'username';
+        const dob = userData.dateOfBirth || { day: '?', month: '?', year: '?' };
+        const createdAt = userData.createdAt ? new Date(userData.createdAt.toDate()) : new Date();
+        
+        // Format date
+        const joinMonth = createdAt.toLocaleString('default', { month: 'long' });
+        const joinYear = createdAt.getFullYear();
+        
+        // Format DOB
+        const dobString = `${dob.day} ${new Date(2000, dob.month-1).toLocaleString('default', { month: 'long' })} ${dob.year}`;
+        
+        const html = `
+            <div class="profile-container">
+                <div class="profile-header">
+                    <button class="home-icon-btn" onclick="renderHome()">🏠</button>
+                </div>
+                
+                <div class="profile-avatar">
+                    <div class="avatar-circle">
+                        <span class="avatar-text">${displayName.charAt(0)}</span>
+                    </div>
+                </div>
+                
+                <div class="profile-name">
+                    <h2>${displayName}</h2>
+                    <p class="profile-username">@${username}</p>
+                </div>
+                
+                <div class="profile-card">
+                    <div class="profile-card-icon">🎂</div>
+                    <div class="profile-card-content">
+                        <div class="profile-card-label">Date of Birth</div>
+                        <div class="profile-card-value">${dobString}</div>
+                    </div>
+                </div>
+                
+                <div class="profile-card">
+                    <div class="profile-card-icon">📅</div>
+                    <div class="profile-card-content">
+                        <div class="profile-card-label">Member Since</div>
+                        <div class="profile-card-value">${joinMonth} ${joinYear}</div>
+                    </div>
+                </div>
+                
+                <button class="logout-btn" onclick="handleLogout()">
+                    <span class="logout-icon">🚪</span>
+                    Logout
+                </button>
+            </div>
+        `;
+        
+        content.innerHTML = html;
+        updateBottomNav('profile');
+    }).catch(error => {
+        console.error('Error fetching user data:', error);
+        content.innerHTML = '<div class="error-message">Failed to load profile</div>';
+    });
+}
+
+// ===== LOGOUT FUNCTION =====
+async function handleLogout() {
+    if (confirm('Are you sure you want to logout?')) {
+        try {
+            await auth.signOut();
+            renderLogin();
+        } catch (error) {
+            console.error('Logout error:', error);
+            alert('Failed to logout. Please try again.');
+        }
+    }
+}
+
+
 function showFeedback(message, type) {
     const existingFeedback = document.querySelector('.quiz-feedback');
     if (existingFeedback) existingFeedback.remove();
@@ -264,7 +364,7 @@ function updateBottomNav(activeView) {
             <span class="nav-icon">📊</span>
             <span>Progress</span>
         </button>
-        <button class="nav-item ${activeView === 'profile' ? 'active' : ''}" onclick="showProfile()">
+        <button class="nav-item ${activeView === 'profile' ? 'active' : ''}" onclick="renderProfile()">
             <span class="nav-icon">👤</span>
             <span>Profile</span>
         </button>
