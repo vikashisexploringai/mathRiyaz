@@ -315,9 +315,162 @@ function handleLogin() {
     renderHome();
 }
 
-// Placeholder functions - we'll implement these next
 function renderRegister() {
-    alert('Register view coming soon!');
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) {
+        appHeader.style.display = 'flex';
+    }
+    
+    AppState.currentView = 'register';
+    const content = document.getElementById('main-content');
+    
+    // Update header
+    updateHeader('Create Account');
+    
+    // Get today's date for max DOB (18 years ago, adjust as needed)
+    const today = new Date();
+    const maxYear = today.getFullYear() - 4; // Minimum 4 years old
+    const minYear = today.getFullYear() - 100; // Maximum 100 years old
+    
+    // Generate year options
+    let yearOptions = '';
+    for (let year = maxYear; year >= minYear; year--) {
+        yearOptions += `<option value="${year}">${year}</option>`;
+    }
+    
+    // Generate month options
+    let monthOptions = '';
+    for (let month = 1; month <= 12; month++) {
+        monthOptions += `<option value="${month}">${month}</option>`;
+    }
+    
+    // Generate day options
+    let dayOptions = '';
+    for (let day = 1; day <= 31; day++) {
+        dayOptions += `<option value="${day}">${day}</option>`;
+    }
+    
+    const html = `
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2>Join Math Riyaz</h2>
+                
+                <div class="form-group">
+                    <label for="fullName">Child's Full Name</label>
+                    <input type="text" id="fullName" placeholder="e.g., John Doe" class="auth-input">
+                </div>
+                
+                <div class="form-group">
+                    <label for="username">Choose Username</label>
+                    <input type="text" id="username" placeholder="e.g., johndoe123" class="auth-input">
+                    <small style="color: #64748b; font-size: 12px; margin-top: 4px; display: block;">This will be used for login</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <div style="display: flex; gap: 8px;">
+                        <select id="dobDay" class="auth-input" style="flex: 1;">
+                            <option value="">Day</option>
+                            ${dayOptions}
+                        </select>
+                        <select id="dobMonth" class="auth-input" style="flex: 1;">
+                            <option value="">Month</option>
+                            ${monthOptions}
+                        </select>
+                        <select id="dobYear" class="auth-input" style="flex: 1;">
+                            <option value="">Year</option>
+                            ${yearOptions}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="At least 6 characters" class="auth-input">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Re-enter password" class="auth-input">
+                </div>
+                
+                <div class="form-row">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="rememberMe" checked>
+                        <span>Remember me</span>
+                    </label>
+                </div>
+                
+                <button class="auth-btn" onclick="handleRegister()">Create Account</button>
+                
+                <div class="auth-links">
+                    <button class="link-btn" onclick="renderLogin()">Already have an account? Login</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    content.innerHTML = html;
+    
+    // Hide bottom nav
+    const bottomNav = document.getElementById('bottom-nav');
+    if (bottomNav) {
+        bottomNav.style.display = 'none';
+    }
+}
+
+function handleRegister() {
+    // Get form values
+    const fullName = document.getElementById('fullName')?.value;
+    const username = document.getElementById('username')?.value;
+    const day = document.getElementById('dobDay')?.value;
+    const month = document.getElementById('dobMonth')?.value;
+    const year = document.getElementById('dobYear')?.value;
+    const password = document.getElementById('password')?.value;
+    const confirmPassword = document.getElementById('confirmPassword')?.value;
+    const rememberMe = document.getElementById('rememberMe')?.checked;
+    
+    // Validation
+    if (!fullName || !username || !day || !month || !year || !password || !confirmPassword) {
+        alert('Please fill in all fields');
+        return;
+    }
+    
+    if (password.length < 6) {
+        alert('Password must be at least 6 characters');
+        return;
+    }
+    
+    if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+    }
+    
+    // Check username format (alphanumeric + underscore, no spaces)
+    const usernameRegex = /^[a-zA-Z0-9_]+$/;
+    if (!usernameRegex.test(username)) {
+        alert('Username can only contain letters, numbers, and underscores');
+        return;
+    }
+    
+    console.log('Register attempt:', { 
+        fullName, 
+        username, 
+        dob: `${day}/${month}/${year}`,
+        rememberMe 
+    });
+    
+    // For now, simulate successful registration
+    alert('Account created successfully! (Demo - will connect to Firebase later)');
+    
+    // Show bottom nav again
+    const bottomNav = document.getElementById('bottom-nav');
+    if (bottomNav) {
+        bottomNav.style.display = 'flex';
+    }
+    
+    // Go to home
+    renderHome();
 }
 
 function renderForgotUsername() {
