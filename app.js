@@ -915,7 +915,8 @@ async function handleVerifyIdentity() {
         }
         
         console.log('12. DOB matches! Verification successful');
-        
+
+        passwordResetVerified = true;
         passwordResetUsername = username;
         console.log('13. Calling renderResetPassword()');
         
@@ -946,6 +947,7 @@ function renderResetPassword() {
     
     // Check if verified
     if (!passwordResetVerified) {
+         console.log('❌ Not verified, returning to forgot password');
         renderForgotPassword();
         return;
     }
