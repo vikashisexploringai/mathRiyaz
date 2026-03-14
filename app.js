@@ -863,76 +863,74 @@ function renderForgotPassword() {
 
 async function handleVerifyIdentity() {
     console.log('✅ handleVerifyIdentity FIRED!');
-    console.log('Button was clicked!');
+    
     const username = document.getElementById('resetUsername')?.value;
     const day = document.getElementById('resetDobDay')?.value;
     const month = document.getElementById('resetDobMonth')?.value;
     const year = document.getElementById('resetDobYear')?.value;
-
-     console.log('Input values:', { username, day, month, year });
     
-    // Validation
+    console.log('Input values:', { username, day, month, year });
+    
     if (!username || !day || !month || !year) {
         alert('Please enter username and date of birth');
         return;
     }
     
     try {
-        // Show loading state
+        console.log('1. Starting verification process');
+        
         const verifyBtn = document.querySelector('.auth-btn');
         verifyBtn.textContent = 'Verifying...';
         verifyBtn.disabled = true;
         
-        // Create email from username
-        const email = `${username}@mathriyaz.local`;
+        console.log('2. Querying Firestore for username:', username);
         
-        // First, try to find user by email in Auth (this doesn't expose data)
-        try {
-            // We can't directly query Auth, so we'll use Firestore
-            const usersRef = db.collection('users');
-            const snapshot = await usersRef
-                .where('username', '==', username)
-                .get();
-            
-            if (snapshot.empty) {
-                throw new Error('User not found');
-            }
-            
-            const userData = snapshot.docs[0].data();
-            
-            // Verify DOB
-            if (userData.dateOfBirth.day !== parseInt(day) ||
-                userData.dateOfBirth.month !== parseInt(month) ||
-                userData.dateOfBirth.year !== parseInt(year)) {
-                throw new Error('Date of birth does not match');
-            }
-            
-            // Store the email for password reset
-            passwordResetEmail = email;
-            passwordResetUsername = username;
-            
-            // Move to password reset step
-            renderResetPassword();
-            
-        } catch (error) {
-            console.error('Verification error:', error);
-            alert('Verification failed. Please check your details and try again.');
-            
-            // Reset button
-            const verifyBtn = document.querySelector('.auth-btn');
-            verifyBtn.textContent = 'Verify Identity';
-            verifyBtn.disabled = false;
+        const usersRef = db.collection('users');
+        console.log('3. Got usersRef');
+        
+        const snapshot = await usersRef
+            .where('username', '==', username)
+            .get();
+        
+        console.log('4. Query complete');
+        console.log('5. Snapshot empty?', snapshot.empty);
+        
+        if (snapshot.empty) {
+            console.log('6. No user found with username:', username);
+            throw new Error('User not found');
         }
         
-    } catch (error) {
-        console.error('Error during verification:', error);
-        alert('An error occurred. Please try again.');
+        console.log('7. User found, getting data');
+        const userData = snapshot.docs[0].data();
+        console.log('8. User data:', userData);
         
-        // Reset button
+        console.log('9. Comparing DOB - User DOB:', userData.dateOfBirth);
+        console.log('10. Input DOB:', { day: parseInt(day), month: parseInt(month), year: parseInt(year) });
+        
+        if (userData.dateOfBirth.day !== parseInt(day) ||
+            userData.dateOfBirth.month !== parseInt(month) ||
+            userData.dateOfBirth.year !== parseInt(year)) {
+            console.log('11. DOB MISMATCH!');
+            throw new Error('Date of birth does not match');
+        }
+        
+        console.log('12. DOB matches! Verification successful');
+        
+        passwordResetUsername = username;
+        console.log('13. Calling renderResetPassword()');
+        
+        renderResetPassword();
+        
+    } catch (error) {
+        console.error('❌ ERROR CAUGHT:', error);
+        alert('Verification failed. Please check your details and try again.');
+        
         const verifyBtn = document.querySelector('.auth-btn');
         verifyBtn.textContent = 'Verify Identity';
         verifyBtn.disabled = false;
     }
+    
+    console.log('14. Function completed');
 }
 
 function renderResetPassword() {
