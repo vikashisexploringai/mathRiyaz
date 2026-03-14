@@ -19,6 +19,9 @@ let questionStartTime = 0;
 
 // ===== FORMATTER =====
 let currentFormatter = null;
+// Store temporary verification state
+let passwordResetVerified = false;
+let passwordResetUsername = null;
 
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', async () => {
@@ -487,7 +490,7 @@ function renderForgotUsername() {
     
     // Generate date options (same as register)
     const today = new Date();
-    const maxYear = today.getFullYear() - 4;
+    const maxYear = today.getFullYear() - 2;
     const minYear = today.getFullYear() - 100;
     
     let yearOptions = '';
@@ -594,7 +597,208 @@ function handleFindUsername() {
 }
 
 function renderForgotPassword() {
-    alert('Forgot Password view coming soon!');
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) {
+        appHeader.style.display = 'flex';
+    }
+    
+    AppState.currentView = 'forgotPassword';
+    const content = document.getElementById('main-content');
+    
+    // Reset verification state
+    passwordResetVerified = false;
+    passwordResetUsername = null;
+    
+    // Update header
+    updateHeader('Reset Password');
+    
+    // Generate date options
+    const today = new Date();
+    const maxYear = today.getFullYear() - 4;
+    const minYear = today.getFullYear() - 100;
+    
+    let yearOptions = '';
+    for (let year = maxYear; year >= minYear; year--) {
+        yearOptions += `<option value="${year}">${year}</option>`;
+    }
+    
+    let monthOptions = '';
+    for (let month = 1; month <= 12; month++) {
+        monthOptions += `<option value="${month}">${month}</option>`;
+    }
+    
+    let dayOptions = '';
+    for (let day = 1; day <= 31; day++) {
+        dayOptions += `<option value="${day}">${day}</option>`;
+    }
+    
+    const html = `
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2>Reset Password</h2>
+                <p style="color: #64748b; font-size: 14px; text-align: center; margin-bottom: 24px;">
+                    Step 1: Verify your identity
+                </p>
+                
+                <div class="form-group">
+                    <label for="resetUsername">Username</label>
+                    <input type="text" id="resetUsername" placeholder="Enter your username" class="auth-input">
+                </div>
+                
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <div style="display: flex; gap: 8px;">
+                        <select id="resetDobDay" class="auth-input" style="flex: 1;">
+                            <option value="">Day</option>
+                            ${dayOptions}
+                        </select>
+                        <select id="resetDobMonth" class="auth-input" style="flex: 1;">
+                            <option value="">Month</option>
+                            ${monthOptions}
+                        </select>
+                        <select id="resetDobYear" class="auth-input" style="flex: 1;">
+                            <option value="">Year</option>
+                            ${yearOptions}
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="auth-btn" onclick="handleVerifyIdentity()">Verify Identity</button>
+                
+                <div class="auth-links">
+                    <button class="link-btn" onclick="renderLogin()">Back to Login</button>
+                    <button class="link-btn" onclick="renderForgotUsername()">Forgot Username?</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    content.innerHTML = html;
+    
+    // Hide bottom nav
+    const bottomNav = document.getElementById('bottom-nav');
+    if (bottomNav) {
+        bottomNav.style.display = 'none';
+    }
+}
+
+function handleVerifyIdentity() {
+    const username = document.getElementById('resetUsername')?.value;
+    const day = document.getElementById('resetDobDay')?.value;
+    const month = document.getElementById('resetDobMonth')?.value;
+    const year = document.getElementById('resetDobYear')?.value;
+    
+    // Validation
+    if (!username || !day || !month || !year) {
+        alert('Please enter username and date of birth');
+        return;
+    }
+    
+    console.log('Verifying identity for:', { username, dob: `${day}/${month}/${year}` });
+    
+    // For demo purposes - accept any input
+    // In real implementation, this would verify against Firestore
+    
+    // Set verified state
+    passwordResetVerified = true;
+    passwordResetUsername = username;
+    
+    // Move to password reset step
+    renderResetPassword();
+}
+
+function renderResetPassword() {
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) {
+        appHeader.style.display = 'flex';
+    }
+    
+    // Check if verified
+    if (!passwordResetVerified) {
+        renderForgotPassword();
+        return;
+    }
+    
+    AppState.currentView = 'resetPassword';
+    const content = document.getElementById('main-content');
+    
+    // Update header
+    updateHeader('Reset Password');
+    
+    const html = `
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2>Reset Password</h2>
+                <p style="color: #64748b; font-size: 14px; text-align: center; margin-bottom: 24px;">
+                    Step 2: Set new password for <strong>${passwordResetUsername}</strong>
+                </p>
+                
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" placeholder="At least 6 characters" class="auth-input">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmNewPassword">Confirm New Password</label>
+                    <input type="password" id="confirmNewPassword" placeholder="Re-enter new password" class="auth-input">
+                </div>
+                
+                <button class="auth-btn" onclick="handleResetPassword()">Update Password</button>
+                
+                <div class="auth-links">
+                    <button class="link-btn" onclick="renderForgotPassword()">Start Over</button>
+                    <button class="link-btn" onclick="renderLogin()">Back to Login</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    content.innerHTML = html;
+    
+    // Hide bottom nav
+    const bottomNav = document.getElementById('bottom-nav');
+    if (bottomNav) {
+        bottomNav.style.display = 'none';
+    }
+}
+
+function handleResetPassword() {
+    const newPassword = document.getElementById('newPassword')?.value;
+    const confirmPassword = document.getElementById('confirmNewPassword')?.value;
+    
+    // Validation
+    if (!newPassword || !confirmPassword) {
+        alert('Please enter and confirm your new password');
+        return;
+    }
+    
+    if (newPassword.length < 6) {
+        alert('Password must be at least 6 characters');
+        return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+    }
+    
+    console.log('Resetting password for:', passwordResetUsername);
+    
+    // For demo purposes
+    alert('Password updated successfully! (Demo - will connect to Firebase later)');
+    
+    // Reset state
+    passwordResetVerified = false;
+    passwordResetUsername = null;
+    
+    // Show bottom nav
+    const bottomNav = document.getElementById('bottom-nav');
+    if (bottomNav) {
+        bottomNav.style.display = 'flex';
+    }
+    
+    // Go to login
+    renderLogin();
 }
 
 // ===== CIRCULAR TIMER =====
