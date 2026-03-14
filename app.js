@@ -955,7 +955,7 @@ function renderResetPassword() {
                     <input type="password" id="confirmNewPassword" placeholder="Re-enter new password" class="auth-input">
                 </div>
                 
-                <button class="auth-btn" onclick="handleResetPassword()">Update Password</button>
+                <button class="auth-btn" onclick="handleCloudPasswordReset()">Update Password</button>
                 
                 <div class="auth-links">
                     <button class="link-btn" onclick="renderForgotPassword()">Start Over</button>
