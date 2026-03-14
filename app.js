@@ -23,7 +23,7 @@ let currentFormatter = null;
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', async () => {
     await loadConfig();
-    renderHome();
+    renderLogin();
 });
 
 // ===== LOAD CONFIGURATION =====
