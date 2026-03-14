@@ -329,7 +329,7 @@ function renderRegister() {
     
     // Get today's date for max DOB (18 years ago, adjust as needed)
     const today = new Date();
-    const maxYear = today.getFullYear() - 4; // Minimum 4 years old
+    const maxYear = today.getFullYear() - 2; // Minimum 2 years old
     const minYear = today.getFullYear() - 100; // Maximum 100 years old
     
     // Generate year options
