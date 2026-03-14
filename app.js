@@ -974,18 +974,16 @@ function renderResetPassword() {
     }
 }
 
-async function handleResetPassword() {
+async function handleCloudPasswordReset() {
+    const username = document.getElementById('resetUsername')?.value;
+    const day = document.getElementById('resetDobDay')?.value;
+    const month = document.getElementById('resetDobMonth')?.value;
+    const year = document.getElementById('resetDobYear')?.value;
     const newPassword = document.getElementById('newPassword')?.value;
     const confirmPassword = document.getElementById('confirmNewPassword')?.value;
     
-    // Validation
-    if (!newPassword || !confirmPassword) {
-        alert('Please enter and confirm your new password');
-        return;
-    }
-    
-    if (newPassword.length < 6) {
-        alert('Password must be at least 6 characters');
+    if (!username || !day || !month || !year || !newPassword || !confirmPassword) {
+        alert('Please fill in all fields');
         return;
     }
     
@@ -994,33 +992,53 @@ async function handleResetPassword() {
         return;
     }
     
+    if (newPassword.length < 6) {
+        alert('Password must be at least 6 characters');
+        return;
+    }
+    
     try {
-        // Show loading state
+        // Show loading
         const resetBtn = document.querySelector('.auth-btn');
         resetBtn.textContent = 'Updating...';
         resetBtn.disabled = true;
         
-        // Sign in temporarily to reset password
-        // Note: This requires the user to be signed in
-        // Alternative: Use sendPasswordResetEmail for email-based reset
+        // Get your function URL from Firebase Console
+        const functionUrl = 'https://us-central1-database-367af.cloudfunctions.net/resetPassword';
         
-        // For username-based reset, we need to sign in with existing credentials
-        // But we don't have the old password. So we need to use Firebase Admin SDK
-        // For now, we'll show a message about email reset
+        // Call the function
+        const response = await fetch(functionUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username,
+                day: parseInt(day),
+                month: parseInt(month),
+                year: parseInt(year),
+                newPassword
+            })
+        });
         
-        alert('Password reset via username will be implemented with Firebase Admin SDK. For now, please use the "Forgot Password" flow with email.');
+        const result = await response.json();
         
-        // Reset state
-        passwordResetVerified = false;
-        passwordResetUsername = null;
-        passwordResetEmail = null;
-        
-        // Go to login
-        renderLogin();
+        if (response.ok) {
+            alert('Password updated successfully! Please login with your new password.');
+            
+            // Reset state
+            passwordResetVerified = false;
+            passwordResetUsername = null;
+            
+            // Go to login
+            renderLogin();
+        } else {
+            throw new Error(result.error || 'Failed to reset password');
+        }
         
     } catch (error) {
         console.error('Password reset error:', error);
-        alert('Failed to reset password. Please try again.');
+        alert(error.message || 'Failed to reset password. Please try again.');
         
         // Reset button
         const resetBtn = document.querySelector('.auth-btn');
