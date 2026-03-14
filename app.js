@@ -22,6 +22,7 @@ let currentFormatter = null;
 // Store temporary verification state
 let passwordResetVerified = false;
 let passwordResetUsername = null;
+let passwordResetEmail = null;
 
 // ===== FIREBASE CONFIG =====
 // Your Firebase configuration (replace with your actual config)
@@ -703,7 +704,7 @@ function renderForgotUsername() {
     }
 }
 
-function handleFindUsername() {
+async function handleFindUsername() {
     const fullName = document.getElementById('fullName')?.value;
     const day = document.getElementById('dobDay')?.value;
     const month = document.getElementById('dobMonth')?.value;
@@ -715,25 +716,51 @@ function handleFindUsername() {
         return;
     }
     
-    console.log('Finding username for:', { fullName, dob: `${day}/${month}/${year}` });
-    
-    // For demo purposes - show a sample result
-    // In real implementation, this would query Firestore
-    
-    // Simulate finding a username
-    const demoUsername = fullName.toLowerCase().replace(/\s+/g, '') + '123';
-    
-    // Show the result
-    const resultDiv = document.getElementById('usernameResult');
-    const foundUsername = document.getElementById('foundUsername');
-    
-    foundUsername.textContent = demoUsername;
-    resultDiv.style.display = 'block';
-    
-    // In a real implementation, you would:
-    // 1. Query Firestore for users with matching name and DOB
-    // 2. If found, display the username
-    // 3. If not found, show error message
+    try {
+        // Show loading state
+        const findBtn = document.querySelector('.auth-btn');
+        findBtn.textContent = 'Searching...';
+        findBtn.disabled = true;
+        
+        // Query Firestore for users with matching name and DOB
+        const usersRef = db.collection('users');
+        const snapshot = await usersRef
+            .where('displayName', '==', fullName)
+            .where('dateOfBirth.day', '==', parseInt(day))
+            .where('dateOfBirth.month', '==', parseInt(month))
+            .where('dateOfBirth.year', '==', parseInt(year))
+            .get();
+        
+        // Reset button
+        findBtn.textContent = 'Find Username';
+        findBtn.disabled = false;
+        
+        if (snapshot.empty) {
+            // No matching user found
+            alert('No account found with these details. Please check and try again.');
+            return;
+        }
+        
+        // Get the first matching user (should be unique)
+        const userData = snapshot.docs[0].data();
+        const username = userData.username;
+        
+        // Show the result
+        const resultDiv = document.getElementById('usernameResult');
+        const foundUsername = document.getElementById('foundUsername');
+        
+        foundUsername.textContent = username;
+        resultDiv.style.display = 'block';
+        
+    } catch (error) {
+        console.error('Error finding username:', error);
+        alert('An error occurred. Please try again.');
+        
+        // Reset button
+        const findBtn = document.querySelector('.auth-btn');
+        findBtn.textContent = 'Find Username';
+        findBtn.disabled = false;
+    }
 }
 
 function renderForgotPassword() {
@@ -822,7 +849,7 @@ function renderForgotPassword() {
     }
 }
 
-function handleVerifyIdentity() {
+async function handleVerifyIdentity() {
     const username = document.getElementById('resetUsername')?.value;
     const day = document.getElementById('resetDobDay')?.value;
     const month = document.getElementById('resetDobMonth')?.value;
@@ -834,17 +861,62 @@ function handleVerifyIdentity() {
         return;
     }
     
-    console.log('Verifying identity for:', { username, dob: `${day}/${month}/${year}` });
-    
-    // For demo purposes - accept any input
-    // In real implementation, this would verify against Firestore
-    
-    // Set verified state
-    passwordResetVerified = true;
-    passwordResetUsername = username;
-    
-    // Move to password reset step
-    renderResetPassword();
+    try {
+        // Show loading state
+        const verifyBtn = document.querySelector('.auth-btn');
+        verifyBtn.textContent = 'Verifying...';
+        verifyBtn.disabled = true;
+        
+        // Create email from username
+        const email = `${username}@mathriyaz.local`;
+        
+        // First, try to find user by email in Auth (this doesn't expose data)
+        try {
+            // We can't directly query Auth, so we'll use Firestore
+            const usersRef = db.collection('users');
+            const snapshot = await usersRef
+                .where('username', '==', username)
+                .get();
+            
+            if (snapshot.empty) {
+                throw new Error('User not found');
+            }
+            
+            const userData = snapshot.docs[0].data();
+            
+            // Verify DOB
+            if (userData.dateOfBirth.day !== parseInt(day) ||
+                userData.dateOfBirth.month !== parseInt(month) ||
+                userData.dateOfBirth.year !== parseInt(year)) {
+                throw new Error('Date of birth does not match');
+            }
+            
+            // Store the email for password reset
+            passwordResetEmail = email;
+            passwordResetUsername = username;
+            
+            // Move to password reset step
+            renderResetPassword();
+            
+        } catch (error) {
+            console.error('Verification error:', error);
+            alert('Verification failed. Please check your details and try again.');
+            
+            // Reset button
+            const verifyBtn = document.querySelector('.auth-btn');
+            verifyBtn.textContent = 'Verify Identity';
+            verifyBtn.disabled = false;
+        }
+        
+    } catch (error) {
+        console.error('Error during verification:', error);
+        alert('An error occurred. Please try again.');
+        
+        // Reset button
+        const verifyBtn = document.querySelector('.auth-btn');
+        verifyBtn.textContent = 'Verify Identity';
+        verifyBtn.disabled = false;
+    }
 }
 
 function renderResetPassword() {
@@ -902,7 +974,7 @@ function renderResetPassword() {
     }
 }
 
-function handleResetPassword() {
+async function handleResetPassword() {
     const newPassword = document.getElementById('newPassword')?.value;
     const confirmPassword = document.getElementById('confirmNewPassword')?.value;
     
@@ -922,23 +994,39 @@ function handleResetPassword() {
         return;
     }
     
-    console.log('Resetting password for:', passwordResetUsername);
-    
-    // For demo purposes
-    alert('Password updated successfully! (Demo - will connect to Firebase later)');
-    
-    // Reset state
-    passwordResetVerified = false;
-    passwordResetUsername = null;
-    
-    // Show bottom nav
-    const bottomNav = document.getElementById('bottom-nav');
-    if (bottomNav) {
-        bottomNav.style.display = 'flex';
+    try {
+        // Show loading state
+        const resetBtn = document.querySelector('.auth-btn');
+        resetBtn.textContent = 'Updating...';
+        resetBtn.disabled = true;
+        
+        // Sign in temporarily to reset password
+        // Note: This requires the user to be signed in
+        // Alternative: Use sendPasswordResetEmail for email-based reset
+        
+        // For username-based reset, we need to sign in with existing credentials
+        // But we don't have the old password. So we need to use Firebase Admin SDK
+        // For now, we'll show a message about email reset
+        
+        alert('Password reset via username will be implemented with Firebase Admin SDK. For now, please use the "Forgot Password" flow with email.');
+        
+        // Reset state
+        passwordResetVerified = false;
+        passwordResetUsername = null;
+        passwordResetEmail = null;
+        
+        // Go to login
+        renderLogin();
+        
+    } catch (error) {
+        console.error('Password reset error:', error);
+        alert('Failed to reset password. Please try again.');
+        
+        // Reset button
+        const resetBtn = document.querySelector('.auth-btn');
+        resetBtn.textContent = 'Update Password';
+        resetBtn.disabled = false;
     }
-    
-    // Go to login
-    renderLogin();
 }
 
 async function loadUserProgress(uid) {
