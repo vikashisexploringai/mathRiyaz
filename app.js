@@ -474,7 +474,123 @@ function handleRegister() {
 }
 
 function renderForgotUsername() {
-    alert('Forgot Username view coming soon!');
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) {
+        appHeader.style.display = 'flex';
+    }
+    
+    AppState.currentView = 'forgotUsername';
+    const content = document.getElementById('main-content');
+    
+    // Update header
+    updateHeader('Find Username');
+    
+    // Generate date options (same as register)
+    const today = new Date();
+    const maxYear = today.getFullYear() - 4;
+    const minYear = today.getFullYear() - 100;
+    
+    let yearOptions = '';
+    for (let year = maxYear; year >= minYear; year--) {
+        yearOptions += `<option value="${year}">${year}</option>`;
+    }
+    
+    let monthOptions = '';
+    for (let month = 1; month <= 12; month++) {
+        monthOptions += `<option value="${month}">${month}</option>`;
+    }
+    
+    let dayOptions = '';
+    for (let day = 1; day <= 31; day++) {
+        dayOptions += `<option value="${day}">${day}</option>`;
+    }
+    
+    const html = `
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2>Find Your Username</h2>
+                <p style="color: #64748b; font-size: 14px; text-align: center; margin-bottom: 24px;">
+                    Enter your child's full name and date of birth to retrieve the username.
+                </p>
+                
+                <div class="form-group">
+                    <label for="fullName">Child's Full Name</label>
+                    <input type="text" id="fullName" placeholder="e.g., John Doe" class="auth-input">
+                </div>
+                
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <div style="display: flex; gap: 8px;">
+                        <select id="dobDay" class="auth-input" style="flex: 1;">
+                            <option value="">Day</option>
+                            ${dayOptions}
+                        </select>
+                        <select id="dobMonth" class="auth-input" style="flex: 1;">
+                            <option value="">Month</option>
+                            ${monthOptions}
+                        </select>
+                        <select id="dobYear" class="auth-input" style="flex: 1;">
+                            <option value="">Year</option>
+                            ${yearOptions}
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="auth-btn" onclick="handleFindUsername()">Find Username</button>
+                
+                <div id="usernameResult" style="display: none; margin: 20px 0; padding: 16px; background: #f0f9ff; border-radius: 12px; text-align: center;">
+                    <p style="color: #0369a1; margin-bottom: 4px;">Your username is:</p>
+                    <p id="foundUsername" style="font-size: 20px; font-weight: 600; color: #0f172a;"></p>
+                </div>
+                
+                <div class="auth-links">
+                    <button class="link-btn" onclick="renderLogin()">Back to Login</button>
+                    <button class="link-btn" onclick="renderForgotPassword()">Forgot Password?</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    content.innerHTML = html;
+    
+    // Hide bottom nav
+    const bottomNav = document.getElementById('bottom-nav');
+    if (bottomNav) {
+        bottomNav.style.display = 'none';
+    }
+}
+
+function handleFindUsername() {
+    const fullName = document.getElementById('fullName')?.value;
+    const day = document.getElementById('dobDay')?.value;
+    const month = document.getElementById('dobMonth')?.value;
+    const year = document.getElementById('dobYear')?.value;
+    
+    // Validation
+    if (!fullName || !day || !month || !year) {
+        alert('Please enter full name and date of birth');
+        return;
+    }
+    
+    console.log('Finding username for:', { fullName, dob: `${day}/${month}/${year}` });
+    
+    // For demo purposes - show a sample result
+    // In real implementation, this would query Firestore
+    
+    // Simulate finding a username
+    const demoUsername = fullName.toLowerCase().replace(/\s+/g, '') + '123';
+    
+    // Show the result
+    const resultDiv = document.getElementById('usernameResult');
+    const foundUsername = document.getElementById('foundUsername');
+    
+    foundUsername.textContent = demoUsername;
+    resultDiv.style.display = 'block';
+    
+    // In a real implementation, you would:
+    // 1. Query Firestore for users with matching name and DOB
+    // 2. If found, display the username
+    // 3. If not found, show error message
 }
 
 function renderForgotPassword() {
