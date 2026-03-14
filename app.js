@@ -178,26 +178,33 @@ function updateHeader(title, showBackButton = false, backFunction = null) {
 
 function updateBottomNav(activeView) {
     const nav = document.getElementById('bottom-nav');
-    if (nav) {
-        nav.innerHTML = `
-            <button class="nav-item ${activeView === 'home' ? 'active' : ''}" onclick="renderHome()">
-                <span class="nav-icon">🏠</span>
-                <span>Home</span>
-            </button>
-            <button class="nav-item ${activeView === 'progress' ? 'active' : ''}" onclick="showProgress()">
-                <span class="nav-icon">📊</span>
-                <span>Progress</span>
-            </button>
-            <button class="nav-item ${activeView === 'profile' ? 'active' : ''}" onclick="showProfile()">
-                <span class="nav-icon">👤</span>
-                <span>Profile</span>
-            </button>
-            <button class="nav-item ${activeView === 'settings' ? 'active' : ''}" onclick="showSettings()">
-                <span class="nav-icon">⚙️</span>
-                <span>Settings</span>
-            </button>
-        `;
+    if (!nav) return;
+    
+    if (activeView === 'login' || activeView === 'register' || 
+        activeView === 'forgotUsername' || activeView === 'forgotPassword') {
+        nav.style.display = 'none';
+        return;
     }
+    
+    nav.style.display = 'flex';
+    nav.innerHTML = `
+        <button class="nav-item ${activeView === 'home' ? 'active' : ''}" onclick="renderHome()">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+        </button>
+        <button class="nav-item ${activeView === 'progress' ? 'active' : ''}" onclick="showProgress()">
+            <span class="nav-icon">📊</span>
+            <span>Progress</span>
+        </button>
+        <button class="nav-item ${activeView === 'profile' ? 'active' : ''}" onclick="showProfile()">
+            <span class="nav-icon">👤</span>
+            <span>Profile</span>
+        </button>
+        <button class="nav-item ${activeView === 'settings' ? 'active' : ''}" onclick="showSettings()">
+            <span class="nav-icon">⚙️</span>
+            <span>Settings</span>
+        </button>
+    `;
 }
 
 function showError(message) {
@@ -226,6 +233,99 @@ function goToNextLevel() {
         // No next level, go back to levels
         renderLevels(AppState.currentSubject, AppState.currentChapter, AppState.currentSubchapter);
     }
+}
+
+// ===== AUTH VIEWS =====
+function renderLogin() {
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) {
+        appHeader.style.display = 'flex';
+    }
+    
+    AppState.currentView = 'login';
+    const content = document.getElementById('main-content');
+    
+    // Update header
+    updateHeader('Welcome Back');
+    
+    const html = `
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2>Login to Math Riyaz</h2>
+                
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter your username" class="auth-input">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" class="auth-input">
+                </div>
+                
+                <div class="form-row">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="rememberMe" checked>
+                        <span>Remember me</span>
+                    </label>
+                </div>
+                
+                <button class="auth-btn" onclick="handleLogin()">Login</button>
+                
+                <div class="auth-links">
+                    <button class="link-btn" onclick="renderForgotUsername()">Forgot Username?</button>
+                    <button class="link-btn" onclick="renderForgotPassword()">Forgot Password?</button>
+                    <button class="link-btn" onclick="renderRegister()">Create Account</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    content.innerHTML = html;
+    
+    // Hide bottom nav on auth pages
+    const bottomNav = document.getElementById('bottom-nav');
+    if (bottomNav) {
+        bottomNav.style.display = 'none';
+    }
+}
+
+function handleLogin() {
+    const username = document.getElementById('username')?.value;
+    const password = document.getElementById('password')?.value;
+    const rememberMe = document.getElementById('rememberMe')?.checked;
+    
+    if (!username || !password) {
+        alert('Please enter both username and password');
+        return;
+    }
+    
+    console.log('Login attempt:', { username, rememberMe });
+    
+    // For now, simulate successful login
+    // Later: Connect to Firebase
+    
+    // Show bottom nav again
+    const bottomNav = document.getElementById('bottom-nav');
+    if (bottomNav) {
+        bottomNav.style.display = 'flex';
+    }
+    
+    // Go to home
+    renderHome();
+}
+
+// Placeholder functions - we'll implement these next
+function renderRegister() {
+    alert('Register view coming soon!');
+}
+
+function renderForgotUsername() {
+    alert('Forgot Username view coming soon!');
+}
+
+function renderForgotPassword() {
+    alert('Forgot Password view coming soon!');
 }
 
 // ===== CIRCULAR TIMER =====
