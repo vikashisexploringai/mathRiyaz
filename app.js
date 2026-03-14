@@ -1012,8 +1012,6 @@ async function handleCloudPasswordReset() {
     const day = document.getElementById('resetDobDay')?.value;
     const month = document.getElementById('resetDobMonth')?.value;
     const year = document.getElementById('resetDobYear')?.value;
-    const newPassword = document.getElementById('newPassword')?.value;
-    const confirmPassword = document.getElementById('confirmNewPassword')?.value;
     
     if (!username || !day || !month || !year || !newPassword || !confirmPassword) {
         alert('Please fill in all fields');
