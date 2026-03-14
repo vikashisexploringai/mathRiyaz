@@ -996,6 +996,18 @@ function renderResetPassword() {
 }
 
 async function handleCloudPasswordReset() {
+
+     console.log('🔵 handleCloudPasswordReset started');
+
+    const newPassword = document.getElementById('newPassword')?.value;
+    const confirmPassword = document.getElementById('confirmNewPassword')?.value;
+    
+    console.log('newPassword exists:', !!document.getElementById('newPassword'));
+    console.log('confirmPassword exists:', !!document.getElementById('confirmNewPassword'));
+    console.log('newPassword value:', newPassword ? '****' : 'empty');
+    console.log('confirmPassword value:', confirmPassword ? '****' : 'empty');
+
+    
     const username = document.getElementById('resetUsername')?.value;
     const day = document.getElementById('resetDobDay')?.value;
     const month = document.getElementById('resetDobMonth')?.value;
