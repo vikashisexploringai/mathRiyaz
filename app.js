@@ -25,6 +25,7 @@ let passwordResetEmail = null;
 let passwordResetDay = null;
 let passwordResetMonth = null;
 let passwordResetYear = null;
+let previousView = null; // Add this line
 let quizStartTime = 0;
 
 // ===== FIREBASE CONFIG =====
@@ -998,6 +999,164 @@ function renderProfile() {
         console.error('Error fetching user data:', error);
         content.innerHTML = '<div class="error-message">Failed to load profile</div>';
     });
+}
+
+// ===== SETTINGS PAGE =====
+function renderSettings() {
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) appHeader.style.display = 'flex';
+    
+    AppState.currentView = 'settings';
+    const content = document.getElementById('main-content');
+    
+    updateHeader('⚙️ Settings');
+    
+    // Get current dark mode preference
+    const isDarkMode = localStorage.getItem('darkMode') === 'true';
+    
+    const html = `
+        <div class="settings-container">
+            <!-- Appearance Section -->
+            <div class="settings-card">
+                <div class="settings-header">Appearance</div>
+                <div class="settings-item">
+                    <div class="settings-item-left">
+                        <span class="settings-icon">🌙</span>
+                        <span class="settings-label">Dark Mode</span>
+                    </div>
+                    <div class="settings-toggle">
+                        <button class="toggle-btn ${!isDarkMode ? 'active' : ''}" onclick="setDarkMode(false)">Off</button>
+                        <button class="toggle-btn ${isDarkMode ? 'active' : ''}" onclick="setDarkMode(true)">On</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Account Section -->
+            <div class="settings-card">
+                <div class="settings-header">Account</div>
+                <div class="settings-item" onclick="renderChangePassword()">
+                    <div class="settings-item-left">
+                        <span class="settings-icon">🔒</span>
+                        <span class="settings-label">Change Password</span>
+                    </div>
+                    <span class="settings-arrow">→</span>
+                </div>
+                <div class="settings-item" onclick="confirmDeleteAccount()">
+                    <div class="settings-item-left">
+                        <span class="settings-icon">🗑️</span>
+                        <span class="settings-label">Delete Account</span>
+                    </div>
+                    <span class="settings-arrow">→</span>
+                </div>
+            </div>
+            
+            <!-- About Section -->
+            <div class="settings-card">
+                <div class="settings-header">About</div>
+                <div class="settings-item">
+                    <div class="settings-item-left">
+                        <span class="settings-icon">ℹ️</span>
+                        <span class="settings-label">Version</span>
+                    </div>
+                    <span class="settings-value">1.0.0</span>
+                </div>
+                <div class="settings-item" onclick="window.open('https://your-terms-url.com', '_blank')">
+                    <div class="settings-item-left">
+                        <span class="settings-icon">📋</span>
+                        <span class="settings-label">Terms of Service</span>
+                    </div>
+                    <span class="settings-arrow">→</span>
+                </div>
+                <div class="settings-item" onclick="window.open('https://your-privacy-url.com', '_blank')">
+                    <div class="settings-item-left">
+                        <span class="settings-icon">🔒</span>
+                        <span class="settings-label">Privacy Policy</span>
+                    </div>
+                    <span class="settings-arrow">→</span>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    content.innerHTML = html;
+    updateBottomNav('settings');
+}
+
+// ===== DARK MODE FUNCTIONS =====
+function setDarkMode(enabled) {
+    localStorage.setItem('darkMode', enabled);
+    
+    if (enabled) {
+        document.body.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+    }
+    
+    // Refresh settings page to update toggle UI
+    renderSettings();
+}
+
+// Initialize dark mode on app start
+function initDarkMode() {
+    const isDarkMode = localStorage.getItem('darkMode') === 'true';
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+    }
+}
+
+// ===== ACCOUNT FUNCTIONS =====
+function renderChangePassword() {
+    if (!auth.currentUser) {
+        showToast('Please login first', 'error');
+        renderLogin();
+        return;
+    }
+    
+    // Store current view to return to settings after
+    previousView = 'settings';
+    
+    // Reuse your existing password reset flow
+    renderForgotPassword();
+}
+
+function confirmDeleteAccount() {
+    if (!auth.currentUser) {
+        showToast('Please login first', 'error');
+        renderLogin();
+        return;
+    }
+    
+    if (confirm('⚠️ Are you sure you want to delete your account?\n\nThis action is PERMANENT and cannot be undone. All your progress and data will be lost.')) {
+        deleteAccount();
+    }
+}
+
+async function deleteAccount() {
+    try {
+        const user = auth.currentUser;
+        const userId = user.uid;
+        
+        showToast('Deleting account...', 'info');
+        
+        // Delete user data from Firestore
+        await db.collection('users').doc(userId).delete();
+        
+        // Delete all attempts
+        const attempts = await db.collection('attempts').where('userId', '==', userId).get();
+        const batch = db.batch();
+        attempts.docs.forEach(doc => batch.delete(doc.ref));
+        await batch.commit();
+        
+        // Delete the user from Authentication
+        await user.delete();
+        
+        showToast('Account deleted successfully', 'success');
+        renderLogin();
+        
+    } catch (error) {
+        console.error('Delete account error:', error);
+        showToast('Failed to delete account. Please try again.', 'error');
+    }
 }
 
 // ===== PROGRESS PAGE =====
