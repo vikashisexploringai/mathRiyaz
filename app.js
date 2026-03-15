@@ -1748,11 +1748,11 @@ async function renderLevels(subjectId, chapterId, subchapterId) {
         let scoreDisplay = progress.completed ? `${progress.score} pts` : '';
         
         levelsHtml += `
-            <button class="${buttonClass}" onclick="${unlocked ? `navigateToQuiz('${subjectId}', '${chapterId}', '${subchapterId}', ${level})` : ''}">
-                <span>Level ${level} ${scoreDisplay}</span>
-                <span>${lockIcon}</span>
-            </button>
-        `;
+    <button class="${buttonClass}" onclick="${unlocked ? `navigateToQuiz('${subjectId}', '${chapterId}', '${subchapterId}', ${level})` : ''}">
+        <span>Level ${level}</span>
+        <span>${lockIcon}</span>
+    </button>
+`;
     }
     
     levelsHtml += `</div>`;
