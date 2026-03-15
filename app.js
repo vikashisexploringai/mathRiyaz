@@ -718,7 +718,27 @@ async function handleRegister() {
             await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
         }
         
-        // STEP 3: Save user data to Firestore
+        // === ADDED: Wait for auth to propagate ===
+        console.log('✅ User created in Auth, UID:', user.uid);
+        console.log('⏳ Waiting 2 seconds for auth to propagate...');
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // === ADDED: Test simple write first ===
+        try {
+            console.log('📝 Attempting simple test write...');
+            await db.collection('users').doc(user.uid).set({
+                uid: user.uid,
+                test: true,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            console.log('✅ Test write succeeded!');
+        } catch (testError) {
+            console.error('❌ Test write failed:', testError);
+            throw new Error('Firestore write failed even for test data');
+        }
+        
+        // STEP 3: Save full user data to Firestore
+        console.log('📝 Writing full user data...');
         await db.collection('users').doc(user.uid).set({
             uid: user.uid,
             username: username,
@@ -737,7 +757,8 @@ async function handleRegister() {
             }
         });
         
-        console.log('Account created successfully!');
+        console.log('✅ Full user data written successfully!');
+        console.log('🎉 Account created successfully!');
         
         const bottomNav = document.getElementById('bottom-nav');
         if (bottomNav) {
@@ -745,7 +766,7 @@ async function handleRegister() {
         }
         
     } catch (error) {
-        console.error('Registration error:', error);
+        console.error('❌ Registration error:', error);
         
         let errorMessage = 'Registration failed. ';
         if (error.code === 'auth/email-already-in-use') {
