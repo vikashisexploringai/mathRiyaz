@@ -1174,6 +1174,104 @@ async function handleLogout() {
     }
 }
 
+// ===== SAVE QUIZ PROGRESS =====
+async function saveQuizProgress() {
+    if (!currentQuizData || !auth.currentUser) {
+        console.log('No quiz data or user not logged in');
+        return;
+    }
+    
+    const user = auth.currentUser;
+    const subjectId = AppState.currentSubject;
+    const chapterId = AppState.currentChapter;
+    const subchapterId = AppState.currentSubchapter;
+    const level = AppState.currentLevel;
+    
+    // Calculate accuracy
+    const totalQuestions = currentQuizData.questions.length;
+    const maxPossible = totalQuestions * currentQuizData.maxPointsPerQuestion;
+    const accuracy = Math.round((currentQuizData.score / maxPossible) * 100);
+    const questionsCorrect = Math.round(currentQuizData.score / (maxPossible / totalQuestions));
+    
+    // Get current attempt count for this level
+    try {
+        // 1. Save the attempt to 'attempts' collection
+        const attemptData = {
+            userId: user.uid,
+            username: user.displayName || 'user',
+            displayName: user.displayName || 'User',
+            
+            subject: subjectId,
+            chapter: chapterId,
+            subchapter: subchapterId,
+            level: level,
+            
+            score: currentQuizData.score,
+            maxPossible: maxPossible,
+            accuracy: accuracy,
+            questionsCorrect: questionsCorrect,
+            totalQuestions: totalQuestions,
+            timeSpent: Math.round((Date.now() - questionStartTime) / 1000), // seconds
+            
+            completedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        await db.collection('attempts').add(attemptData);
+        console.log('✅ Attempt saved to attempts collection');
+        
+        // 2. Update user's overall stats
+        const userRef = db.collection('users').doc(user.uid);
+        const userDoc = await userRef.get();
+        
+        if (userDoc.exists) {
+            const userData = userDoc.data();
+            const overall = userData.overall || {
+                totalPoints: 0,
+                quizzesTaken: 0,
+                totalTimeSpent: 0,
+                lastActive: null
+            };
+            
+            // Update overall stats
+            overall.totalPoints = (overall.totalPoints || 0) + currentQuizData.score;
+            overall.quizzesTaken = (overall.quizzesTaken || 0) + 1;
+            overall.totalTimeSpent = (overall.totalTimeSpent || 0) + attemptData.timeSpent;
+            overall.lastActive = firebase.firestore.FieldValue.serverTimestamp();
+            
+            await userRef.update({ overall });
+        }
+        
+        // 3. Update subject-specific stats
+        const subjectPath = `subjects.${subjectId}`;
+        const subjectRef = userRef;
+        
+        // Get current subject stats or initialize
+        const subjectData = userDoc.data()?.subjects?.[subjectId] || {
+            totalPoints: 0,
+            quizzesTaken: 0,
+            accuracy: 0
+        };
+        
+        // Update subject totals
+        subjectData.totalPoints = (subjectData.totalPoints || 0) + currentQuizData.score;
+        subjectData.quizzesTaken = (subjectData.quizzesTaken || 0) + 1;
+        
+        // Recalculate average accuracy
+        const oldTotal = (subjectData.accuracy || 0) * (subjectData.quizzesTaken - 1);
+        subjectData.accuracy = Math.round((oldTotal + accuracy) / subjectData.quizzesTaken);
+        
+        // Save back to Firestore
+        await userRef.update({
+            [`subjects.${subjectId}`]: subjectData
+        });
+        
+        console.log('✅ User stats updated');
+        
+    } catch (error) {
+        console.error('Error saving progress:', error);
+    }
+}
+
 // ===== CIRCULAR TIMER =====
 function startCircularTimer() {
     if (!currentQuizData) return;
@@ -1581,6 +1679,8 @@ function showQuizComplete() {
     if (questionTimer) {
         clearInterval(questionTimer);
     }
+
+     saveQuizProgress();
     
     const totalPossible = currentQuizData.questions.length * currentQuizData.maxPointsPerQuestion;
     
