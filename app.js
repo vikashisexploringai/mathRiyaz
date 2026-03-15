@@ -1198,6 +1198,7 @@ function renderChangePassword() {
 }
 
 // ===== HANDLE CHANGE PASSWORD =====
+// ===== HANDLE CHANGE PASSWORD =====
 async function handleChangePassword() {
     const currentPassword = document.getElementById('currentPassword')?.value;
     const newPassword = document.getElementById('newPassword')?.value;
@@ -1231,7 +1232,7 @@ async function handleChangePassword() {
     
     try {
         const changeBtn = document.querySelector('.auth-btn');
-        changeBtn.textContent = 'Updating...';
+        changeBtn.textContent = 'Verifying...';
         changeBtn.disabled = true;
         
         const user = auth.currentUser;
@@ -1244,6 +1245,7 @@ async function handleChangePassword() {
         await user.reauthenticateWithCredential(credential);
         
         // Update password
+        changeBtn.textContent = 'Updating...';
         await user.updatePassword(newPassword);
         
         showToast('Password updated successfully!', 'success');
@@ -1254,20 +1256,22 @@ async function handleChangePassword() {
     } catch (error) {
         console.error('Change password error:', error);
         
-        if (error.code === 'auth/wrong-password') {
+        // Clear loading state
+        const changeBtn = document.querySelector('.auth-btn');
+        changeBtn.textContent = 'Update Password';
+        changeBtn.disabled = false;
+        
+        // Handle specific errors
+        if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-login-credentials') {
             showInlineMessage('currentPassword', 'Current password is incorrect');
         } else if (error.code === 'auth/weak-password') {
             showInlineMessage('newPassword', 'Password is too weak');
         } else if (error.code === 'auth/requires-recent-login') {
-            showToast('Please log out and log back in to change password', 'error');
-            handleLogout();
+            showToast('Session expired. Please logout and login again.', 'error');
+            setTimeout(() => handleLogout(), 2000);
         } else {
             showToast('Failed to change password: ' + error.message, 'error');
         }
-        
-        const changeBtn = document.querySelector('.auth-btn');
-        changeBtn.textContent = 'Update Password';
-        changeBtn.disabled = false;
     }
 }
 
