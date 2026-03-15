@@ -1270,20 +1270,20 @@ body {
     
     /* Larger question text */
     .quiz-question {
-        font-size: 56px !important;
+        font-size: 56px ;
     }
     
     .quiz-question .fraction {
-        font-size: 64px !important;
+        font-size: 64px ;
     }
     
     /* Larger options */
     .quiz-option-large {
-        font-size: 44px !important;
+        font-size: 44px ;
     }
     
     .quiz-option-large .fraction {
-        font-size: 48px !important;
+        font-size: 48px ;
     }
     
     /* Add some breathing room */
