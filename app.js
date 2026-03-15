@@ -1127,36 +1127,106 @@ function confirmDeleteAccount() {
         return;
     }
     
-    if (confirm('⚠️ Are you sure you want to delete your account?\n\nThis action is PERMANENT and cannot be undone. All your progress and data will be lost.')) {
-        deleteAccount();
-    }
+    // Show a custom delete confirmation modal
+    const content = document.getElementById('main-content');
+    
+    // Store current content to restore if canceled
+    const previousContent = content.innerHTML;
+    
+    const deleteModalHTML = `
+        <div class="delete-modal-overlay">
+            <div class="delete-modal">
+                <div class="delete-modal-icon">⚠️</div>
+                <h3 class="delete-modal-title">Delete Account?</h3>
+                <p class="delete-modal-message">
+                    This action is <strong>PERMANENT</strong> and cannot be undone.<br>
+                    All your data will be lost:
+                </p>
+                <ul class="delete-modal-list">
+                    <li>• Profile information</li>
+                    <li>• All quiz attempts</li>
+                    <li>• Progress and statistics</li>
+                    <li>• Achievements</li>
+                </ul>
+                <div class="delete-modal-buttons">
+                    <button class="delete-modal-cancel" onclick="cancelDelete()">Cancel</button>
+                    <button class="delete-modal-confirm" onclick="deleteAccount()">Delete Forever</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Store the previous content for cancel function
+    window.previousContent = previousContent;
+    
+    content.innerHTML = deleteModalHTML;
 }
 
+// Cancel delete and restore previous view
+window.cancelDelete = function() {
+    const content = document.getElementById('main-content');
+    if (window.previousContent) {
+        content.innerHTML = window.previousContent;
+    } else {
+        renderSettings(); // Fallback
+    }
+};
+
 async function deleteAccount() {
+    const user = auth.currentUser;
+    if (!user) {
+        showToast('No user logged in', 'error');
+        renderLogin();
+        return;
+    }
+    
+    const userId = user.uid;
+    
     try {
-        const user = auth.currentUser;
-        const userId = user.uid;
-        
         showToast('Deleting account...', 'info');
         
-        // Delete user data from Firestore
+        // 1. Delete all attempts from Firestore
+        const attemptsSnapshot = await db.collection('attempts')
+            .where('userId', '==', userId)
+            .get();
+        
+        if (!attemptsSnapshot.empty) {
+            const batch = db.batch();
+            attemptsSnapshot.docs.forEach(doc => {
+                batch.delete(doc.ref);
+            });
+            await batch.commit();
+            console.log(`✅ Deleted ${attemptsSnapshot.size} attempts`);
+        }
+        
+        // 2. Delete user document from Firestore
         await db.collection('users').doc(userId).delete();
+        console.log('✅ Deleted user document');
         
-        // Delete all attempts
-        const attempts = await db.collection('attempts').where('userId', '==', userId).get();
-        const batch = db.batch();
-        attempts.docs.forEach(doc => batch.delete(doc.ref));
-        await batch.commit();
-        
-        // Delete the user from Authentication
+        // 3. Delete user authentication account
         await user.delete();
+        console.log('✅ Deleted user authentication');
+        
+        // 4. Clear any local storage data
+        localStorage.removeItem('darkMode');
         
         showToast('Account deleted successfully', 'success');
+        
+        // 5. Redirect to login
         renderLogin();
         
     } catch (error) {
         console.error('Delete account error:', error);
-        showToast('Failed to delete account. Please try again.', 'error');
+        
+        // If error is because user needs to re-authenticate
+        if (error.code === 'auth/requires-recent-login') {
+            showToast('Please log out and log back in to delete your account', 'error');
+        } else {
+            showToast('Failed to delete account: ' + error.message, 'error');
+        }
+        
+        // Return to settings
+        renderSettings();
     }
 }
 
