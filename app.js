@@ -435,6 +435,7 @@ function goToNextLevel() {
 }
 
 // ===== AUTH VIEWS =====
+
 function renderLogin() {
     const appHeader = document.getElementById('app-header');
     if (appHeader) {
@@ -1705,7 +1706,7 @@ function renderChapters(subjectId) {
 }
 
 // ===== RENDER LEVELS - CLEAN DESIGN =====
-function renderLevels(subjectId, chapterId, subchapterId) {
+async function renderLevels(subjectId, chapterId, subchapterId) {
     const appHeader = document.getElementById('app-header');
     if (appHeader) {
         appHeader.style.display = 'flex';
@@ -1722,30 +1723,39 @@ function renderLevels(subjectId, chapterId, subchapterId) {
     const chapter = subject.chapters.find(c => c.id === chapterId);
     const subchapter = chapter.subchapters.find(s => s.id === subchapterId);
     
-    // Update header with centered subchapter name and back button to chapters
+    // Update header with centered subchapter name
     updateHeader(subchapter.name, true, `renderSubchapters('${subjectId}', '${chapterId}')`);
     
     const content = document.getElementById('main-content');
+    content.innerHTML = `<div class="loading-spinner"></div>`;
+    
+    // Check unlock status for all levels
+    const levelPromises = [];
+    for (let level = 1; level <= subchapter.levels; level++) {
+        levelPromises.push(isLevelUnlocked(subjectId, chapterId, subchapterId, level));
+    }
+    
+    const unlockedStatus = await Promise.all(levelPromises);
     
     let levelsHtml = `<div class="levels-list">`;
     
     for (let level = 1; level <= subchapter.levels; level++) {
-        const progress = getLevelProgress(subjectId, chapterId, subchapterId, level);
-        const locked = level > 1 && !isLevelUnlocked(subjectId, chapterId, subchapterId, level);
+        const progress = await getLevelProgress(subjectId, chapterId, subchapterId, level);
+        const unlocked = unlockedStatus[level - 1];
         
-        let lockIcon = locked ? '🔒' : '🔓';
-        let buttonClass = locked ? 'level-button locked' : 'level-button';
+        let lockIcon = unlocked ? '🔓' : '🔒';
+        let buttonClass = unlocked ? 'level-button' : 'level-button locked';
+        let scoreDisplay = progress.completed ? `${progress.score} pts` : '';
         
         levelsHtml += `
-            <button class="${buttonClass}" onclick="${!locked ? `navigateToQuiz('${subjectId}', '${chapterId}', '${subchapterId}', ${level})` : ''}">
-                <span>Level ${level}</span>
+            <button class="${buttonClass}" onclick="${unlocked ? `navigateToQuiz('${subjectId}', '${chapterId}', '${subchapterId}', ${level})` : ''}">
+                <span>Level ${level} ${scoreDisplay}</span>
                 <span>${lockIcon}</span>
             </button>
         `;
     }
     
     levelsHtml += `</div>`;
-    
     content.innerHTML = levelsHtml;
     updateBottomNav('chapters');
 }
@@ -2148,18 +2158,54 @@ function calculateChapterProgress(subjectId, chapterId) {
     return { completed: 2, total: 4, percentage: 50 };
 }
 
-function getLevelProgress(subjectId, chapterId, subchapterId, level) {
-    return {
-        completed: level === 1,
-        started: level === 2,
-        score: level === 1 ? 80 : 0
-    };
+// ===== LEVEL PROGRESS FUNCTIONS =====
+async function getLevelProgress(subjectId, chapterId, subchapterId, level) {
+    const user = auth.currentUser;
+    if (!user) {
+        return { completed: false, started: false, score: 0 };
+    }
+    
+    try {
+        // Query attempts for this specific level
+        const snapshot = await db.collection('attempts')
+            .where('userId', '==', user.uid)
+            .where('subject', '==', subjectId)
+            .where('chapter', '==', chapterId)
+            .where('subchapter', '==', subchapterId)
+            .where('level', '==', level)
+            .orderBy('score', 'desc')
+            .limit(1)
+            .get();
+        
+        if (snapshot.empty) {
+            return { completed: false, started: false, score: 0 };
+        }
+        
+        const attempt = snapshot.docs[0].data();
+        return {
+            completed: true,
+            started: true,
+            score: attempt.score,
+            accuracy: attempt.accuracy,
+            questionsCorrect: attempt.questionsCorrect,
+            totalQuestions: attempt.totalQuestions,
+            timeSpent: attempt.timeSpent,
+            completedAt: attempt.completedAt
+        };
+        
+    } catch (error) {
+        console.error('Error getting level progress:', error);
+        return { completed: false, started: false, score: 0 };
+    }
 }
 
-function isLevelUnlocked(subjectId, chapterId, subchapterId, level) {
+async function isLevelUnlocked(subjectId, chapterId, subchapterId, level) {
+    // Level 1 always unlocked
     if (level === 1) return true;
-    const prevLevel = getLevelProgress(subjectId, chapterId, subchapterId, level - 1);
-    return prevLevel.completed;
+    
+    // Check if previous level is completed
+    const prevLevelProgress = await getLevelProgress(subjectId, chapterId, subchapterId, level - 1);
+    return prevLevelProgress.completed;
 }
 
 function saveProgressToFirebase() {
@@ -2179,8 +2225,15 @@ window.navigateToSubchapter = function(subjectId, chapterId, subchapterId) {
     renderLevels(subjectId, chapterId, subchapterId);
 };
 
-window.navigateToQuiz = function(subjectId, chapterId, subchapterId, level) {
-    renderQuiz(subjectId, chapterId, subchapterId, level);
+window.navigateToQuiz = async function(subjectId, chapterId, subchapterId, level) {
+    // Check if level is unlocked before proceeding
+    const unlocked = await isLevelUnlocked(subjectId, chapterId, subchapterId, level);
+    
+    if (unlocked) {
+        renderQuiz(subjectId, chapterId, subchapterId, level);
+    } else {
+        alert('This level is locked. Complete previous levels first!');
+    }
 };
 
 // ===== PLACEHOLDER FUNCTIONS =====
