@@ -152,6 +152,41 @@ body {
     padding: 20px;
 }
 
+/* Quiz screen specific layout */
+.main-content:has(.quiz-header-blue) {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 80px);
+}
+
+.main-content:has(.quiz-header-blue) .quiz-header-blue,
+.main-content:has(.quiz-header-blue) .quiz-header-white {
+    flex-shrink: 0;
+}
+
+.main-content:has(.quiz-header-blue) .quiz-question {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0 16px;
+}
+
+.main-content:has(.quiz-header-blue) .quiz-options-large {
+    flex-shrink: 0;
+    margin-top: 0;
+}
+
+/* Keep padding for other screens */
+.main-content:has(.subjects-grid),
+.main-content:has(.chapters-list),
+.main-content:has(.subchapters-list),
+.main-content:has(.levels-list) {
+    padding: 20px;
+}
+
 /* ===== SECTION HEADER (generic back button) ===== */
 .section-header {
     display: flex;
@@ -176,131 +211,6 @@ body {
     display: flex;
     align-items: center;
     gap: 4px;
-}
-
-/* ===== AUTH PAGES ===== */
-.auth-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: calc(100vh - 80px);
-    padding: 20px;
-}
-
-.auth-card {
-    background: white;
-    border-radius: 24px;
-    padding: 32px 24px;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    border: 1px solid #e2e8f0;
-}
-
-.auth-card h2 {
-    font-size: 24px;
-    font-weight: 600;
-    color: #0f172a;
-    margin-bottom: 24px;
-    text-align: center;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    color: #475569;
-    margin-bottom: 6px;
-}
-
-.auth-input {
-    width: 100%;
-    padding: 14px 16px;
-    font-size: 16px;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    transition: all 0.2s;
-    background: white;
-}
-
-.auth-input:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.form-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: #475569;
-    cursor: pointer;
-}
-
-.checkbox-label input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-}
-
-.auth-btn {
-    width: 100%;
-    padding: 16px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-bottom: 20px;
-}
-
-.auth-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.2);
-}
-
-.auth-btn:active {
-    transform: translateY(0);
-}
-
-.auth-links {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    align-items: center;
-    border-top: 1px solid #e2e8f0;
-    padding-top: 20px;
-}
-
-.link-btn {
-    background: none;
-    border: none;
-    color: #667eea;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: color 0.2s;
-    padding: 4px 8px;
-}
-
-.link-btn:hover {
-    color: #764ba2;
-    text-decoration: underline;
 }
 
 /* ===== SUBJECT CARDS (HOME SCREEN) ===== */
@@ -510,35 +420,7 @@ body {
     font-size: 22px;
 }
 
-/* ===== QUIZ PAGE ===== */
-/* Quiz screen specific layout */
-.main-content:has(.quiz-header-blue) {
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    min-height: calc(100vh - 80px);
-}
-
-.main-content:has(.quiz-header-blue) .quiz-header-blue,
-.main-content:has(.quiz-header-blue) .quiz-header-white {
-    flex-shrink: 0;
-}
-
-.main-content:has(.quiz-header-blue) .quiz-question {
-    flex: 3;  /* Takes more vertical space */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-    padding: 0 16px;
-}
-
-.main-content:has(.quiz-header-blue) .quiz-options-large {
-    flex-shrink: 0;
-    margin-top: 0;
-}
-
-/* Quiz Header - Two-Row Design */
+/* ===== QUIZ HEADER - TWO-ROW DESIGN ===== */
 .quiz-header-blue {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -624,7 +506,7 @@ body {
     align-items: center;
 }
 
-/* Circular Timer */
+/* ===== CIRCULAR TIMER ===== */
 .circular-timer {
     width: 36px;
     height: 36px;
@@ -662,7 +544,7 @@ body {
     pointer-events: none;
 }
 
-/* Quiz Question */
+/* ===== QUIZ QUESTION ===== */
 .quiz-question {
     text-align: center;
     font-size: 32px;
@@ -696,7 +578,7 @@ body {
     padding: 0 6px;
 }
 
-/* Quiz Options Buttons */
+/* ===== QUIZ OPTIONS BUTTONS ===== */
 .quiz-options-large {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -806,7 +688,7 @@ body {
     font-weight: 700 !important;
 }
 
-/* Quiz Complete Page */
+/* ===== QUIZ COMPLETE PAGE ===== */
 .quiz-complete {
     text-align: center;
     padding: 20px;
@@ -881,11 +763,117 @@ body {
     background: #2563eb;
 }
 
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 400px) {
+    /* Quiz options */
+    .quiz-options-large {
+        gap: 10px;
+        padding: 0 16px 25px 16px;
+    }
+    
+    .quiz-option-large {
+        font-size: 28px;
+    }
+    
+    .quiz-option-large .fraction {
+        font-size: 28px;
+    }
+    
+    /* Quiz question */
+    .quiz-question {
+        font-size: 28px;
+    }
+    
+    .quiz-question .fraction {
+        font-size: 32px;
+    }
+    
+    /* Cards */
+    .chapter-card,
+    .subchapter-card {
+        padding: 16px 18px;
+    }
+    
+    .chapter-name,
+    .subchapter-name {
+        font-size: 16px;
+    }
+    
+    /* Levels page */
+    .level-button {
+        padding: 16px 20px;
+    }
+    
+    .level-button span:first-child {
+        font-size: 16px;
+    }
+    
+    .header-title {
+        font-size: 18px;
+    }
+    
+    /* Quiz complete */
+    .score-display {
+        font-size: 56px;
+    }
+    
+    .questions-correct {
+        font-size: 20px;
+    }
+    
+    .button-row {
+        gap: 12px;
+        max-width: 280px;
+    }
+}
+
+/* ===== UTILITY CLASSES ===== */
+.hidden {
+    display: none !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+.mb-20 {
+    margin-bottom: 20px;
+}
+
 /* ===== PROFILE PAGE ===== */
 .profile-container {
     padding: 20px;
     max-width: 400px;
     margin: 0 auto;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+}
+
+.home-icon-btn {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 8px;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.home-icon-btn:hover {
+    background: #f0f0f0;
 }
 
 .profile-avatar {
@@ -993,6 +981,21 @@ body {
 
 .logout-icon {
     font-size: 18px;
+}
+
+@media (max-width: 400px) {
+    .avatar-circle {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .avatar-text {
+        font-size: 40px;
+    }
+    
+    .profile-name h2 {
+        font-size: 20px;
+    }
 }
 
 /* ===== PROGRESS PAGE ===== */
@@ -1251,114 +1254,7 @@ body {
     font-size: 12px;
 }
 
-/* ===== LAPTOP OPTIMIZATIONS ===== */
-@media (min-width: 768px) {
-    .app-container {
-        max-width: 700px;  /* Slightly wider on laptop */
-    }
-    
-    /* Larger question on laptop */
-    .quiz-question {
-        font-size: 48px !important;
-    }
-    
-    .quiz-question .fraction {
-        font-size: 56px !important;
-    }
-    
-    /* Larger options on laptop */
-    .quiz-option-large {
-        font-size: 40px !important;
-    }
-    
-    .quiz-option-large .fraction {
-        font-size: 44px !important;
-    }
-    
-    /* More spacing for question */
-    .main-content:has(.quiz-header-blue) .quiz-question {
-        flex: 4;  /* Even more space on laptop */
-    }
-}
-
-/* ===== MOBILE OPTIMIZATIONS ===== */
 @media (max-width: 400px) {
-    /* Quiz options */
-    .quiz-options-large {
-        gap: 10px;
-        padding: 0 16px 25px 16px;
-    }
-    
-    .quiz-option-large {
-        font-size: 28px;
-    }
-    
-    .quiz-option-large .fraction {
-        font-size: 28px;
-    }
-    
-    /* Quiz question */
-    .quiz-question {
-        font-size: 28px;
-    }
-    
-    .quiz-question .fraction {
-        font-size: 32px;
-    }
-    
-    /* Cards */
-    .chapter-card,
-    .subchapter-card {
-        padding: 16px 18px;
-    }
-    
-    .chapter-name,
-    .subchapter-name {
-        font-size: 16px;
-    }
-    
-    /* Levels page */
-    .level-button {
-        padding: 16px 20px;
-    }
-    
-    .level-button span:first-child {
-        font-size: 16px;
-    }
-    
-    .header-title {
-        font-size: 18px;
-    }
-    
-    /* Quiz complete */
-    .score-display {
-        font-size: 56px;
-    }
-    
-    .questions-correct {
-        font-size: 20px;
-    }
-    
-    .button-row {
-        gap: 12px;
-        max-width: 280px;
-    }
-    
-    /* Profile page */
-    .avatar-circle {
-        width: 80px;
-        height: 80px;
-    }
-    
-    .avatar-text {
-        font-size: 40px;
-    }
-    
-    .profile-name h2 {
-        font-size: 20px;
-    }
-    
-    /* All Activity page */
     .all-activity-item-details {
         flex-direction: column;
         align-items: flex-start;
@@ -1370,19 +1266,127 @@ body {
     }
 }
 
-/* ===== UTILITY CLASSES ===== */
-.hidden {
-    display: none !important;
+/* ===== AUTH PAGES ===== */
+.auth-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 80px);
+    padding: 20px;
 }
 
-.text-center {
+.auth-card {
+    background: white;
+    border-radius: 24px;
+    padding: 32px 24px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    border: 1px solid #e2e8f0;
+}
+
+.auth-card h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 24px;
     text-align: center;
 }
 
-.mt-20 {
-    margin-top: 20px;
+.form-group {
+    margin-bottom: 20px;
 }
 
-.mb-20 {
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #475569;
+    margin-bottom: 6px;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    transition: all 0.2s;
+    background: white;
+}
+
+.auth-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #475569;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
     margin-bottom: 20px;
+}
+
+.auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.2);
+}
+
+.auth-btn:active {
+    transform: translateY(0);
+}
+
+.auth-links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 20px;
+}
+
+.link-btn {
+    background: none;
+    border: none;
+    color: #667eea;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 4px 8px;
+}
+
+.link-btn:hover {
+    color: #764ba2;
+    text-decoration: underline;
 }
