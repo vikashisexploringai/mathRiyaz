@@ -26,6 +26,7 @@ let passwordResetEmail = null;
 let passwordResetDay = null;
 let passwordResetMonth = null;
 let passwordResetYear = null;
+let quizStartTime = 0;  // Add this with other let declarations
 
 // ===== FIREBASE CONFIG =====
 // Your Firebase configuration (replace with your actual config)
@@ -1197,6 +1198,8 @@ async function saveQuizProgress() {
     const maxPossible = totalQuestions * currentQuizData.maxPointsPerQuestion;
     const accuracy = Math.round((currentQuizData.score / maxPossible) * 100);
     const questionsCorrect = Math.round(currentQuizData.score / (maxPossible / totalQuestions));
+    const totalTimeSpent = Math.round((Date.now() - quizStartTime) / 1000);
+
     
     // Get current attempt count for this level
     try {
@@ -1216,7 +1219,7 @@ async function saveQuizProgress() {
             accuracy: accuracy,
             questionsCorrect: questionsCorrect,
             totalQuestions: totalQuestions,
-            timeSpent: Math.round((Date.now() - questionStartTime) / 1000), // seconds
+            timeSpent: totalTimeSpent,
             
             completedAt: firebase.firestore.FieldValue.serverTimestamp()
         };
@@ -1619,6 +1622,7 @@ function renderQuiz(subjectId, chapterId, subchapterId, level) {
 }
 
 function renderGenericQuiz(quizData) {
+     quizStartTime = Date.now();
     const appHeader = document.getElementById('app-header');
     if (appHeader) {
         appHeader.style.display = 'none';
@@ -1709,6 +1713,7 @@ function showQuizComplete() {
 }
 
 function restartQuiz() {
+     quizStartTime = Date.now();
     if (!currentQuizData) return;
     
     currentQuizData.currentQuestion = 0;
