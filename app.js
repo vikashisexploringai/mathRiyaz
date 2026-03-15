@@ -250,6 +250,39 @@ async function handleLogout() {
 }
 
 
+// ===== PROGRESS HELPER FUNCTIONS =====
+function formatTime(seconds) {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    
+    if (hours > 0) {
+        return `${hours}.${Math.floor(minutes/6)} hrs`; // e.g., 12.5 hrs
+    } else if (minutes > 0) {
+        return `${minutes} mins`;
+    } else {
+        return `${seconds} sec`;
+    }
+}
+
+function formatDate(timestamp) {
+    if (!timestamp) return 'Unknown';
+    
+    const date = timestamp.toDate();
+    const now = new Date();
+    const diffMs = now - date;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) {
+        return `Today, ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    } else if (diffDays === 1) {
+        return `Yesterday, ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    } else if (diffDays < 7) {
+        return `${diffDays} days ago`;
+    } else {
+        return date.toLocaleDateString();
+    }
+}
+
 function showFeedback(message, type) {
     const existingFeedback = document.querySelector('.quiz-feedback');
     if (existingFeedback) existingFeedback.remove();
@@ -358,7 +391,7 @@ function updateBottomNav(activeView) {
             <span class="nav-icon">🏠</span>
             <span>Home</span>
         </button>
-        <button class="nav-item ${activeView === 'progress' ? 'active' : ''}" onclick="showProgress()">
+        <button class="nav-item ${activeView === 'progress' ? 'active' : ''}" onclick="renderProgress()">
             <span class="nav-icon">📊</span>
             <span>Progress</span>
         </button>
@@ -1278,6 +1311,178 @@ async function saveQuizProgress() {
     } catch (error) {
         console.error('Error saving progress:', error);
     }
+}
+
+// ===== PROGRESS PAGE =====
+function renderProgress() {
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) {
+        appHeader.style.display = 'flex';
+    }
+    
+    AppState.currentView = 'progress';
+    const content = document.getElementById('main-content');
+    
+    // Update header
+    updateHeader('📊 Progress');
+    
+    // Check if user is logged in
+    const user = auth.currentUser;
+    if (!user) {
+        renderLogin();
+        return;
+    }
+    
+    // Show loading
+    content.innerHTML = `<div class="loading-spinner"></div>`;
+    
+    // Fetch user data and attempts
+    Promise.all([
+        db.collection('users').doc(user.uid).get(),
+        db.collection('attempts')
+            .where('userId', '==', user.uid)
+            .orderBy('completedAt', 'desc')
+            .limit(5)
+            .get()
+    ]).then(([userDoc, attemptsSnapshot]) => {
+        if (!userDoc.exists) {
+            content.innerHTML = '<div class="error-message">User data not found</div>';
+            return;
+        }
+        
+        const userData = userDoc.data();
+        const overall = userData.overall || { totalPoints: 0, quizzesTaken: 0, totalTimeSpent: 0 };
+        const subjects = userData.subjects || {};
+        
+        // Calculate average accuracy
+        const avgAccuracy = overall.quizzesTaken > 0 
+            ? Math.round((overall.totalPoints / (overall.quizzesTaken * 1000)) * 100) 
+            : 0;
+        
+        // Build HTML
+        let html = `
+            <div class="progress-container">
+                <!-- Overall Statistics -->
+                <div class="stats-card">
+                    <div class="stats-header">📈 Overall Statistics</div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">${overall.totalPoints}</div>
+                            <div class="stat-label">Total Points</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${overall.quizzesTaken}</div>
+                            <div class="stat-label">Quizzes</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${avgAccuracy}%</div>
+                            <div class="stat-label">Accuracy</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${formatTime(overall.totalTimeSpent || 0)}</div>
+                            <div class="stat-label">Total Time</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Subject Breakdown -->
+                <div class="stats-card">
+                    <div class="stats-header">📚 Subject Breakdown</div>
+                    <div class="subject-list">
+        `;
+        
+        // Math subject
+        const math = subjects.math || { totalPoints: 0, accuracy: 0 };
+        const mathPercent = overall.totalPoints > 0 ? Math.round((math.totalPoints / overall.totalPoints) * 100) : 0;
+        html += `
+            <div class="subject-item">
+                <div class="subject-header">
+                    <span class="subject-name">📐 Math</span>
+                    <span class="subject-stats">${math.totalPoints} pts • ${math.accuracy || 0}%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: ${mathPercent}%"></div>
+                </div>
+            </div>
+        `;
+        
+        // English subject
+        const english = subjects.english || { totalPoints: 0, accuracy: 0 };
+        const englishPercent = overall.totalPoints > 0 ? Math.round((english.totalPoints / overall.totalPoints) * 100) : 0;
+        html += `
+            <div class="subject-item">
+                <div class="subject-header">
+                    <span class="subject-name">📚 English</span>
+                    <span class="subject-stats">${english.totalPoints} pts • ${english.accuracy || 0}%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: ${englishPercent}%"></div>
+                </div>
+            </div>
+        `;
+        
+        // Science subject
+        const science = subjects.science || { totalPoints: 0, accuracy: 0 };
+        const sciencePercent = overall.totalPoints > 0 ? Math.round((science.totalPoints / overall.totalPoints) * 100) : 0;
+        html += `
+            <div class="subject-item">
+                <div class="subject-header">
+                    <span class="subject-name">🔬 Science</span>
+                    <span class="subject-stats">${science.totalPoints} pts • ${science.accuracy || 0}%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: ${sciencePercent}%"></div>
+                </div>
+            </div>
+        `;
+        
+        html += `</div></div>`;
+        
+        // Recent Activity
+        html += `<div class="stats-card"><div class="stats-header">🕒 Recent Activity</div>`;
+        
+        if (attemptsSnapshot.empty) {
+            html += '<div class="empty-state">No quizzes taken yet</div>';
+        } else {
+            html += `<div class="activity-list">`;
+            attemptsSnapshot.forEach(doc => {
+                const attempt = doc.data();
+                const dateStr = formatDate(attempt.completedAt);
+                const subjectIcon = attempt.subject === 'math' ? '📐' : attempt.subject === 'english' ? '📚' : '🔬';
+                
+                html += `
+                    <div class="activity-item">
+                        <div class="activity-main">
+                            <span class="activity-title">${subjectIcon} ${attempt.chapter} ${attempt.level}</span>
+                            <span class="activity-score">${attempt.score} pts</span>
+                        </div>
+                        <div class="activity-details">
+                            <span>${attempt.questionsCorrect}/${attempt.totalQuestions} correct</span>
+                            <span>•</span>
+                            <span>${dateStr}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+        }
+        
+        // View All button
+        html += `
+            <button class="view-all-btn" onclick="renderAllActivity()">
+                📋 View All Activity
+            </button>
+        `;
+        
+        html += `</div></div>`; // Close stats-card and progress-container
+        
+        content.innerHTML = html;
+        updateBottomNav('progress');
+        
+    }).catch(error => {
+        console.error('Error loading progress:', error);
+        content.innerHTML = '<div class="error-message">Failed to load progress</div>';
+    });
 }
 
 // ===== CIRCULAR TIMER =====
