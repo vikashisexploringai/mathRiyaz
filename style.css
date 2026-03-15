@@ -1342,6 +1342,154 @@ body {
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
 }
 
+/* ===== SETTINGS PAGE ===== */
+.settings-container {
+    padding: 16px;
+}
+
+.settings-card {
+    background: white;
+    border-radius: 20px;
+    padding: 8px 0;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+.settings-header {
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 16px 20px 8px 20px;
+}
+
+.settings-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-top: 1px solid #f1f5f9;
+}
+
+.settings-item:first-of-type {
+    border-top: none;
+}
+
+.settings-item:hover {
+    background: #f8fafc;
+}
+
+.settings-item-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.settings-icon {
+    font-size: 20px;
+    width: 24px;
+    text-align: center;
+}
+
+.settings-label {
+    font-size: 16px;
+    color: #0f172a;
+}
+
+.settings-value {
+    font-size: 14px;
+    color: #64748b;
+}
+
+.settings-arrow {
+    font-size: 18px;
+    color: #94a3b8;
+}
+
+/* Toggle Buttons */
+.settings-toggle {
+    display: flex;
+    background: #f1f5f9;
+    border-radius: 30px;
+    padding: 2px;
+}
+
+.toggle-btn {
+    padding: 6px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: transparent;
+    color: #64748b;
+}
+
+.toggle-btn.active {
+    background: #3b82f6;
+    color: white;
+    box-shadow: 0 2px 8px rgba(59,130,246,0.3);
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background-color: #0f172a;
+    color: #f1f5f9;
+}
+
+body.dark-mode .app-container {
+    background-color: #1e293b;
+    box-shadow: none;
+}
+
+body.dark-mode .settings-card {
+    background: #334155;
+    border-color: #475569;
+}
+
+body.dark-mode .settings-header {
+    color: #94a3b8;
+}
+
+body.dark-mode .settings-item {
+    border-top-color: #475569;
+}
+
+body.dark-mode .settings-item:hover {
+    background: #2d3a4f;
+}
+
+body.dark-mode .settings-label {
+    color: #f1f5f9;
+}
+
+body.dark-mode .settings-value {
+    color: #94a3b8;
+}
+
+body.dark-mode .settings-arrow {
+    color: #64748b;
+}
+
+body.dark-mode .settings-toggle {
+    background: #2d3a4f;
+}
+
+body.dark-mode .toggle-btn {
+    color: #94a3b8;
+}
+
+body.dark-mode .toggle-btn.active {
+    background: #3b82f6;
+    color: white;
+}
+
 /* ===== UTILITY CLASSES ===== */
 .hidden {
     display: none !important;
