@@ -1068,7 +1068,7 @@ function renderSettings() {
                     </div>
                     <span class="settings-arrow">→</span>
                 </div>
-                <div class="settings-item" onclick="window.open('https://your-privacy-url.com', '_blank')">
+                <div class="settings-item" onclick="window.open('https://vikashisexploringai.github.io/mathRiyaz/privacy-policy.html', '_blank')">
                     <div class="settings-item-left">
                         <span class="settings-icon">🔒</span>
                         <span class="settings-label">Privacy Policy</span>
