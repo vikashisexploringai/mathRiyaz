@@ -96,6 +96,7 @@ function clearInlineMessages() {
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', async () => {
     await loadConfig();
+    initDarkMode(); 
     renderLogin();
 });
 
@@ -2062,7 +2063,11 @@ window.navigateToQuiz = async function(subjectId, chapterId, subchapterId, level
 // ===== PLACEHOLDER FUNCTIONS =====
 function showProgress() { showToast('Progress view coming soon!', 'info'); }
 function showProfile() { showToast('Profile view coming soon!', 'info'); }
-function showSettings() { showToast('Settings view coming soon!', 'info'); }
+
+
+function showSettings() {
+    renderSettings();
+}
 
 // Make functions globally available
 window.renderHome = renderHome;
