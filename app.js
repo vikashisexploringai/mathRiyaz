@@ -16,9 +16,8 @@ let currentQuizData = null;
 let questionTimer = null;
 let timeRemaining = 0;
 let questionStartTime = 0;
-
-// ===== FORMATTER =====
 let currentFormatter = null;
+
 // Store temporary verification state
 let passwordResetVerified = false;
 let passwordResetUsername = null;
@@ -26,20 +25,19 @@ let passwordResetEmail = null;
 let passwordResetDay = null;
 let passwordResetMonth = null;
 let passwordResetYear = null;
-let quizStartTime = 0;  // Add this with other let declarations
+let quizStartTime = 0;
 
 // ===== FIREBASE CONFIG =====
-// Your Firebase configuration (replace with your actual config)
 const firebaseConfig = {
-  apiKey: "AIzaSyACO39eJRrdbgowWcqgdp0DFkDPUhbQQfQ",
-  authDomain: "database-367af.firebaseapp.com",
-  projectId: "database-367af",
-  storageBucket: "database-367af.firebasestorage.app",
-  messagingSenderId: "246204653332",
-  appId: "1:246204653332:web:8daf25ea24112de940ec01"
+    apiKey: "AIzaSyACO39eJRrdbgowWcqgdp0DFkDPUhbQQfQ",
+    authDomain: "database-367af.firebaseapp.com",
+    projectId: "database-367af",
+    storageBucket: "database-367af.firebasestorage.app",
+    messagingSenderId: "246204653332",
+    appId: "1:246204653332:web:8daf25ea24112de940ec01"
 };
 
-// Initialize Firebase (if not already initialized)
+// Initialize Firebase
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
@@ -47,47 +45,52 @@ if (!firebase.apps.length) {
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-console.log('Firebase apps:', firebase.apps.length);
-console.log('Auth exists:', !!auth);
-console.log('Firestore exists:', !!db);
-
-// Try to force Firestore initialization
-try {
-    const test = db.collection('test');
-    console.log('Firestore test passed');
-} catch (e) {
-    console.error('Firestore test failed:', e);
+// ===== TOAST NOTIFICATION SYSTEM =====
+function showToast(message, type = 'info', duration = 3000) {
+    const existingToast = document.querySelector('.toast-notification');
+    if (existingToast) existingToast.remove();
+    
+    const toast = document.createElement('div');
+    toast.className = `toast-notification toast-${type}`;
+    toast.textContent = message;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add('show'), 10);
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, duration);
 }
 
-// Set up auth state observer
-auth.onAuthStateChanged(async (user) => {
-    if (user) {
-        // User is signed in
-        console.log('User signed in:', user.email);
-        AppState.currentUser = {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName
-        };
-        
-        // Load user progress from Firestore
-        await loadUserProgress(user.uid);
-        
-        // If current view is login/register, go to home
-        if (['login', 'register', 'forgotUsername', 'forgotPassword', 'resetPassword'].includes(AppState.currentView)) {
-            renderHome();
-        }
-    } else {
-        // User is signed out
-        console.log('User signed out');
-        AppState.currentUser = null;
-        
-        // If not on auth page, go to login
-        if (!['login', 'register', 'forgotUsername', 'forgotPassword', 'resetPassword'].includes(AppState.currentView)) {
-            renderLogin();
-        }
-    }
-});
+// ===== INLINE MESSAGE HELPER =====
+function showInlineMessage(inputId, message, type = 'error') {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    
+    const existingMessage = input.parentElement.querySelector('.inline-message');
+    if (existingMessage) existingMessage.remove();
+    
+    input.classList.add('input-error');
+    
+    const messageEl = document.createElement('div');
+    messageEl.className = `inline-message inline-${type}`;
+    messageEl.textContent = message;
+    
+    input.parentElement.appendChild(messageEl);
+    
+    input.addEventListener('input', function clearError() {
+        input.classList.remove('input-error');
+        if (messageEl.parentElement) messageEl.remove();
+        input.removeEventListener('input', clearError);
+    }, { once: true });
+}
+
+function clearInlineMessages() {
+    document.querySelectorAll('.inline-message').forEach(el => el.remove());
+    document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+}
 
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', async () => {
@@ -107,20 +110,40 @@ async function loadConfig() {
     }
 }
 
+// ===== AUTH STATE OBSERVER =====
+auth.onAuthStateChanged(async (user) => {
+    if (user) {
+        console.log('User signed in:', user.email);
+        AppState.currentUser = {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName
+        };
+        
+        await loadUserProgress(user.uid);
+        
+        if (['login', 'register', 'forgotUsername', 'forgotPassword', 'resetPassword'].includes(AppState.currentView)) {
+            renderHome();
+        }
+    } else {
+        console.log('User signed out');
+        AppState.currentUser = null;
+        
+        if (!['login', 'register', 'forgotUsername', 'forgotPassword', 'resetPassword'].includes(AppState.currentView)) {
+            renderLogin();
+        }
+    }
+});
+
 // ===== FORMATTER LOADING =====
 async function loadSubjectFormatter(subjectId) {
     try {
-        // Dynamically import the formatter for this subject
         const formatterModule = await import(`./shared/formatters/${subjectId}-formatter.js`);
-        
-        // Store the formatter
         currentFormatter = formatterModule.default || formatterModule;
-        
         console.log(`Loaded formatter for ${subjectId}`);
         return currentFormatter;
     } catch (error) {
         console.warn(`No specific formatter for ${subjectId}, using default`);
-        // Use default formatter that just returns the text as-is
         currentFormatter = {
             formatQuestion: (text) => text,
             formatOptions: (options) => options,
@@ -140,123 +163,12 @@ function shuffleArray(array) {
     return newArray;
 }
 
-function renderLargeOptions(question) {
-    // Use formatter to format options if available
-    const formattedOptions = currentFormatter?.formatOptions 
-        ? currentFormatter.formatOptions(question.options)
-        : question.options.map(opt => ({ display: opt, value: opt }));
-    
-    return shuffleArray(formattedOptions).map(opt => `
-        <button class="quiz-option-large" onclick="checkAnswer('${opt.value.replace(/'/g, "\\'")}', this)">
-            ${opt.display}
-        </button>
-    `).join('');
-}
-
-
-// ===== PROFILE PAGE =====
-function renderProfile() {
-    const appHeader = document.getElementById('app-header');
-    if (appHeader) {
-        appHeader.style.display = 'flex';
-    }
-    
-    AppState.currentView = 'profile';
-    const content = document.getElementById('main-content');
-    
-    // Update header
-    updateHeader('Profile');
-    
-    // Get current user data
-    const user = auth.currentUser;
-    if (!user) {
-        renderLogin();
-        return;
-    }
-    
-    // Fetch user details from Firestore
-    db.collection('users').doc(user.uid).get().then(doc => {
-        if (!doc.exists) {
-            console.error('User document not found');
-            return;
-        }
-        
-        const userData = doc.data();
-        const displayName = userData.displayName || 'User';
-        const username = userData.username || 'username';
-        const dob = userData.dateOfBirth || { day: '?', month: '?', year: '?' };
-        const createdAt = userData.createdAt ? new Date(userData.createdAt.toDate()) : new Date();
-        
-        // Format dates
-        const joinMonth = createdAt.toLocaleString('default', { month: 'long' });
-        const joinYear = createdAt.getFullYear();
-        const dobString = `${dob.day} ${new Date(2000, dob.month-1).toLocaleString('default', { month: 'long' })} ${dob.year}`;
-        
-        const html = `
-            <div class="profile-container">
-                <div class="profile-avatar">
-                    <div class="avatar-circle">
-                        <span class="avatar-text">${displayName.charAt(0)}</span>
-                    </div>
-                </div>
-                
-                <div class="profile-name">
-                    <h2>${displayName}</h2>
-                    <p class="profile-username">@${username}</p>
-                </div>
-                
-                <div class="profile-card">
-                    <div class="profile-card-icon">🎂</div>
-                    <div class="profile-card-content">
-                        <div class="profile-card-label">Date of Birth</div>
-                        <div class="profile-card-value">${dobString}</div>
-                    </div>
-                </div>
-                
-                <div class="profile-card">
-                    <div class="profile-card-icon">📅</div>
-                    <div class="profile-card-content">
-                        <div class="profile-card-label">Member Since</div>
-                        <div class="profile-card-value">${joinMonth} ${joinYear}</div>
-                    </div>
-                </div>
-                
-                <button class="logout-btn" onclick="handleLogout()">
-                    <span class="logout-icon">🚪</span>
-                    Logout
-                </button>
-            </div>
-        `;
-        
-        content.innerHTML = html;
-        updateBottomNav('profile');
-    }).catch(error => {
-        console.error('Error fetching user data:', error);
-        content.innerHTML = '<div class="error-message">Failed to load profile</div>';
-    });
-}
-
-// ===== LOGOUT FUNCTION =====
-async function handleLogout() {
-    if (confirm('Are you sure you want to logout?')) {
-        try {
-            await auth.signOut();
-            renderLogin();
-        } catch (error) {
-            console.error('Logout error:', error);
-            alert('Failed to logout. Please try again.');
-        }
-    }
-}
-
-
-// ===== PROGRESS HELPER FUNCTIONS =====
 function formatTime(seconds) {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     
     if (hours > 0) {
-        return `${hours}.${Math.floor(minutes/6)} hrs`; // e.g., 12.5 hrs
+        return `${hours}.${Math.floor(minutes/6)} hrs`;
     } else if (minutes > 0) {
         return `${minutes} mins`;
     } else {
@@ -269,8 +181,7 @@ function formatDate(timestamp) {
     
     const date = timestamp.toDate();
     const now = new Date();
-    const diffMs = now - date;
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
     
     if (diffDays === 0) {
         return `Today, ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
@@ -281,70 +192,6 @@ function formatDate(timestamp) {
     } else {
         return date.toLocaleDateString();
     }
-}
-
-function showFeedback(message, type) {
-    const existingFeedback = document.querySelector('.quiz-feedback');
-    if (existingFeedback) existingFeedback.remove();
-    
-    const feedback = document.createElement('div');
-    feedback.className = `quiz-feedback ${type}`;
-    feedback.textContent = message;
-    
-    const questionContainer = document.querySelector('.quiz-question');
-    if (questionContainer) {
-        questionContainer.parentNode.insertBefore(feedback, questionContainer.nextSibling);
-    }
-    
-    setTimeout(() => {
-        feedback.remove();
-    }, 2000);
-}
-
-function disableAllButtons() {
-    const allButtons = document.querySelectorAll('.quiz-option-large');
-    allButtons.forEach(btn => {
-        btn.disabled = true;
-        btn.style.opacity = '0.7';
-        btn.style.cursor = 'not-allowed';
-    });
-}
-
-function enableAllButtons() {
-    const allButtons = document.querySelectorAll('.quiz-option-large');
-    allButtons.forEach(btn => {
-        btn.disabled = false;
-        btn.style.opacity = '1';
-        btn.style.cursor = 'pointer';
-        btn.classList.remove('correct', 'wrong');
-    });
-}
-
-function highlightCorrectAnswer(correctAnswer) {
-    const allButtons = document.querySelectorAll('.quiz-option-large');
-    allButtons.forEach(btn => {
-        if (btn.textContent.trim() === correctAnswer) {
-            btn.classList.add('correct');
-        }
-    });
-}
-
-function calculatePoints(timeTaken) {
-    const maxPoints = currentQuizData.maxPointsPerQuestion;
-    const timeLimit = currentQuizData.timePerQuestion;
-    
-    let points = maxPoints * (1 - (timeTaken / timeLimit) * 0.5);
-    points = Math.round(points);
-    const minPoints = Math.round(maxPoints * 0.1);
-    
-    return Math.max(minPoints, points);
-}
-
-function getFeedbackMessage(percentage) {
-    if (percentage >= 90) return "Excellent! You've mastered this level! 🎉";
-    if (percentage >= 70) return "Good job! You're doing great! 👍";
-    if (percentage >= 50) return "Keep practicing! You'll get better! 💪";
-    return "Don't give up! Try again to improve! 🌱";
 }
 
 function loadSubjectCSS(subjectId) {
@@ -379,8 +226,7 @@ function updateBottomNav(activeView) {
     const nav = document.getElementById('bottom-nav');
     if (!nav) return;
     
-    if (activeView === 'login' || activeView === 'register' || 
-        activeView === 'forgotUsername' || activeView === 'forgotPassword') {
+    if (['login', 'register', 'forgotUsername', 'forgotPassword', 'resetPassword'].includes(activeView)) {
         nav.style.display = 'none';
         return;
     }
@@ -418,34 +264,29 @@ function showError(message) {
     }
 }
 
-function goToNextLevel() {
-    const nextLevel = AppState.currentLevel + 1;
-    const subchapter = AppState.config.subjects
-        .find(s => s.id === AppState.currentSubject)
-        .chapters.find(c => c.id === AppState.currentChapter)
-        .subchapters.find(s => s.id === AppState.currentSubchapter);
-    
-    if (nextLevel <= subchapter.levels) {
-        // Next level exists
-        renderQuiz(AppState.currentSubject, AppState.currentChapter, AppState.currentSubchapter, nextLevel);
-    } else {
-        // No next level, go back to levels
-        renderLevels(AppState.currentSubject, AppState.currentChapter, AppState.currentSubchapter);
+async function loadUserProgress(uid) {
+    try {
+        const userDoc = await db.collection('users').doc(uid).get();
+        
+        if (userDoc.exists) {
+            const userData = userDoc.data();
+            AppState.progress = userData.progress || {};
+            AppState.userDisplayName = userData.displayName;
+            console.log('User progress loaded:', AppState.progress);
+        }
+    } catch (error) {
+        console.error('Error loading user progress:', error);
     }
 }
 
 // ===== AUTH VIEWS =====
-
 function renderLogin() {
     const appHeader = document.getElementById('app-header');
-    if (appHeader) {
-        appHeader.style.display = 'flex';
-    }
+    if (appHeader) appHeader.style.display = 'flex';
     
     AppState.currentView = 'login';
     const content = document.getElementById('main-content');
     
-    // Update header
     updateHeader('Welcome Back');
     
     const html = `
@@ -482,12 +323,7 @@ function renderLogin() {
     `;
     
     content.innerHTML = html;
-    
-    // Hide bottom nav on auth pages
-    const bottomNav = document.getElementById('bottom-nav');
-    if (bottomNav) {
-        bottomNav.style.display = 'none';
-    }
+    updateBottomNav('login');
 }
 
 async function handleLogin() {
@@ -495,53 +331,41 @@ async function handleLogin() {
     const password = document.getElementById('password')?.value;
     const rememberMe = document.getElementById('rememberMe')?.checked;
     
+    clearInlineMessages();
+    
     if (!username || !password) {
-        alert('Please enter both username and password');
+        if (!username) showInlineMessage('username', 'Please enter username');
+        if (!password) showInlineMessage('password', 'Please enter password');
         return;
     }
     
     try {
-        // Show loading state
         const loginBtn = document.querySelector('.auth-btn');
         loginBtn.textContent = 'Logging in...';
         loginBtn.disabled = true;
         
-        // Create email from username
         const email = `${username}@mathriyaz.local`;
         
-        // Set persistence based on Remember Me
-        if (rememberMe) {
-            await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-        } else {
-            await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
-        }
+        await auth.setPersistence(
+            rememberMe ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION
+        );
         
-        // Sign in
         await auth.signInWithEmailAndPassword(email, password);
-        
-        // Auth observer will handle navigation
+        showToast('Login successful!', 'success');
         
     } catch (error) {
         console.error('Login error:', error);
         
-        let errorMessage = 'Login failed. ';
-        switch (error.code) {
-            case 'auth/user-not-found':
-                errorMessage += 'Username not found.';
-                break;
-            case 'auth/wrong-password':
-                errorMessage += 'Incorrect password.';
-                break;
-            case 'auth/invalid-email':
-                errorMessage += 'Invalid username format.';
-                break;
-            default:
-                errorMessage += error.message;
+        if (error.code === 'auth/user-not-found') {
+            showInlineMessage('username', 'Username not found');
+        } else if (error.code === 'auth/wrong-password') {
+            showInlineMessage('password', 'Incorrect password');
+        } else if (error.code === 'auth/invalid-email') {
+            showInlineMessage('username', 'Invalid username format');
+        } else {
+            showToast(error.message, 'error');
         }
         
-        alert(errorMessage);
-        
-        // Reset button
         const loginBtn = document.querySelector('.auth-btn');
         loginBtn.textContent = 'Login';
         loginBtn.disabled = false;
@@ -550,34 +374,27 @@ async function handleLogin() {
 
 function renderRegister() {
     const appHeader = document.getElementById('app-header');
-    if (appHeader) {
-        appHeader.style.display = 'flex';
-    }
+    if (appHeader) appHeader.style.display = 'flex';
     
     AppState.currentView = 'register';
     const content = document.getElementById('main-content');
     
-    // Update header
     updateHeader('Create Account');
     
-    // Get today's date for max DOB (18 years ago, adjust as needed)
     const today = new Date();
-    const maxYear = today.getFullYear() - 2; // Minimum 2 years old
-    const minYear = today.getFullYear() - 100; // Maximum 100 years old
+    const maxYear = today.getFullYear() - 2;
+    const minYear = today.getFullYear() - 100;
     
-    // Generate year options
     let yearOptions = '';
     for (let year = maxYear; year >= minYear; year--) {
         yearOptions += `<option value="${year}">${year}</option>`;
     }
     
-    // Generate month options
     let monthOptions = '';
     for (let month = 1; month <= 12; month++) {
         monthOptions += `<option value="${month}">${month}</option>`;
     }
     
-    // Generate day options
     let dayOptions = '';
     for (let day = 1; day <= 31; day++) {
         dayOptions += `<option value="${day}">${day}</option>`;
@@ -596,7 +413,7 @@ function renderRegister() {
                 <div class="form-group">
                     <label for="username">Choose Username</label>
                     <input type="text" id="username" placeholder="e.g., johndoe123" class="auth-input">
-                    <small style="color: #64748b; font-size: 12px; margin-top: 4px; display: block;">This will be used for login</small>
+                    <small style="color: #64748b; font-size: 12px; margin-top: 4px; display: block;">Letters, numbers, and underscores only</small>
                 </div>
                 
                 <div class="form-group">
@@ -644,12 +461,7 @@ function renderRegister() {
     `;
     
     content.innerHTML = html;
-    
-    // Hide bottom nav
-    const bottomNav = document.getElementById('bottom-nav');
-    if (bottomNav) {
-        bottomNav.style.display = 'none';
-    }
+    updateBottomNav('register');
 }
 
 async function handleRegister() {
@@ -662,120 +474,73 @@ async function handleRegister() {
     const confirmPassword = document.getElementById('confirmPassword')?.value;
     const rememberMe = document.getElementById('rememberMe')?.checked;
     
-    // Validation
-    if (!fullName || !username || !day || !month || !year || !password || !confirmPassword) {
-        alert('Please fill in all fields');
-        return;
+    clearInlineMessages();
+    let hasError = false;
+    
+    if (!fullName) { showInlineMessage('fullName', 'Please enter full name'); hasError = true; }
+    if (!username) { showInlineMessage('username', 'Please choose a username'); hasError = true; }
+    else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+        showInlineMessage('username', 'Username can only contain letters, numbers, and underscores');
+        hasError = true;
     }
     
-    if (password.length < 6) {
-        alert('Password must be at least 6 characters');
-        return;
-    }
+    if (!day || !month || !year) { showInlineMessage('dobDay', 'Please select date of birth'); hasError = true; }
+    if (!password) { showInlineMessage('password', 'Please enter password'); hasError = true; }
+    else if (password.length < 6) { showInlineMessage('password', 'Password must be at least 6 characters'); hasError = true; }
     
-    if (password !== confirmPassword) {
-        alert('Passwords do not match');
-        return;
-    }
+    if (!confirmPassword) { showInlineMessage('confirmPassword', 'Please confirm password'); hasError = true; }
+    else if (password !== confirmPassword) { showInlineMessage('confirmPassword', 'Passwords do not match'); hasError = true; }
     
-    const usernameRegex = /^[a-zA-Z0-9_]+$/;
-    if (!usernameRegex.test(username)) {
-        alert('Username can only contain letters, numbers, and underscores');
-        return;
-    }
+    if (hasError) return;
     
     try {
-        // Show loading state
         const registerBtn = document.querySelector('.auth-btn');
         registerBtn.textContent = 'Checking...';
         registerBtn.disabled = true;
         
-        // STEP 1: Check if username already exists in Firestore
-        const usersRef = db.collection('users');
-        const snapshot = await usersRef.where('username', '==', username).get();
+        const snapshot = await db.collection('users').where('username', '==', username).get();
         
         if (!snapshot.empty) {
-            alert('Username already taken. Please choose another.');
+            showInlineMessage('username', 'Username already taken. Please choose another.');
             registerBtn.textContent = 'Create Account';
             registerBtn.disabled = false;
             return;
         }
         
-        // STEP 2: Username is available, proceed with registration
         registerBtn.textContent = 'Creating Account...';
         
         const email = `${username}@mathriyaz.local`;
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
         
-        await user.updateProfile({
-            displayName: fullName
-        });
+        await user.updateProfile({ displayName: fullName });
         
-        if (rememberMe) {
-            await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-        } else {
-            await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
-        }
+        await auth.setPersistence(
+            rememberMe ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION
+        );
         
-        // === ADDED: Wait for auth to propagate ===
-        console.log('✅ User created in Auth, UID:', user.uid);
-        console.log('⏳ Waiting 2 seconds for auth to propagate...');
         await new Promise(resolve => setTimeout(resolve, 2000));
         
-        // === ADDED: Test simple write first ===
-        try {
-            console.log('📝 Attempting simple test write...');
-            await db.collection('users').doc(user.uid).set({
-                uid: user.uid,
-                test: true,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            console.log('✅ Test write succeeded!');
-        } catch (testError) {
-            console.error('❌ Test write failed:', testError);
-            throw new Error('Firestore write failed even for test data');
-        }
-        
-        // STEP 3: Save full user data to Firestore
-        console.log('📝 Writing full user data...');
         await db.collection('users').doc(user.uid).set({
             uid: user.uid,
             username: username,
             displayName: fullName,
             email: email,
-            dateOfBirth: {
-                day: parseInt(day),
-                month: parseInt(month),
-                year: parseInt(year)
-            },
+            dateOfBirth: { day: parseInt(day), month: parseInt(month), year: parseInt(year) },
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            overall: {
-                totalPoints: 0,
-                quizzesTaken: 0,
-                totalTimeSpent: 0
-            }
+            overall: { totalPoints: 0, quizzesTaken: 0, totalTimeSpent: 0 }
         });
         
-        console.log('✅ Full user data written successfully!');
-        console.log('🎉 Account created successfully!');
-        
-        const bottomNav = document.getElementById('bottom-nav');
-        if (bottomNav) {
-            bottomNav.style.display = 'flex';
-        }
+        showToast('Account created successfully!', 'success');
         
     } catch (error) {
-        console.error('❌ Registration error:', error);
+        console.error('Registration error:', error);
         
-        let errorMessage = 'Registration failed. ';
         if (error.code === 'auth/email-already-in-use') {
-            errorMessage += 'Username already taken. Please choose another.';
+            showInlineMessage('username', 'Username already taken. Please choose another.');
         } else {
-            errorMessage += error.message;
+            showToast('Registration failed: ' + error.message, 'error');
         }
-        
-        alert(errorMessage);
         
         const registerBtn = document.querySelector('.auth-btn');
         registerBtn.textContent = 'Create Account';
@@ -785,17 +550,13 @@ async function handleRegister() {
 
 function renderForgotUsername() {
     const appHeader = document.getElementById('app-header');
-    if (appHeader) {
-        appHeader.style.display = 'flex';
-    }
+    if (appHeader) appHeader.style.display = 'flex';
     
     AppState.currentView = 'forgotUsername';
     const content = document.getElementById('main-content');
     
-    // Update header
     updateHeader('Find Username');
     
-    // Generate date options (same as register)
     const today = new Date();
     const maxYear = today.getFullYear() - 2;
     const minYear = today.getFullYear() - 100;
@@ -862,12 +623,7 @@ function renderForgotUsername() {
     `;
     
     content.innerHTML = html;
-    
-    // Hide bottom nav
-    const bottomNav = document.getElementById('bottom-nav');
-    if (bottomNav) {
-        bottomNav.style.display = 'none';
-    }
+    updateBottomNav('forgotUsername');
 }
 
 async function handleFindUsername() {
@@ -876,53 +632,44 @@ async function handleFindUsername() {
     const month = document.getElementById('dobMonth')?.value;
     const year = document.getElementById('dobYear')?.value;
     
-    // Validation
+    clearInlineMessages();
+    
     if (!fullName || !day || !month || !year) {
-        alert('Please enter full name and date of birth');
+        if (!fullName) showInlineMessage('fullName', 'Please enter full name');
+        if (!day || !month || !year) showInlineMessage('dobDay', 'Please select date of birth');
         return;
     }
     
     try {
-        // Show loading state
         const findBtn = document.querySelector('.auth-btn');
         findBtn.textContent = 'Searching...';
         findBtn.disabled = true;
         
-        // Query Firestore for users with matching name and DOB
-        const usersRef = db.collection('users');
-        const snapshot = await usersRef
+        const snapshot = await db.collection('users')
             .where('displayName', '==', fullName)
             .where('dateOfBirth.day', '==', parseInt(day))
             .where('dateOfBirth.month', '==', parseInt(month))
             .where('dateOfBirth.year', '==', parseInt(year))
             .get();
         
-        // Reset button
         findBtn.textContent = 'Find Username';
         findBtn.disabled = false;
         
         if (snapshot.empty) {
-            // No matching user found
-            alert('No account found with these details. Please check and try again.');
+            showToast('No account found with these details', 'error');
             return;
         }
         
-        // Get the first matching user (should be unique)
         const userData = snapshot.docs[0].data();
-        const username = userData.username;
         
-        // Show the result
-        const resultDiv = document.getElementById('usernameResult');
-        const foundUsername = document.getElementById('foundUsername');
-        
-        foundUsername.textContent = username;
-        resultDiv.style.display = 'block';
+        document.getElementById('foundUsername').textContent = userData.username;
+        document.getElementById('usernameResult').style.display = 'block';
+        showToast('Username found!', 'success');
         
     } catch (error) {
         console.error('Error finding username:', error);
-        alert('An error occurred. Please try again.');
+        showToast('An error occurred. Please try again.', 'error');
         
-        // Reset button
         const findBtn = document.querySelector('.auth-btn');
         findBtn.textContent = 'Find Username';
         findBtn.disabled = false;
@@ -931,23 +678,18 @@ async function handleFindUsername() {
 
 function renderForgotPassword() {
     const appHeader = document.getElementById('app-header');
-    if (appHeader) {
-        appHeader.style.display = 'flex';
-    }
+    if (appHeader) appHeader.style.display = 'flex';
     
     AppState.currentView = 'forgotPassword';
     const content = document.getElementById('main-content');
     
-    // Reset verification state
     passwordResetVerified = false;
     passwordResetUsername = null;
     
-    // Update header
     updateHeader('Reset Password');
     
-    // Generate date options
     const today = new Date();
-    const maxYear = today.getFullYear() - 4;
+    const maxYear = today.getFullYear() - 2;
     const minYear = today.getFullYear() - 100;
     
     let yearOptions = '';
@@ -1007,12 +749,7 @@ function renderForgotPassword() {
     `;
     
     content.innerHTML = html;
-    
-    // Hide bottom nav
-    const bottomNav = document.getElementById('bottom-nav');
-    if (bottomNav) {
-        bottomNav.style.display = 'none';
-    }
+    updateBottomNav('forgotPassword');
 }
 
 async function handleVerifyIdentity() {
@@ -1021,8 +758,11 @@ async function handleVerifyIdentity() {
     const month = document.getElementById('resetDobMonth')?.value;
     const year = document.getElementById('resetDobYear')?.value;
     
+    clearInlineMessages();
+    
     if (!username || !day || !month || !year) {
-        alert('Please enter username and date of birth');
+        if (!username) showInlineMessage('resetUsername', 'Please enter username');
+        if (!day || !month || !year) showInlineMessage('resetDobDay', 'Please select date of birth');
         return;
     }
     
@@ -1031,37 +771,37 @@ async function handleVerifyIdentity() {
         verifyBtn.textContent = 'Verifying...';
         verifyBtn.disabled = true;
         
-        const usersRef = db.collection('users');
-        const snapshot = await usersRef
-            .where('username', '==', username)
-            .get();
+        const snapshot = await db.collection('users').where('username', '==', username).get();
         
         if (snapshot.empty) {
-            throw new Error('User not found');
+            showInlineMessage('resetUsername', 'Username not found');
+            verifyBtn.textContent = 'Verify Identity';
+            verifyBtn.disabled = false;
+            return;
         }
         
         const userData = snapshot.docs[0].data();
         
-        // Verify DOB
         if (userData.dateOfBirth.day !== parseInt(day) ||
             userData.dateOfBirth.month !== parseInt(month) ||
             userData.dateOfBirth.year !== parseInt(year)) {
-            throw new Error('Date of birth does not match');
+            showInlineMessage('resetDobDay', 'Date of birth does not match');
+            verifyBtn.textContent = 'Verify Identity';
+            verifyBtn.disabled = false;
+            return;
         }
         
-        // Store verification data
         passwordResetVerified = true;
         passwordResetUsername = username;
         passwordResetDay = day;
         passwordResetMonth = month;
         passwordResetYear = year;
         
-        // Move to password reset step
         renderResetPassword();
         
     } catch (error) {
         console.error('Verification error:', error);
-        alert('Verification failed. Please check your details and try again.');
+        showToast('Verification failed. Please try again.', 'error');
         
         const verifyBtn = document.querySelector('.auth-btn');
         verifyBtn.textContent = 'Verify Identity';
@@ -1070,27 +810,17 @@ async function handleVerifyIdentity() {
 }
 
 function renderResetPassword() {
-
-     console.log('🎯 renderResetPassword CALLED!');
-    console.log('passwordResetVerified:', passwordResetVerified);
-    console.log('passwordResetUsername:', passwordResetUsername);
-    
-    const appHeader = document.getElementById('app-header');
-    if (appHeader) {
-        appHeader.style.display = 'flex';
-    }
-    
-    // Check if verified
     if (!passwordResetVerified) {
-         console.log('❌ Not verified, returning to forgot password');
         renderForgotPassword();
         return;
     }
     
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) appHeader.style.display = 'flex';
+    
     AppState.currentView = 'resetPassword';
     const content = document.getElementById('main-content');
     
-    // Update header
     updateHeader('Reset Password');
     
     const html = `
@@ -1122,56 +852,37 @@ function renderResetPassword() {
     `;
     
     content.innerHTML = html;
-    
-    // Hide bottom nav
-    const bottomNav = document.getElementById('bottom-nav');
-    if (bottomNav) {
-        bottomNav.style.display = 'none';
-    }
+    updateBottomNav('resetPassword');
 }
 
 async function handleCloudPasswordReset() {
     const newPassword = document.getElementById('newPassword')?.value;
     const confirmPassword = document.getElementById('confirmNewPassword')?.value;
     
-    // Use stored values from verification
-    const username = passwordResetUsername;
-    const day = passwordResetDay;
-    const month = passwordResetMonth;
-    const year = passwordResetYear;
+    clearInlineMessages();
+    let hasError = false;
     
-    if (!username || !newPassword || !confirmPassword) {
-        alert('Please fill in all fields');
-        return;
-    }
+    if (!newPassword) { showInlineMessage('newPassword', 'Please enter new password'); hasError = true; }
+    else if (newPassword.length < 6) { showInlineMessage('newPassword', 'Password must be at least 6 characters'); hasError = true; }
     
-    if (newPassword !== confirmPassword) {
-        alert('Passwords do not match');
-        return;
-    }
+    if (!confirmPassword) { showInlineMessage('confirmNewPassword', 'Please confirm password'); hasError = true; }
+    else if (newPassword !== confirmPassword) { showInlineMessage('confirmNewPassword', 'Passwords do not match'); hasError = true; }
     
-    if (newPassword.length < 6) {
-        alert('Password must be at least 6 characters');
-        return;
-    }
+    if (hasError) return;
     
     try {
         const resetBtn = document.querySelector('.auth-btn');
         resetBtn.textContent = 'Updating...';
         resetBtn.disabled = true;
         
-        const functionUrl = 'https://us-central1-database-367af.cloudfunctions.net/resetPassword';
-        
-        const response = await fetch(functionUrl, {
+        const response = await fetch('https://us-central1-database-367af.cloudfunctions.net/resetPassword', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                username,
-                day: parseInt(day),
-                month: parseInt(month),
-                year: parseInt(year),
+                username: passwordResetUsername,
+                day: parseInt(passwordResetDay),
+                month: parseInt(passwordResetMonth),
+                year: parseInt(passwordResetYear),
                 newPassword
             })
         });
@@ -1179,14 +890,11 @@ async function handleCloudPasswordReset() {
         const result = await response.json();
         
         if (response.ok) {
-            alert('Password updated successfully! Please login with your new password.');
+            showToast('Password updated successfully! Please login with your new password.', 'success');
             
-            // Reset state
             passwordResetVerified = false;
             passwordResetUsername = null;
-            passwordResetDay = null;
-            passwordResetMonth = null;
-            passwordResetYear = null;
+            passwordResetDay = passwordResetMonth = passwordResetYear = null;
             
             renderLogin();
         } else {
@@ -1195,7 +903,7 @@ async function handleCloudPasswordReset() {
         
     } catch (error) {
         console.error('Password reset error:', error);
-        alert(error.message || 'Failed to reset password. Please try again.');
+        showToast(error.message, 'error');
         
         const resetBtn = document.querySelector('.auth-btn');
         resetBtn.textContent = 'Update Password';
@@ -1203,160 +911,113 @@ async function handleCloudPasswordReset() {
     }
 }
 
-async function loadUserProgress(uid) {
-    try {
-        const userDoc = await db.collection('users').doc(uid).get();
-        
-        if (userDoc.exists) {
-            const userData = userDoc.data();
-            AppState.progress = userData.progress || {};
-            AppState.userDisplayName = userData.displayName;
-            console.log('User progress loaded:', AppState.progress);
-        }
-    } catch (error) {
-        console.error('Error loading user progress:', error);
-    }
-}
-
 async function handleLogout() {
-    try {
-        await auth.signOut();
-        renderLogin();
-    } catch (error) {
-        console.error('Logout error:', error);
-        alert('Failed to logout. Please try again.');
-    }
-}
-
-// ===== SAVE QUIZ PROGRESS =====
-async function saveQuizProgress() {
-
-    console.log('📝 saveQuizProgress STARTED');
-    console.log('currentQuizData exists:', !!currentQuizData);
-    console.log('auth.currentUser exists:', !!auth.currentUser);
-    
-    if (!currentQuizData || !auth.currentUser) {
-        console.log('No quiz data or user not logged in');
-        return;
-    }
-    
-    const user = auth.currentUser;
-    const subjectId = AppState.currentSubject;
-    const chapterId = AppState.currentChapter;
-    const subchapterId = AppState.currentSubchapter;
-    const level = AppState.currentLevel;
-    
-    // Calculate accuracy
-    const totalQuestions = currentQuizData.questions.length;
-    const maxPossible = totalQuestions * currentQuizData.maxPointsPerQuestion;
-    const accuracy = Math.round((currentQuizData.score / maxPossible) * 100);
-    const questionsCorrect = Math.round(currentQuizData.score / (maxPossible / totalQuestions));
-    const totalTimeSpent = Math.round((Date.now() - quizStartTime) / 1000);
-
-    
-    // Get current attempt count for this level
-    try {
-        // 1. Save the attempt to 'attempts' collection
-        const attemptData = {
-            userId: user.uid,
-            username: user.displayName || 'user',
-            displayName: user.displayName || 'User',
-            
-            subject: subjectId,
-            chapter: chapterId,
-            subchapter: subchapterId,
-            level: level,
-            
-            score: currentQuizData.score,
-            maxPossible: maxPossible,
-            accuracy: accuracy,
-            questionsCorrect: questionsCorrect,
-            totalQuestions: totalQuestions,
-            timeSpent: totalTimeSpent,
-            
-            completedAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        
-        await db.collection('attempts').add(attemptData);
-        console.log('✅ Attempt saved to attempts collection');
-        
-        // 2. Update user's overall stats
-        const userRef = db.collection('users').doc(user.uid);
-        const userDoc = await userRef.get();
-        
-        if (userDoc.exists) {
-            const userData = userDoc.data();
-            const overall = userData.overall || {
-                totalPoints: 0,
-                quizzesTaken: 0,
-                totalTimeSpent: 0,
-                lastActive: null
-            };
-            
-            // Update overall stats
-            overall.totalPoints = (overall.totalPoints || 0) + currentQuizData.score;
-            overall.quizzesTaken = (overall.quizzesTaken || 0) + 1;
-            overall.totalTimeSpent = (overall.totalTimeSpent || 0) + attemptData.timeSpent;
-            overall.lastActive = firebase.firestore.FieldValue.serverTimestamp();
-            
-            await userRef.update({ overall });
+    if (confirm('Are you sure you want to logout?')) {
+        try {
+            await auth.signOut();
+            renderLogin();
+            showToast('Logged out successfully', 'success');
+        } catch (error) {
+            console.error('Logout error:', error);
+            showToast('Failed to logout. Please try again.', 'error');
         }
-        
-        // 3. Update subject-specific stats
-        const subjectPath = `subjects.${subjectId}`;
-        const subjectRef = userRef;
-        
-        // Get current subject stats or initialize
-        const subjectData = userDoc.data()?.subjects?.[subjectId] || {
-            totalPoints: 0,
-            quizzesTaken: 0,
-            accuracy: 0
-        };
-        
-        // Update subject totals
-        subjectData.totalPoints = (subjectData.totalPoints || 0) + currentQuizData.score;
-        subjectData.quizzesTaken = (subjectData.quizzesTaken || 0) + 1;
-        
-        // Recalculate average accuracy
-        const oldTotal = (subjectData.accuracy || 0) * (subjectData.quizzesTaken - 1);
-        subjectData.accuracy = Math.round((oldTotal + accuracy) / subjectData.quizzesTaken);
-        
-        // Save back to Firestore
-        await userRef.update({
-            [`subjects.${subjectId}`]: subjectData
-        });
-        
-        console.log('✅ User stats updated');
-        
-    } catch (error) {
-        console.error('Error saving progress:', error);
     }
 }
 
-// ===== PROGRESS PAGE =====
-function renderProgress() {
+// ===== PROFILE PAGE =====
+function renderProfile() {
     const appHeader = document.getElementById('app-header');
-    if (appHeader) {
-        appHeader.style.display = 'flex';
-    }
+    if (appHeader) appHeader.style.display = 'flex';
     
-    AppState.currentView = 'progress';
+    AppState.currentView = 'profile';
     const content = document.getElementById('main-content');
     
-    // Update header
-    updateHeader('📊 Progress');
+    updateHeader('Profile');
     
-    // Check if user is logged in
     const user = auth.currentUser;
     if (!user) {
         renderLogin();
         return;
     }
     
-    // Show loading
+    db.collection('users').doc(user.uid).get().then(doc => {
+        if (!doc.exists) {
+            console.error('User document not found');
+            return;
+        }
+        
+        const userData = doc.data();
+        const displayName = userData.displayName || 'User';
+        const username = userData.username || 'username';
+        const dob = userData.dateOfBirth || { day: '?', month: '?', year: '?' };
+        const createdAt = userData.createdAt ? new Date(userData.createdAt.toDate()) : new Date();
+        
+        const joinMonth = createdAt.toLocaleString('default', { month: 'long' });
+        const joinYear = createdAt.getFullYear();
+        const dobString = `${dob.day} ${new Date(2000, dob.month-1).toLocaleString('default', { month: 'long' })} ${dob.year}`;
+        
+        const html = `
+            <div class="profile-container">
+                <div class="profile-avatar">
+                    <div class="avatar-circle">
+                        <span class="avatar-text">${displayName.charAt(0)}</span>
+                    </div>
+                </div>
+                
+                <div class="profile-name">
+                    <h2>${displayName}</h2>
+                    <p class="profile-username">@${username}</p>
+                </div>
+                
+                <div class="profile-card">
+                    <div class="profile-card-icon">🎂</div>
+                    <div class="profile-card-content">
+                        <div class="profile-card-label">Date of Birth</div>
+                        <div class="profile-card-value">${dobString}</div>
+                    </div>
+                </div>
+                
+                <div class="profile-card">
+                    <div class="profile-card-icon">📅</div>
+                    <div class="profile-card-content">
+                        <div class="profile-card-label">Member Since</div>
+                        <div class="profile-card-value">${joinMonth} ${joinYear}</div>
+                    </div>
+                </div>
+                
+                <button class="logout-btn" onclick="handleLogout()">
+                    <span class="logout-icon">🚪</span>
+                    Logout
+                </button>
+            </div>
+        `;
+        
+        content.innerHTML = html;
+        updateBottomNav('profile');
+    }).catch(error => {
+        console.error('Error fetching user data:', error);
+        content.innerHTML = '<div class="error-message">Failed to load profile</div>';
+    });
+}
+
+// ===== PROGRESS PAGE =====
+function renderProgress() {
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) appHeader.style.display = 'flex';
+    
+    AppState.currentView = 'progress';
+    const content = document.getElementById('main-content');
+    
+    updateHeader('📊 Progress');
+    
+    const user = auth.currentUser;
+    if (!user) {
+        renderLogin();
+        return;
+    }
+    
     content.innerHTML = `<div class="loading-spinner"></div>`;
     
-    // Fetch user data and attempts
     Promise.all([
         db.collection('users').doc(user.uid).get(),
         db.collection('attempts')
@@ -1374,15 +1035,12 @@ function renderProgress() {
         const overall = userData.overall || { totalPoints: 0, quizzesTaken: 0, totalTimeSpent: 0 };
         const subjects = userData.subjects || {};
         
-        // Calculate average accuracy
         const avgAccuracy = overall.quizzesTaken > 0 
             ? Math.round((overall.totalPoints / (overall.quizzesTaken * 1000)) * 100) 
             : 0;
         
-        // Build HTML
         let html = `
             <div class="progress-container">
-                <!-- Overall Statistics -->
                 <div class="stats-card">
                     <div class="stats-header">📈 Overall Statistics</div>
                     <div class="stats-grid">
@@ -1405,13 +1063,11 @@ function renderProgress() {
                     </div>
                 </div>
                 
-                <!-- Subject Breakdown -->
                 <div class="stats-card">
                     <div class="stats-header">📚 Subject Breakdown</div>
                     <div class="subject-list">
         `;
         
-        // Math subject
         const math = subjects.math || { totalPoints: 0, accuracy: 0 };
         const mathPercent = overall.totalPoints > 0 ? Math.round((math.totalPoints / overall.totalPoints) * 100) : 0;
         html += `
@@ -1426,7 +1082,6 @@ function renderProgress() {
             </div>
         `;
         
-        // English subject
         const english = subjects.english || { totalPoints: 0, accuracy: 0 };
         const englishPercent = overall.totalPoints > 0 ? Math.round((english.totalPoints / overall.totalPoints) * 100) : 0;
         html += `
@@ -1441,7 +1096,6 @@ function renderProgress() {
             </div>
         `;
         
-        // Science subject
         const science = subjects.science || { totalPoints: 0, accuracy: 0 };
         const sciencePercent = overall.totalPoints > 0 ? Math.round((science.totalPoints / overall.totalPoints) * 100) : 0;
         html += `
@@ -1458,7 +1112,6 @@ function renderProgress() {
         
         html += `</div></div>`;
         
-        // Recent Activity
         html += `<div class="stats-card"><div class="stats-header">🕒 Recent Activity</div>`;
         
         if (attemptsSnapshot.empty) {
@@ -1487,14 +1140,11 @@ function renderProgress() {
             html += `</div>`;
         }
         
-        // View All button
         html += `
-            <button class="view-all-btn" onclick="renderAllActivity()">
-                📋 View All Activity
-            </button>
+            <button class="view-all-btn" onclick="renderAllActivity()">📋 View All Activity</button>
         `;
         
-        html += `</div></div>`; // Close stats-card and progress-container
+        html += `</div></div>`;
         
         content.innerHTML = html;
         updateBottomNav('progress');
@@ -1505,13 +1155,392 @@ function renderProgress() {
     });
 }
 
+// ===== ALL ACTIVITY PAGE =====
+function renderAllActivity() {
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) appHeader.style.display = 'flex';
+    
+    AppState.currentView = 'allActivity';
+    const content = document.getElementById('main-content');
+    
+    const user = auth.currentUser;
+    if (!user) {
+        renderLogin();
+        return;
+    }
+    
+    content.innerHTML = `<div class="loading-spinner"></div>`;
+    
+    db.collection('attempts')
+        .where('userId', '==', user.uid)
+        .orderBy('completedAt', 'desc')
+        .get()
+        .then(snapshot => {
+            if (snapshot.empty) {
+                content.innerHTML = `
+                    <div class="all-activity-container">
+                        <div class="all-activity-header">
+                            <button class="all-activity-back-btn" onclick="renderProgress()">‹</button>
+                            <span class="all-activity-title">📋 All Activity</span>
+                            <div class="all-activity-placeholder"></div>
+                        </div>
+                        <div class="empty-state">No activity yet</div>
+                    </div>
+                `;
+                updateBottomNav('progress');
+                return;
+            }
+            
+            let html = `
+                <div class="all-activity-container">
+                    <div class="all-activity-header">
+                        <button class="all-activity-back-btn" onclick="renderProgress()">‹</button>
+                        <span class="all-activity-title">📋 All Activity</span>
+                        <div class="all-activity-placeholder"></div>
+                    </div>
+                    <div class="all-activity-list">
+            `;
+            
+            snapshot.forEach(doc => {
+                const attempt = doc.data();
+                const dateStr = formatDate(attempt.completedAt);
+                const timeStr = attempt.timeSpent ? formatTime(attempt.timeSpent) : 'N/A';
+                const subjectIcon = attempt.subject === 'math' ? '📐' : attempt.subject === 'english' ? '📚' : '🔬';
+                
+                const chapterName = attempt.chapter ? attempt.chapter.charAt(0).toUpperCase() + attempt.chapter.slice(1) : '';
+                const subchapterName = attempt.subchapter ? attempt.subchapter.charAt(0).toUpperCase() + attempt.subchapter.slice(1) : '';
+                
+                html += `
+                    <div class="all-activity-item">
+                        <div class="all-activity-item-header">
+                            <span class="all-activity-item-title">
+                                ${subjectIcon} ${chapterName} · ${subchapterName} · Level ${attempt.level}
+                            </span>
+                            <span class="all-activity-item-score">${attempt.score} pts</span>
+                        </div>
+                        <div class="all-activity-item-details">
+                            <span>${attempt.questionsCorrect}/${attempt.totalQuestions} correct</span>
+                            <span class="dot">•</span>
+                            <span>${dateStr}</span>
+                            <span class="dot">•</span>
+                            <span>⏱️ ${timeStr}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+            
+            content.innerHTML = html;
+            updateBottomNav('progress');
+            
+        })
+        .catch(error => {
+            console.error('Error loading all activity:', error);
+            content.innerHTML = `
+                <div class="all-activity-container">
+                    <div class="all-activity-header">
+                        <button class="all-activity-back-btn" onclick="renderProgress()">‹</button>
+                        <span class="all-activity-title">📋 All Activity</span>
+                        <div class="all-activity-placeholder"></div>
+                    </div>
+                    <div class="error-message">Failed to load activity</div>
+                </div>
+            `;
+        });
+}
+
+// ===== QUIZ FUNCTIONS =====
+function renderQuiz(subjectId, chapterId, subchapterId, level) {
+    AppState.currentView = 'quiz';
+    AppState.currentSubject = subjectId;
+    AppState.currentChapter = chapterId;
+    AppState.currentSubchapter = subchapterId;
+    AppState.currentLevel = level;
+    
+    const content = document.getElementById('main-content');
+    content.innerHTML = `<div class="loading-spinner"></div>`;
+    
+    loadSubjectFormatter(subjectId).then(() => {
+        loadQuizData(subjectId, chapterId, subchapterId, level)
+            .then(quizData => renderGenericQuiz(quizData))
+            .catch(error => {
+                console.error('Failed to load quiz:', error);
+                content.innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <p style="color: #ef4444;">Failed to load quiz</p>
+                        <button class="back-button" onclick="renderLevels('${subjectId}', '${chapterId}', '${subchapterId}')">← Go Back</button>
+                    </div>
+                `;
+            });
+    });
+}
+
+function renderGenericQuiz(quizData) {
+    quizStartTime = Date.now();
+    
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) appHeader.style.display = 'none';
+    
+    currentQuizData = quizData;
+    currentQuizData.currentQuestion = 0;
+    currentQuizData.score = 0;
+    
+    const content = document.getElementById('main-content');
+    
+    const subject = AppState.config.subjects.find(s => s.id === AppState.currentSubject);
+    const chapter = subject.chapters.find(c => c.id === AppState.currentChapter);
+    const subchapter = chapter.subchapters.find(s => s.id === AppState.currentSubchapter);
+    
+    const formattedQuestion = currentFormatter?.formatQuestion 
+        ? currentFormatter.formatQuestion(quizData.questions[0].question)
+        : quizData.questions[0].question;
+    
+    const html = `
+        <div class="quiz-header-blue">
+            <div class="quiz-header-left">
+                <button class="quiz-back-btn-white" onclick="if(questionTimer) clearInterval(questionTimer); renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">‹</button>
+                <span class="quiz-subchapter-name">${subchapter.name}</span>
+            </div>
+            <div class="quiz-level-blue">Level ${AppState.currentLevel}</div>
+        </div>
+
+        <div class="quiz-header-white">
+            <div class="quiz-progress-white">1/${quizData.questions.length}</div>
+            <div class="quiz-score-header" id="quizScoreHeader">0</div>
+            <div class="quiz-timer-row">
+                <div class="circular-timer" id="circularTimer">
+                    <svg width="36" height="36" viewBox="0 0 40 40">
+                        <circle class="timer-circle-bg" cx="20" cy="20" r="16"></circle>
+                        <circle class="timer-circle-progress" id="timerCircleProgress" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="0"></circle>
+                    </svg>
+                    <div class="timer-circle-text" id="timerText">${currentQuizData.timePerQuestion}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quiz-question" id="quizQuestion">${formattedQuestion}</div>
+
+        <div class="quiz-options-large" id="quizOptions">
+            ${renderLargeOptions(quizData.questions[0])}
+        </div>
+    `;
+    
+    content.innerHTML = html;
+    startCircularTimer();
+}
+
+function renderLargeOptions(question) {
+    const formattedOptions = currentFormatter?.formatOptions 
+        ? currentFormatter.formatOptions(question.options)
+        : question.options.map(opt => ({ display: opt, value: opt }));
+    
+    return shuffleArray(formattedOptions).map(opt => `
+        <button class="quiz-option-large" onclick="checkAnswer('${opt.value.replace(/'/g, "\\'")}', this)">
+            ${opt.display}
+        </button>
+    `).join('');
+}
+
+function checkAnswer(selectedOption, buttonElement) {
+    if (!currentQuizData) return;
+    
+    if (questionTimer) clearInterval(questionTimer);
+    
+    const timeTaken = (Date.now() - questionStartTime) / 1000;
+    const question = currentQuizData.questions[currentQuizData.currentQuestion];
+    const isCorrect = (selectedOption === question.correct);
+    
+    if (isCorrect) {
+        const pointsEarned = calculatePoints(timeTaken);
+        buttonElement.classList.add('correct');
+        currentQuizData.score += pointsEarned;
+    } else {
+        buttonElement.classList.add('wrong');
+        highlightCorrectAnswer(question.correct);
+    }
+    
+    updateScoreDisplay();
+    disableAllButtons();
+    
+    setTimeout(moveToNextQuestion, 500);
+}
+
+function renderCurrentQuestion() {
+    if (!currentQuizData) return;
+    
+    const question = currentQuizData.questions[currentQuizData.currentQuestion];
+    
+    const questionEl = document.getElementById('quizQuestion');
+    if (questionEl) {
+        questionEl.innerHTML = currentFormatter?.formatQuestion 
+            ? currentFormatter.formatQuestion(question.question)
+            : question.question;
+    }
+    
+    const optionsEl = document.getElementById('quizOptions');
+    if (optionsEl) optionsEl.innerHTML = renderLargeOptions(question);
+    
+    const progressEl = document.querySelector('.quiz-progress-white');
+    if (progressEl) {
+        progressEl.textContent = `${currentQuizData.currentQuestion + 1}/${currentQuizData.questions.length}`;
+    }
+    
+    updateScoreDisplay();
+    startCircularTimer();
+}
+
+function updateScoreDisplay() {
+    const scoreHeaderEl = document.getElementById('quizScoreHeader');
+    if (scoreHeaderEl && currentQuizData) scoreHeaderEl.textContent = currentQuizData.score;
+}
+
+function disableAllButtons() {
+    document.querySelectorAll('.quiz-option-large').forEach(btn => {
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+        btn.style.cursor = 'not-allowed';
+    });
+}
+
+function enableAllButtons() {
+    document.querySelectorAll('.quiz-option-large').forEach(btn => {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+        btn.classList.remove('correct', 'wrong');
+    });
+}
+
+function highlightCorrectAnswer(correctAnswer) {
+    document.querySelectorAll('.quiz-option-large').forEach(btn => {
+        if (btn.textContent.trim() === correctAnswer) {
+            btn.classList.add('correct');
+        }
+    });
+}
+
+function calculatePoints(timeTaken) {
+    const maxPoints = currentQuizData.maxPointsPerQuestion;
+    const timeLimit = currentQuizData.timePerQuestion;
+    
+    let points = maxPoints * (1 - (timeTaken / timeLimit) * 0.5);
+    points = Math.round(points);
+    const minPoints = Math.round(maxPoints * 0.1);
+    
+    return Math.max(minPoints, points);
+}
+
+function moveToNextQuestion() {
+    if (!currentQuizData) return;
+    
+    if (questionTimer) clearInterval(questionTimer);
+    
+    if (currentQuizData.currentQuestion + 1 < currentQuizData.questions.length) {
+        currentQuizData.currentQuestion++;
+        renderCurrentQuestion();
+    } else {
+        showQuizComplete();
+    }
+}
+
+function showQuizComplete() {
+    if (!currentQuizData) return;
+    
+    if (questionTimer) clearInterval(questionTimer);
+    
+    saveQuizProgress();
+    
+    const content = document.getElementById('main-content');
+    content.innerHTML = `
+        <div class="section-header">
+            <button class="back-button" onclick="renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">← Back to levels</button>
+        </div>
+        <div class="quiz-complete">
+            <div class="completion-icon">🏆</div>
+            <div class="score-display">${currentQuizData.score}</div>
+            <div class="questions-correct">${currentQuizData.currentQuestion + 1}/${currentQuizData.questions.length}</div>
+            <div class="button-row">
+                <button class="try-again-btn" onclick="restartQuiz()">Try Again</button>
+                <button class="next-level-btn" onclick="goToNextLevel()">Next Level</button>
+            </div>
+        </div>
+    `;
+}
+
+function restartQuiz() {
+    quizStartTime = Date.now();
+    
+    if (!currentQuizData) return;
+    
+    currentQuizData.currentQuestion = 0;
+    currentQuizData.score = 0;
+    
+    const content = document.getElementById('main-content');
+    
+    const subject = AppState.config.subjects.find(s => s.id === AppState.currentSubject);
+    const chapter = subject.chapters.find(c => c.id === AppState.currentChapter);
+    const subchapter = chapter.subchapters.find(s => s.id === AppState.currentSubchapter);
+    
+    const formattedQuestion = currentFormatter?.formatQuestion 
+        ? currentFormatter.formatQuestion(currentQuizData.questions[0].question)
+        : currentQuizData.questions[0].question;
+    
+    content.innerHTML = `
+        <div class="quiz-header-blue">
+            <div class="quiz-header-left">
+                <button class="quiz-back-btn-white" onclick="if(questionTimer) clearInterval(questionTimer); renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">‹</button>
+                <span class="quiz-subchapter-name">${subchapter.name}</span>
+            </div>
+            <div class="quiz-level-blue">Level ${AppState.currentLevel}</div>
+        </div>
+
+        <div class="quiz-header-white">
+            <div class="quiz-progress-white">1/${currentQuizData.questions.length}</div>
+            <div class="quiz-score-header" id="quizScoreHeader">0</div>
+            <div class="quiz-timer-row">
+                <div class="circular-timer" id="circularTimer">
+                    <svg width="36" height="36" viewBox="0 0 40 40">
+                        <circle class="timer-circle-bg" cx="20" cy="20" r="16"></circle>
+                        <circle class="timer-circle-progress" id="timerCircleProgress" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="0"></circle>
+                    </svg>
+                    <div class="timer-circle-text" id="timerText">${currentQuizData.timePerQuestion}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quiz-question" id="quizQuestion">${formattedQuestion}</div>
+
+        <div class="quiz-options-large" id="quizOptions">
+            ${renderLargeOptions(currentQuizData.questions[0])}
+        </div>
+    `;
+    
+    startCircularTimer();
+}
+
+function goToNextLevel() {
+    const nextLevel = AppState.currentLevel + 1;
+    const subchapter = AppState.config.subjects
+        .find(s => s.id === AppState.currentSubject)
+        .chapters.find(c => c.id === AppState.currentChapter)
+        .subchapters.find(s => s.id === AppState.currentSubchapter);
+    
+    if (nextLevel <= subchapter.levels) {
+        renderQuiz(AppState.currentSubject, AppState.currentChapter, AppState.currentSubchapter, nextLevel);
+    } else {
+        renderLevels(AppState.currentSubject, AppState.currentChapter, AppState.currentSubchapter);
+    }
+}
+
 // ===== CIRCULAR TIMER =====
 function startCircularTimer() {
     if (!currentQuizData) return;
     
-    if (questionTimer) {
-        clearInterval(questionTimer);
-    }
+    if (questionTimer) clearInterval(questionTimer);
     
     timeRemaining = currentQuizData.timePerQuestion;
     questionStartTime = Date.now();
@@ -1561,631 +1590,15 @@ function startCircularTimer() {
 
 function handleTimeOut() {
     disableAllButtons();
-    
-    setTimeout(() => {
-        moveToNextQuestion();
-    }, 500);
+    setTimeout(moveToNextQuestion, 500);
 }
 
-// ===== QUIZ FUNCTIONS =====
-function checkAnswer(selectedOption, buttonElement) {
-    if (!currentQuizData) return;
-    
-    if (questionTimer) {
-        clearInterval(questionTimer);
-    }
-    
-    const timeTaken = (Date.now() - questionStartTime) / 1000;
-    const question = currentQuizData.questions[currentQuizData.currentQuestion];
-    const isCorrect = (selectedOption === question.correct);
-    
-    let pointsEarned = 0;
-    
-    if (isCorrect) {
-        pointsEarned = calculatePoints(timeTaken);
-        buttonElement.classList.add('correct');
-    } else {
-        buttonElement.classList.add('wrong');
-        highlightCorrectAnswer(question.correct);
-    }
-    
-    currentQuizData.score += pointsEarned;
-    updateScoreDisplay();
-    disableAllButtons();
-    
-    setTimeout(() => {
-        moveToNextQuestion();
-    }, 500);
-}
-
-function renderCurrentQuestion() {
-    if (!currentQuizData) return;
-    
-    const question = currentQuizData.questions[currentQuizData.currentQuestion];
-    
-    const questionEl = document.getElementById('quizQuestion');
-    if (questionEl) {
-        // Use formatter to format the question text
-        questionEl.innerHTML = currentFormatter?.formatQuestion 
-            ? currentFormatter.formatQuestion(question.question)
-            : question.question;
-    }
-    
-    const optionsEl = document.getElementById('quizOptions');
-    if (optionsEl) {
-        optionsEl.innerHTML = renderLargeOptions(question);
-    }
-    
-    const progressEl = document.querySelector('.quiz-progress-white');
-    if (progressEl) {
-        progressEl.textContent = `${currentQuizData.currentQuestion + 1}/${currentQuizData.questions.length}`;
-    }
-    
-    updateScoreDisplay();
-    startCircularTimer();
-}
-
-function updateScoreDisplay() {
-    const scoreHeaderEl = document.getElementById('quizScoreHeader');
-    if (scoreHeaderEl && currentQuizData) {
-        scoreHeaderEl.textContent = currentQuizData.score;
-    }
-    
-    const scoreEl = document.getElementById('quizScore');
-    if (scoreEl && currentQuizData) {
-        scoreEl.textContent = currentQuizData.score;
-    }
-}
-
-function moveToNextQuestion() {
-    if (!currentQuizData) return;
-    
-    if (questionTimer) {
-        clearInterval(questionTimer);
-    }
-    
-    if (currentQuizData.currentQuestion + 1 < currentQuizData.questions.length) {
-        currentQuizData.currentQuestion++;
-        renderCurrentQuestion();
-    } else {
-        showQuizComplete();
-    }
-}
-
-// ===== RENDER SUBCHAPTERS - CLEAN DESIGN =====
-function renderSubchapters(subjectId, chapterId) {
-    const appHeader = document.getElementById('app-header');
-    if (appHeader) {
-        appHeader.style.display = 'flex';
-    }
-    
-    if (!AppState.config) return;
-    
-    AppState.currentView = 'subchapters';
-    AppState.currentSubject = subjectId;
-    AppState.currentChapter = chapterId;
-    
-    const subject = AppState.config.subjects.find(s => s.id === subjectId);
-    const chapter = subject.chapters.find(c => c.id === chapterId);
-    const content = document.getElementById('main-content');
-    
-    // Update header with centered chapter name and back button to subject
-    updateHeader(chapter.name, true, `renderChapters('${subjectId}')`);
-    
-    let html = `<div class="subchapters-list">`;
-    
-    chapter.subchapters.forEach(subchapter => {
-        html += `
-            <div class="subchapter-card" onclick="navigateToSubchapter('${subjectId}', '${chapterId}', '${subchapter.id}')">
-                <span class="subchapter-name">${subchapter.name}</span>
-                <span class="subchapter-arrow">→</span>
-            </div>
-        `;
-    });
-    
-    html += `</div>`;
-    content.innerHTML = html;
-    updateBottomNav('subjects');
-}
-
-// ===== RENDER CHAPTERS - CLEAN DESIGN =====
-function renderChapters(subjectId) {
-    const appHeader = document.getElementById('app-header');
-    if (appHeader) {
-        appHeader.style.display = 'flex';
-    }
-    
-    if (!AppState.config) return;
-    
-    AppState.currentView = 'chapters';
-    AppState.currentSubject = subjectId;
-    
-    const subject = AppState.config.subjects.find(s => s.id === subjectId);
-    const content = document.getElementById('main-content');
-    
-    loadSubjectCSS(subjectId);
-    
-    // Update header with centered subject name and back button to home
-    updateHeader(subject.name, true, 'renderHome()');
-    
-    let html = `<div class="chapters-list">`;
-    
-    subject.chapters.forEach(chapter => {
-        html += `
-            <div class="chapter-card" onclick="navigateToChapter('${subjectId}', '${chapter.id}')">
-                <span class="chapter-name">${chapter.name}</span>
-                <span class="chapter-arrow">→</span>
-            </div>
-        `;
-    });
-    
-    html += `</div>`;
-    content.innerHTML = html;
-    updateBottomNav('subjects');
-}
-
-// ===== RENDER LEVELS - CLEAN DESIGN =====
-async function renderLevels(subjectId, chapterId, subchapterId) {
-    const appHeader = document.getElementById('app-header');
-    if (appHeader) {
-        appHeader.style.display = 'flex';
-    }
-    
-    if (!AppState.config) return;
-    
-    AppState.currentView = 'levels';
-    AppState.currentSubject = subjectId;
-    AppState.currentChapter = chapterId;
-    AppState.currentSubchapter = subchapterId;
-    
-    const subject = AppState.config.subjects.find(s => s.id === subjectId);
-    const chapter = subject.chapters.find(c => c.id === chapterId);
-    const subchapter = chapter.subchapters.find(s => s.id === subchapterId);
-    
-    // Update header with centered subchapter name
-    updateHeader(subchapter.name, true, `renderSubchapters('${subjectId}', '${chapterId}')`);
-    
-    const content = document.getElementById('main-content');
-    content.innerHTML = `<div class="loading-spinner"></div>`;
-    
-    // Check unlock status for all levels
-    const levelPromises = [];
-    for (let level = 1; level <= subchapter.levels; level++) {
-        levelPromises.push(isLevelUnlocked(subjectId, chapterId, subchapterId, level));
-    }
-    
-    const unlockedStatus = await Promise.all(levelPromises);
-    
-    let levelsHtml = `<div class="levels-list">`;
-    
-    for (let level = 1; level <= subchapter.levels; level++) {
-        const progress = await getLevelProgress(subjectId, chapterId, subchapterId, level);
-        const unlocked = unlockedStatus[level - 1];
-        
-        let lockIcon = unlocked ? '🔓' : '🔒';
-        let buttonClass = unlocked ? 'level-button' : 'level-button locked';
-        let scoreDisplay = progress.completed ? `${progress.score} pts` : '';
-        
-        levelsHtml += `
-    <button class="${buttonClass}" onclick="${unlocked ? `navigateToQuiz('${subjectId}', '${chapterId}', '${subchapterId}', ${level})` : ''}">
-        <span>Level ${level}</span>
-        <span>${lockIcon}</span>
-    </button>
-`;
-    }
-    
-    levelsHtml += `</div>`;
-    content.innerHTML = levelsHtml;
-    updateBottomNav('chapters');
-}
-
-// ===== HELPER FUNCTION FOR SUBCHAPTER PROGRESS =====
-function calculateSubchapterProgress(subjectId, chapterId, subchapterId) {
-    const subject = AppState.config.subjects.find(s => s.id === subjectId);
-    const chapter = subject.chapters.find(c => c.id === chapterId);
-    const subchapter = chapter.subchapters.find(s => s.id === subchapterId);
-    
-    const completed = 0;
-    const total = subchapter.levels;
-    const percentage = total > 0 ? (completed / total) * 100 : 0;
-    
-    return { completed, total, percentage };
-}
-
-// ===== VIEW RENDERING =====
-function renderHome() {
-    const appHeader = document.getElementById('app-header');
-    if (appHeader) {
-        appHeader.style.display = 'flex';
-    }
-    
-    if (!AppState.config) return;
-    
-    AppState.currentView = 'home';
-    const content = document.getElementById('main-content');
-    
-    // Update header with app name (no back button)
-    updateHeader('Math Riyaz');
-    
-    let html = `<div class="subjects-grid">`;
-    
-    AppState.config.subjects.forEach(subject => {
-        html += `
-            <div class="subject-card ${subject.id}" onclick="navigateToSubject('${subject.id}')">
-                <div class="subject-header">
-                    <span class="subject-icon">${subject.icon}</span>
-                    <span class="subject-title">${subject.name}</span>
-                </div>
-                <div class="subject-description">${subject.description}</div>
-            </div>
-        `;
-    });
-    
-    html += `</div>`;
-    
-    content.innerHTML = html;
-    updateBottomNav('home');
-}
-
-function renderQuiz(subjectId, chapterId, subchapterId, level) {
-    AppState.currentView = 'quiz';
-    AppState.currentSubject = subjectId;
-    AppState.currentChapter = chapterId;
-    AppState.currentSubchapter = subchapterId;
-    AppState.currentLevel = level;
-    
-    const content = document.getElementById('main-content');
-    content.innerHTML = `<div class="loading-spinner"></div>`;
-    
-    // Load the subject formatter first
-    loadSubjectFormatter(subjectId).then(() => {
-        loadQuizData(subjectId, chapterId, subchapterId, level)
-            .then(quizData => {
-                renderGenericQuiz(quizData);
-            })
-            .catch(error => {
-                console.error('Failed to load quiz:', error);
-                content.innerHTML = `
-                    <div style="text-align: center; padding: 40px;">
-                        <p style="color: #ef4444;">Failed to load quiz</p>
-                        <button class="back-button" onclick="renderLevels('${subjectId}', '${chapterId}', '${subchapterId}')">← Go Back</button>
-                    </div>
-                `;
-            });
-    });
-}
-
-function renderGenericQuiz(quizData) {
-     quizStartTime = Date.now();
-    const appHeader = document.getElementById('app-header');
-    if (appHeader) {
-        appHeader.style.display = 'none';
-    }
-    
-    currentQuizData = quizData;
-    currentQuizData.currentQuestion = 0;
-    currentQuizData.score = 0;
-    
-    const content = document.getElementById('main-content');
-    const subjectId = AppState.currentSubject;
-    
-    const subject = AppState.config.subjects.find(s => s.id === AppState.currentSubject);
-    const chapter = subject.chapters.find(c => c.id === AppState.currentChapter);
-    const subchapter = chapter.subchapters.find(s => s.id === AppState.currentSubchapter);
-    
-    // Format the first question using the formatter
-    const formattedQuestion = currentFormatter?.formatQuestion 
-        ? currentFormatter.formatQuestion(quizData.questions[0].question)
-        : quizData.questions[0].question;
-    
-let html = `
-    <!-- First Row - Blue with back, subchapter, and level -->
-    <div class="quiz-header-blue">
-        <div class="quiz-header-left">
-            <button class="quiz-back-btn-white" onclick="if(questionTimer) clearInterval(questionTimer); renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">‹</button>
-            <span class="quiz-subchapter-name">${subchapter.name}</span>
-        </div>
-        <div class="quiz-level-blue">Level ${AppState.currentLevel}</div>
-    </div>
-
-    <!-- Second Row - White with progress, score, timer -->
-    <div class="quiz-header-white">
-        <div class="quiz-progress-white">1/${quizData.questions.length}</div>
-        <div class="quiz-score-header" id="quizScoreHeader">0</div>
-        <div class="quiz-timer-row">
-            <div class="circular-timer" id="circularTimer">
-                <svg width="36" height="36" viewBox="0 0 40 40">
-                    <circle class="timer-circle-bg" cx="20" cy="20" r="16"></circle>
-                    <circle class="timer-circle-progress" id="timerCircleProgress" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="0"></circle>
-                </svg>
-                <div class="timer-circle-text" id="timerText">${currentQuizData.timePerQuestion}</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="quiz-question" id="quizQuestion">
-        ${formattedQuestion}
-    </div>
-
-    <div class="quiz-options-large" id="quizOptions">
-        ${renderLargeOptions(quizData.questions[0])}
-    </div>
-`;
-    
-    content.innerHTML = html;
-    startCircularTimer();
-}
-
-function showQuizComplete() {
-    if (!currentQuizData) return;
-    
-    if (questionTimer) {
-        clearInterval(questionTimer);
-    }
-
-     saveQuizProgress();
-    
-    const totalPossible = currentQuizData.questions.length * currentQuizData.maxPointsPerQuestion;
-    
-    const content = document.getElementById('main-content');
-    content.innerHTML = `
-        <div class="section-header">
-            <button class="back-button" onclick="renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">← Back to levels</button>
-        </div>
-        <div class="quiz-complete">
-            <div class="completion-icon">🏆</div>
-            <div class="score-display">${currentQuizData.score}</div>
-            <div class="questions-correct">${currentQuizData.currentQuestion + 1}/${currentQuizData.questions.length}</div>
-            <div class="button-row">
-                <button class="try-again-btn" onclick="restartQuiz()">Try Again</button>
-                <button class="next-level-btn" onclick="goToNextLevel()">Next Level</button>
-            </div>
-        </div>
-    `;
-    
-    saveProgressToFirebase();
-}
-
-function restartQuiz() {
-     quizStartTime = Date.now();
-    if (!currentQuizData) return;
-    
-    currentQuizData.currentQuestion = 0;
-    currentQuizData.score = 0;
-    
-    const content = document.getElementById('main-content');
-    
-    const subject = AppState.config.subjects.find(s => s.id === AppState.currentSubject);
-    const chapter = subject.chapters.find(c => c.id === AppState.currentChapter);
-    const subchapter = chapter.subchapters.find(s => s.id === AppState.currentSubchapter);
-    
-    // Format the first question using the formatter
-    const formattedQuestion = currentFormatter?.formatQuestion 
-        ? currentFormatter.formatQuestion(currentQuizData.questions[0].question)
-        : currentQuizData.questions[0].question;
-    
-    content.innerHTML = `
-    <!-- First Row - Blue with back, subchapter, and level -->
-    <div class="quiz-header-blue">
-        <div class="quiz-header-left">
-            <button class="quiz-back-btn-white" onclick="if(questionTimer) clearInterval(questionTimer); renderLevels('${AppState.currentSubject}', '${AppState.currentChapter}', '${AppState.currentSubchapter}')">‹</button>
-            <span class="quiz-subchapter-name">${subchapter.name}</span>
-        </div>
-        <div class="quiz-level-blue">Level ${AppState.currentLevel}</div>
-    </div>
-
-    <!-- Second Row - White with progress, score, timer -->
-    <div class="quiz-header-white">
-        <div class="quiz-progress-white">1/${currentQuizData.questions.length}</div>
-        <div class="quiz-score-header" id="quizScoreHeader">0</div>
-        <div class="quiz-timer-row">
-            <div class="circular-timer" id="circularTimer">
-                <svg width="36" height="36" viewBox="0 0 40 40">
-                    <circle class="timer-circle-bg" cx="20" cy="20" r="16"></circle>
-                    <circle class="timer-circle-progress" id="timerCircleProgress" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="0"></circle>
-                </svg>
-                <div class="timer-circle-text" id="timerText">${currentQuizData.timePerQuestion}</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="quiz-question" id="quizQuestion">
-        ${formattedQuestion}
-    </div>
-
-    <div class="quiz-options-large" id="quizOptions">
-        ${renderLargeOptions(currentQuizData.questions[0])}
-    </div>
-`;
-    
-    startCircularTimer();
-}
-
-// ===== DATA LOADING =====
-async function loadQuizData(subjectId, chapterId, subchapterId, level) {
-    try {
-        const path = `data/${subjectId}/${chapterId}/${subchapterId}/level${level}.json`;
-        console.log('Loading quiz from:', path);
-        
-        const response = await fetch(path);
-        
-        if (!response.ok) {
-            throw new Error(`Failed to load: ${response.status}`);
-        }
-        
-        const quizData = await response.json();
-        
-        // Select 10 random questions from the pool
-        const allQuestions = quizData.questions;
-        const totalQuestions = allQuestions.length;
-        const numToSelect = Math.min(10, totalQuestions);
-        
-        // Randomly select questions without repetition
-        const selectedQuestions = [];
-        const usedIndices = new Set();
-        
-        while (selectedQuestions.length < numToSelect) {
-            const randomIndex = Math.floor(Math.random() * totalQuestions);
-            if (!usedIndices.has(randomIndex)) {
-                usedIndices.add(randomIndex);
-                selectedQuestions.push(allQuestions[randomIndex]);
-            }
-        }
-        
-        // Return new quiz object with selected questions
-        return {
-            ...quizData,
-            questions: selectedQuestions,
-            totalQuestions: numToSelect
-        };
-        
-    } catch (error) {
-        console.error('Error loading quiz data:', error);
-        // Return fallback data with 2 questions
-        return {
-            title: "Sample Quiz",
-            level: level,
-            maxPointsPerQuestion: 100,
-            timePerQuestion: 30,
-            questions: [
-                {
-                    question: "1/4 + 2/4 = ?",
-                    options: ["3/4", "3/8", "1/2", "2/4"],
-                    correct: "3/4"
-                },
-                {
-                    question: "1/3 + 1/3 = ?",
-                    options: ["2/3", "1/6", "2/6", "3/3"],
-                    correct: "2/3"
-                }
-            ]
-        };
-    }
-}
-
-// ===== ALL ACTIVITY PAGE =====
-function renderAllActivity() {
-    const appHeader = document.getElementById('app-header');
-    if (appHeader) {
-        appHeader.style.display = 'flex';
-    }
-    
-    AppState.currentView = 'allActivity';
-    const content = document.getElementById('main-content');
-    
-    // Check if user is logged in
-    const user = auth.currentUser;
-    if (!user) {
-        renderLogin();
-        return;
-    }
-    
-    // Show loading
-    content.innerHTML = `<div class="loading-spinner"></div>`;
-    
-    // Fetch all attempts for this user
-    db.collection('attempts')
-        .where('userId', '==', user.uid)
-        .orderBy('completedAt', 'desc')
-        .get()
-        .then(snapshot => {
-            if (snapshot.empty) {
-                content.innerHTML = `
-                    <div class="all-activity-container">
-                        <div class="all-activity-header">
-                            <button class="all-activity-back-btn" onclick="renderProgress()">‹</button>
-                            <span class="all-activity-title">📋 All Activity</span>
-                            <div class="all-activity-placeholder"></div>
-                        </div>
-                        <div class="empty-state">No activity yet</div>
-                    </div>
-                `;
-                updateBottomNav('progress');
-                return;
-            }
-            
-            let html = `
-                <div class="all-activity-container">
-                    <div class="all-activity-header">
-                        <button class="all-activity-back-btn" onclick="renderProgress()">‹</button>
-                        <span class="all-activity-title">📋 All Activity</span>
-                        <div class="all-activity-placeholder"></div>
-                    </div>
-                    <div class="all-activity-list">
-            `;
-            
-            snapshot.forEach(doc => {
-                const attempt = doc.data();
-                const date = attempt.completedAt ? attempt.completedAt.toDate() : new Date();
-                const dateStr = formatDate(attempt.completedAt);
-                const timeStr = attempt.timeSpent ? formatTime(attempt.timeSpent) : 'N/A';
-                const subjectIcon = attempt.subject === 'math' ? '📐' : attempt.subject === 'english' ? '📚' : '🔬';
-                
-                // Format chapter and subchapter nicely
-                const chapterName = attempt.chapter ? attempt.chapter.charAt(0).toUpperCase() + attempt.chapter.slice(1) : '';
-                const subchapterName = attempt.subchapter ? attempt.subchapter.charAt(0).toUpperCase() + attempt.subchapter.slice(1) : '';
-                
-                html += `
-                    <div class="all-activity-item">
-                        <div class="all-activity-item-header">
-                            <span class="all-activity-item-title">
-                                ${subjectIcon} ${chapterName} · ${subchapterName} · Level ${attempt.level}
-                            </span>
-                            <span class="all-activity-item-score">${attempt.score} pts</span>
-                        </div>
-                        <div class="all-activity-item-details">
-                            <span>${attempt.questionsCorrect}/${attempt.totalQuestions} correct</span>
-                            <span class="dot">•</span>
-                            <span>${dateStr}</span>
-                            <span class="dot">•</span>
-                            <span>⏱️ ${timeStr}</span>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += `
-                    </div>
-                </div>
-            `;
-            
-            content.innerHTML = html;
-            updateBottomNav('progress');
-            
-        })
-        .catch(error => {
-            console.error('Error loading all activity:', error);
-            content.innerHTML = `
-                <div class="all-activity-container">
-                    <div class="all-activity-header">
-                        <button class="all-activity-back-btn" onclick="renderProgress()">‹</button>
-                        <span class="all-activity-title">📋 All Activity</span>
-                        <div class="all-activity-placeholder"></div>
-                    </div>
-                    <div class="error-message">Failed to load activity</div>
-                </div>
-            `;
-        });
-}
-
-// ===== PROGRESS FUNCTIONS (PLACEHOLDERS) =====
-function calculateSubjectProgress(subjectId) {
-    return { completed: 3, total: 8, percentage: 37.5 };
-}
-
-function calculateChapterProgress(subjectId, chapterId) {
-    return { completed: 2, total: 4, percentage: 50 };
-}
-
-// ===== LEVEL PROGRESS FUNCTIONS =====
+// ===== LEVEL FUNCTIONS =====
 async function getLevelProgress(subjectId, chapterId, subchapterId, level) {
     const user = auth.currentUser;
-    if (!user) {
-        return { completed: false, started: false, score: 0 };
-    }
+    if (!user) return { completed: false, started: false, score: 0 };
     
     try {
-        // Query attempts for this specific level
         const snapshot = await db.collection('attempts')
             .where('userId', '==', user.uid)
             .where('subject', '==', subjectId)
@@ -2196,9 +1609,7 @@ async function getLevelProgress(subjectId, chapterId, subchapterId, level) {
             .limit(1)
             .get();
         
-        if (snapshot.empty) {
-            return { completed: false, started: false, score: 0 };
-        }
+        if (snapshot.empty) return { completed: false, started: false, score: 0 };
         
         const attempt = snapshot.docs[0].data();
         return {
@@ -2219,57 +1630,287 @@ async function getLevelProgress(subjectId, chapterId, subchapterId, level) {
 }
 
 async function isLevelUnlocked(subjectId, chapterId, subchapterId, level) {
-    // Level 1 always unlocked
     if (level === 1) return true;
-    
-    // Check if previous level is completed
     const prevLevelProgress = await getLevelProgress(subjectId, chapterId, subchapterId, level - 1);
     return prevLevelProgress.completed;
 }
 
-function saveProgressToFirebase() {
-    console.log('Progress saved for level', AppState.currentLevel, 'Score:', currentQuizData?.score);
+// ===== RENDER FUNCTIONS =====
+function renderHome() {
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) appHeader.style.display = 'flex';
+    
+    if (!AppState.config) return;
+    
+    AppState.currentView = 'home';
+    const content = document.getElementById('main-content');
+    
+    updateHeader('Math Riyaz');
+    
+    let html = `<div class="subjects-grid">`;
+    
+    AppState.config.subjects.forEach(subject => {
+        html += `
+            <div class="subject-card ${subject.id}" onclick="navigateToSubject('${subject.id}')">
+                <div class="subject-header">
+                    <span class="subject-icon">${subject.icon}</span>
+                    <span class="subject-title">${subject.name}</span>
+                </div>
+                <div class="subject-description">${subject.description}</div>
+            </div>
+        `;
+    });
+    
+    html += `</div>`;
+    content.innerHTML = html;
+    updateBottomNav('home');
+}
+
+function renderChapters(subjectId) {
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) appHeader.style.display = 'flex';
+    
+    if (!AppState.config) return;
+    
+    AppState.currentView = 'chapters';
+    AppState.currentSubject = subjectId;
+    
+    const subject = AppState.config.subjects.find(s => s.id === subjectId);
+    const content = document.getElementById('main-content');
+    
+    loadSubjectCSS(subjectId);
+    updateHeader(subject.name, true, 'renderHome()');
+    
+    let html = `<div class="chapters-list">`;
+    
+    subject.chapters.forEach(chapter => {
+        html += `
+            <div class="chapter-card" onclick="navigateToChapter('${subjectId}', '${chapter.id}')">
+                <span class="chapter-name">${chapter.name}</span>
+                <span class="chapter-arrow">→</span>
+            </div>
+        `;
+    });
+    
+    html += `</div>`;
+    content.innerHTML = html;
+    updateBottomNav('subjects');
+}
+
+function renderSubchapters(subjectId, chapterId) {
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) appHeader.style.display = 'flex';
+    
+    if (!AppState.config) return;
+    
+    AppState.currentView = 'subchapters';
+    AppState.currentSubject = subjectId;
+    AppState.currentChapter = chapterId;
+    
+    const subject = AppState.config.subjects.find(s => s.id === subjectId);
+    const chapter = subject.chapters.find(c => c.id === chapterId);
+    const content = document.getElementById('main-content');
+    
+    updateHeader(chapter.name, true, `renderChapters('${subjectId}')`);
+    
+    let html = `<div class="subchapters-list">`;
+    
+    chapter.subchapters.forEach(subchapter => {
+        html += `
+            <div class="subchapter-card" onclick="navigateToSubchapter('${subjectId}', '${chapterId}', '${subchapter.id}')">
+                <span class="subchapter-name">${subchapter.name}</span>
+                <span class="subchapter-arrow">→</span>
+            </div>
+        `;
+    });
+    
+    html += `</div>`;
+    content.innerHTML = html;
+    updateBottomNav('subjects');
+}
+
+async function renderLevels(subjectId, chapterId, subchapterId) {
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) appHeader.style.display = 'flex';
+    
+    if (!AppState.config) return;
+    
+    AppState.currentView = 'levels';
+    AppState.currentSubject = subjectId;
+    AppState.currentChapter = chapterId;
+    AppState.currentSubchapter = subchapterId;
+    
+    const subject = AppState.config.subjects.find(s => s.id === subjectId);
+    const chapter = subject.chapters.find(c => c.id === chapterId);
+    const subchapter = chapter.subchapters.find(s => s.id === subchapterId);
+    
+    updateHeader(subchapter.name, true, `renderSubchapters('${subjectId}', '${chapterId}')`);
+    
+    const content = document.getElementById('main-content');
+    content.innerHTML = `<div class="loading-spinner"></div>`;
+    
+    const levelPromises = [];
+    for (let level = 1; level <= subchapter.levels; level++) {
+        levelPromises.push(isLevelUnlocked(subjectId, chapterId, subchapterId, level));
+    }
+    
+    const unlockedStatus = await Promise.all(levelPromises);
+    
+    let levelsHtml = `<div class="levels-list">`;
+    
+    for (let level = 1; level <= subchapter.levels; level++) {
+        const unlocked = unlockedStatus[level - 1];
+        const lockIcon = unlocked ? '🔓' : '🔒';
+        const buttonClass = unlocked ? 'level-button' : 'level-button locked';
+        
+        levelsHtml += `
+            <button class="${buttonClass}" onclick="${unlocked ? `navigateToQuiz('${subjectId}', '${chapterId}', '${subchapterId}', ${level})` : ''}">
+                <span>Level ${level}</span>
+                <span>${lockIcon}</span>
+            </button>
+        `;
+    }
+    
+    levelsHtml += `</div>`;
+    content.innerHTML = levelsHtml;
+    updateBottomNav('chapters');
+}
+
+// ===== DATA LOADING =====
+async function loadQuizData(subjectId, chapterId, subchapterId, level) {
+    try {
+        const path = `data/${subjectId}/${chapterId}/${subchapterId}/level${level}.json`;
+        console.log('Loading quiz from:', path);
+        
+        const response = await fetch(path);
+        if (!response.ok) throw new Error(`Failed to load: ${response.status}`);
+        
+        const quizData = await response.json();
+        
+        const allQuestions = quizData.questions;
+        const totalQuestions = allQuestions.length;
+        const numToSelect = Math.min(10, totalQuestions);
+        
+        const selectedQuestions = [];
+        const usedIndices = new Set();
+        
+        while (selectedQuestions.length < numToSelect) {
+            const randomIndex = Math.floor(Math.random() * totalQuestions);
+            if (!usedIndices.has(randomIndex)) {
+                usedIndices.add(randomIndex);
+                selectedQuestions.push(allQuestions[randomIndex]);
+            }
+        }
+        
+        return { ...quizData, questions: selectedQuestions, totalQuestions: numToSelect };
+        
+    } catch (error) {
+        console.error('Error loading quiz data:', error);
+        return {
+            title: "Sample Quiz",
+            level: level,
+            maxPointsPerQuestion: 100,
+            timePerQuestion: 30,
+            questions: [
+                { question: "1/4 + 2/4 = ?", options: ["3/4", "3/8", "1/2", "2/4"], correct: "3/4" },
+                { question: "1/3 + 1/3 = ?", options: ["2/3", "1/6", "2/6", "3/3"], correct: "2/3" }
+            ]
+        };
+    }
+}
+
+// ===== SAVE QUIZ PROGRESS =====
+async function saveQuizProgress() {
+    if (!currentQuizData || !auth.currentUser) return;
+    
+    const user = auth.currentUser;
+    const subjectId = AppState.currentSubject;
+    const chapterId = AppState.currentChapter;
+    const subchapterId = AppState.currentSubchapter;
+    const level = AppState.currentLevel;
+    
+    const totalQuestions = currentQuizData.questions.length;
+    const maxPossible = totalQuestions * currentQuizData.maxPointsPerQuestion;
+    const accuracy = Math.round((currentQuizData.score / maxPossible) * 100);
+    const questionsCorrect = Math.round(currentQuizData.score / (maxPossible / totalQuestions));
+    const totalTimeSpent = Math.round((Date.now() - quizStartTime) / 1000);
+    
+    try {
+        const attemptData = {
+            userId: user.uid,
+            username: user.displayName || 'user',
+            displayName: user.displayName || 'User',
+            subject: subjectId,
+            chapter: chapterId,
+            subchapter: subchapterId,
+            level: level,
+            score: currentQuizData.score,
+            maxPossible: maxPossible,
+            accuracy: accuracy,
+            questionsCorrect: questionsCorrect,
+            totalQuestions: totalQuestions,
+            timeSpent: totalTimeSpent,
+            completedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        await db.collection('attempts').add(attemptData);
+        
+        const userRef = db.collection('users').doc(user.uid);
+        const userDoc = await userRef.get();
+        
+        if (userDoc.exists) {
+            const userData = userDoc.data();
+            const overall = userData.overall || { totalPoints: 0, quizzesTaken: 0, totalTimeSpent: 0 };
+            
+            overall.totalPoints = (overall.totalPoints || 0) + currentQuizData.score;
+            overall.quizzesTaken = (overall.quizzesTaken || 0) + 1;
+            overall.totalTimeSpent = (overall.totalTimeSpent || 0) + totalTimeSpent;
+            overall.lastActive = firebase.firestore.FieldValue.serverTimestamp();
+            
+            await userRef.update({ overall });
+            
+            const subjectData = userData.subjects?.[subjectId] || { totalPoints: 0, quizzesTaken: 0, accuracy: 0 };
+            
+            subjectData.totalPoints = (subjectData.totalPoints || 0) + currentQuizData.score;
+            subjectData.quizzesTaken = (subjectData.quizzesTaken || 0) + 1;
+            
+            const oldTotal = (subjectData.accuracy || 0) * (subjectData.quizzesTaken - 1);
+            subjectData.accuracy = Math.round((oldTotal + accuracy) / subjectData.quizzesTaken);
+            
+            await userRef.update({ [`subjects.${subjectId}`]: subjectData });
+        }
+        
+        console.log('✅ Progress saved');
+        
+    } catch (error) {
+        console.error('Error saving progress:', error);
+    }
 }
 
 // ===== NAVIGATION FUNCTIONS =====
-window.navigateToSubject = function(subjectId) {
-    renderChapters(subjectId);
-};
-
-window.navigateToChapter = function(subjectId, chapterId) {
-    renderSubchapters(subjectId, chapterId);
-};
-
-window.navigateToSubchapter = function(subjectId, chapterId, subchapterId) {
-    renderLevels(subjectId, chapterId, subchapterId);
-};
-
+window.navigateToSubject = function(subjectId) { renderChapters(subjectId); };
+window.navigateToChapter = function(subjectId, chapterId) { renderSubchapters(subjectId, chapterId); };
+window.navigateToSubchapter = function(subjectId, chapterId, subchapterId) { renderLevels(subjectId, chapterId, subchapterId); };
 window.navigateToQuiz = async function(subjectId, chapterId, subchapterId, level) {
-    // Check if level is unlocked before proceeding
     const unlocked = await isLevelUnlocked(subjectId, chapterId, subchapterId, level);
-    
     if (unlocked) {
         renderQuiz(subjectId, chapterId, subchapterId, level);
     } else {
-        alert('This level is locked. Complete previous levels first!');
+        showToast('This level is locked. Complete previous levels first!', 'error');
     }
 };
 
 // ===== PLACEHOLDER FUNCTIONS =====
-function showProgress() {
-    alert('Progress view coming soon!');
-}
-
-function showProfile() {
-    alert('Profile view coming soon!');
-}
-
-function showSettings() {
-    alert('Settings view coming soon!');
-}
+function showProgress() { showToast('Progress view coming soon!', 'info'); }
+function showProfile() { showToast('Profile view coming soon!', 'info'); }
+function showSettings() { showToast('Settings view coming soon!', 'info'); }
 
 // Make functions globally available
 window.renderHome = renderHome;
 window.renderChapters = renderChapters;
 window.renderLevels = renderLevels;
 window.checkAnswer = checkAnswer;
+window.handleLogout = handleLogout;
+window.renderProgress = renderProgress;
+window.renderProfile = renderProfile;
+window.renderAllActivity = renderAllActivity;
