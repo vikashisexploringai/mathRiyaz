@@ -1176,6 +1176,11 @@ async function handleLogout() {
 
 // ===== SAVE QUIZ PROGRESS =====
 async function saveQuizProgress() {
+
+    console.log('📝 saveQuizProgress STARTED');
+    console.log('currentQuizData exists:', !!currentQuizData);
+    console.log('auth.currentUser exists:', !!auth.currentUser);
+    
     if (!currentQuizData || !auth.currentUser) {
         console.log('No quiz data or user not logged in');
         return;
