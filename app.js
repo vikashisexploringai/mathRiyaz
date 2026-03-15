@@ -653,7 +653,6 @@ function renderRegister() {
 }
 
 async function handleRegister() {
-    // Get form values
     const fullName = document.getElementById('fullName')?.value;
     const username = document.getElementById('username')?.value;
     const day = document.getElementById('dobDay')?.value;
@@ -679,7 +678,6 @@ async function handleRegister() {
         return;
     }
     
-    // Check username format
     const usernameRegex = /^[a-zA-Z0-9_]+$/;
     if (!usernameRegex.test(username)) {
         alert('Username can only contain letters, numbers, and underscores');
@@ -689,29 +687,38 @@ async function handleRegister() {
     try {
         // Show loading state
         const registerBtn = document.querySelector('.auth-btn');
-        registerBtn.textContent = 'Creating Account...';
+        registerBtn.textContent = 'Checking...';
         registerBtn.disabled = true;
         
-        // Create email from username
-        const email = `${username}@mathriyaz.local`;
+        // STEP 1: Check if username already exists in Firestore
+        const usersRef = db.collection('users');
+        const snapshot = await usersRef.where('username', '==', username).get();
         
-        // Create user in Firebase Auth
+        if (!snapshot.empty) {
+            alert('Username already taken. Please choose another.');
+            registerBtn.textContent = 'Create Account';
+            registerBtn.disabled = false;
+            return;
+        }
+        
+        // STEP 2: Username is available, proceed with registration
+        registerBtn.textContent = 'Creating Account...';
+        
+        const email = `${username}@mathriyaz.local`;
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
         
-        // Update profile with display name
         await user.updateProfile({
             displayName: fullName
         });
         
-        // Set persistence based on Remember Me
         if (rememberMe) {
             await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
         } else {
             await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
         }
         
-        // Save additional user data to Firestore
+        // STEP 3: Save user data to Firestore
         await db.collection('users').doc(user.uid).set({
             uid: user.uid,
             username: username,
@@ -732,32 +739,23 @@ async function handleRegister() {
         
         console.log('Account created successfully!');
         
-        // Show bottom nav
         const bottomNav = document.getElementById('bottom-nav');
         if (bottomNav) {
             bottomNav.style.display = 'flex';
         }
         
-        // Go to home (auth observer will handle)
-        
     } catch (error) {
         console.error('Registration error:', error);
         
         let errorMessage = 'Registration failed. ';
-        switch (error.code) {
-            case 'auth/email-already-in-use':
-                errorMessage += 'Username already taken. Please choose another.';
-                break;
-            case 'auth/weak-password':
-                errorMessage += 'Password is too weak.';
-                break;
-            default:
-                errorMessage += error.message;
+        if (error.code === 'auth/email-already-in-use') {
+            errorMessage += 'Username already taken. Please choose another.';
+        } else {
+            errorMessage += error.message;
         }
         
         alert(errorMessage);
         
-        // Reset button
         const registerBtn = document.querySelector('.auth-btn');
         registerBtn.textContent = 'Create Account';
         registerBtn.disabled = false;
