@@ -913,16 +913,55 @@ async function handleCloudPasswordReset() {
     }
 }
 
-async function handleLogout() {
-    if (confirm('Are you sure you want to logout?')) {
-        try {
-            await auth.signOut();
-            renderLogin();
-            showToast('Logged out successfully', 'success');
-        } catch (error) {
-            console.error('Logout error:', error);
-            showToast('Failed to logout. Please try again.', 'error');
-        }
+function handleLogout() {
+    // Show custom logout confirmation modal
+    const content = document.getElementById('main-content');
+    
+    // Store current content to restore if canceled
+    window.previousContent = content.innerHTML;
+    
+    const logoutModalHTML = `
+        <div class="logout-modal-overlay">
+            <div class="logout-modal">
+                <div class="logout-modal-icon">👋</div>
+                <h3 class="logout-modal-title">Logout?</h3>
+                <p class="logout-modal-message">
+                    Are you sure you want to logout?
+                </p>
+                <div class="logout-modal-buttons">
+                    <button class="logout-modal-cancel" onclick="cancelLogout()">Cancel</button>
+                    <button class="logout-modal-confirm" onclick="confirmLogout()">Logout</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    content.innerHTML = logoutModalHTML;
+}
+
+// Cancel logout and restore previous view
+window.cancelLogout = function() {
+    const content = document.getElementById('main-content');
+    if (window.previousContent) {
+        content.innerHTML = window.previousContent;
+    } else {
+        renderSettings(); // Fallback
+    }
+};
+
+// Confirm logout
+async function confirmLogout() {
+    try {
+        showToast('Logging out...', 'info');
+        await auth.signOut();
+        renderLogin();
+        showToast('Logged out successfully', 'success');
+    } catch (error) {
+        console.error('Logout error:', error);
+        showToast('Failed to logout. Please try again.', 'error');
+        
+        // Restore previous view on error
+        cancelLogout();
     }
 }
 
