@@ -1144,19 +1144,131 @@ function initDarkMode() {
     }
 }
 
-// ===== ACCOUNT FUNCTIONS =====
+// ===== CHANGE PASSWORD PAGE =====
 function renderChangePassword() {
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) appHeader.style.display = 'flex';
+    
+    // Check if user is logged in
     if (!auth.currentUser) {
         showToast('Please login first', 'error');
         renderLogin();
         return;
     }
     
-    // Store current view to return to settings after
-    previousView = 'settings';
+    AppState.currentView = 'changePassword';
+    const content = document.getElementById('main-content');
     
-    // Reuse your existing password reset flow
-    renderForgotPassword();
+    updateHeader('Change Password', true, 'renderSettings()');
+    
+    const html = `
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2>Change Password</h2>
+                <p style="color: #64748b; font-size: 14px; text-align: center; margin-bottom: 24px;">
+                    Enter your current password and choose a new one
+                </p>
+                
+                <div class="form-group">
+                    <label for="currentPassword">Current Password</label>
+                    <input type="password" id="currentPassword" placeholder="Enter current password" class="auth-input">
+                </div>
+                
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" placeholder="At least 6 characters" class="auth-input">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmNewPassword">Confirm New Password</label>
+                    <input type="password" id="confirmNewPassword" placeholder="Re-enter new password" class="auth-input">
+                </div>
+                
+                <button class="auth-btn" onclick="handleChangePassword()">Update Password</button>
+                
+                <div class="auth-links">
+                    <button class="link-btn" onclick="renderSettings()">Back to Settings</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    content.innerHTML = html;
+    updateBottomNav('settings');
+}
+
+// ===== HANDLE CHANGE PASSWORD =====
+async function handleChangePassword() {
+    const currentPassword = document.getElementById('currentPassword')?.value;
+    const newPassword = document.getElementById('newPassword')?.value;
+    const confirmPassword = document.getElementById('confirmNewPassword')?.value;
+    
+    clearInlineMessages();
+    let hasError = false;
+    
+    if (!currentPassword) {
+        showInlineMessage('currentPassword', 'Please enter current password');
+        hasError = true;
+    }
+    
+    if (!newPassword) {
+        showInlineMessage('newPassword', 'Please enter new password');
+        hasError = true;
+    } else if (newPassword.length < 6) {
+        showInlineMessage('newPassword', 'Password must be at least 6 characters');
+        hasError = true;
+    }
+    
+    if (!confirmPassword) {
+        showInlineMessage('confirmNewPassword', 'Please confirm new password');
+        hasError = true;
+    } else if (newPassword !== confirmPassword) {
+        showInlineMessage('confirmNewPassword', 'Passwords do not match');
+        hasError = true;
+    }
+    
+    if (hasError) return;
+    
+    try {
+        const changeBtn = document.querySelector('.auth-btn');
+        changeBtn.textContent = 'Updating...';
+        changeBtn.disabled = true;
+        
+        const user = auth.currentUser;
+        const email = user.email;
+        
+        // Create credential with current password
+        const credential = firebase.auth.EmailAuthProvider.credential(email, currentPassword);
+        
+        // Re-authenticate user
+        await user.reauthenticateWithCredential(credential);
+        
+        // Update password
+        await user.updatePassword(newPassword);
+        
+        showToast('Password updated successfully!', 'success');
+        
+        // Return to settings
+        renderSettings();
+        
+    } catch (error) {
+        console.error('Change password error:', error);
+        
+        if (error.code === 'auth/wrong-password') {
+            showInlineMessage('currentPassword', 'Current password is incorrect');
+        } else if (error.code === 'auth/weak-password') {
+            showInlineMessage('newPassword', 'Password is too weak');
+        } else if (error.code === 'auth/requires-recent-login') {
+            showToast('Please log out and log back in to change password', 'error');
+            handleLogout();
+        } else {
+            showToast('Failed to change password: ' + error.message, 'error');
+        }
+        
+        const changeBtn = document.querySelector('.auth-btn');
+        changeBtn.textContent = 'Update Password';
+        changeBtn.disabled = false;
+    }
 }
 
 function confirmDeleteAccount() {
