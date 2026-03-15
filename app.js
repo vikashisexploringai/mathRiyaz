@@ -2034,6 +2034,111 @@ async function loadQuizData(subjectId, chapterId, subchapterId, level) {
     }
 }
 
+// ===== ALL ACTIVITY PAGE =====
+function renderAllActivity() {
+    const appHeader = document.getElementById('app-header');
+    if (appHeader) {
+        appHeader.style.display = 'flex';
+    }
+    
+    AppState.currentView = 'allActivity';
+    const content = document.getElementById('main-content');
+    
+    // Check if user is logged in
+    const user = auth.currentUser;
+    if (!user) {
+        renderLogin();
+        return;
+    }
+    
+    // Show loading
+    content.innerHTML = `<div class="loading-spinner"></div>`;
+    
+    // Fetch all attempts for this user
+    db.collection('attempts')
+        .where('userId', '==', user.uid)
+        .orderBy('completedAt', 'desc')
+        .get()
+        .then(snapshot => {
+            if (snapshot.empty) {
+                content.innerHTML = `
+                    <div class="all-activity-container">
+                        <div class="all-activity-header">
+                            <button class="all-activity-back-btn" onclick="renderProgress()">‹</button>
+                            <span class="all-activity-title">📋 All Activity</span>
+                            <div class="all-activity-placeholder"></div>
+                        </div>
+                        <div class="empty-state">No activity yet</div>
+                    </div>
+                `;
+                updateBottomNav('progress');
+                return;
+            }
+            
+            let html = `
+                <div class="all-activity-container">
+                    <div class="all-activity-header">
+                        <button class="all-activity-back-btn" onclick="renderProgress()">‹</button>
+                        <span class="all-activity-title">📋 All Activity</span>
+                        <div class="all-activity-placeholder"></div>
+                    </div>
+                    <div class="all-activity-list">
+            `;
+            
+            snapshot.forEach(doc => {
+                const attempt = doc.data();
+                const date = attempt.completedAt ? attempt.completedAt.toDate() : new Date();
+                const dateStr = formatDate(attempt.completedAt);
+                const timeStr = attempt.timeSpent ? formatTime(attempt.timeSpent) : 'N/A';
+                const subjectIcon = attempt.subject === 'math' ? '📐' : attempt.subject === 'english' ? '📚' : '🔬';
+                
+                // Format chapter and subchapter nicely
+                const chapterName = attempt.chapter ? attempt.chapter.charAt(0).toUpperCase() + attempt.chapter.slice(1) : '';
+                const subchapterName = attempt.subchapter ? attempt.subchapter.charAt(0).toUpperCase() + attempt.subchapter.slice(1) : '';
+                
+                html += `
+                    <div class="all-activity-item">
+                        <div class="all-activity-item-header">
+                            <span class="all-activity-item-title">
+                                ${subjectIcon} ${chapterName} · ${subchapterName} · Level ${attempt.level}
+                            </span>
+                            <span class="all-activity-item-score">${attempt.score} pts</span>
+                        </div>
+                        <div class="all-activity-item-details">
+                            <span>${attempt.questionsCorrect}/${attempt.totalQuestions} correct</span>
+                            <span class="dot">•</span>
+                            <span>${dateStr}</span>
+                            <span class="dot">•</span>
+                            <span>⏱️ ${timeStr}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+            
+            content.innerHTML = html;
+            updateBottomNav('progress');
+            
+        })
+        .catch(error => {
+            console.error('Error loading all activity:', error);
+            content.innerHTML = `
+                <div class="all-activity-container">
+                    <div class="all-activity-header">
+                        <button class="all-activity-back-btn" onclick="renderProgress()">‹</button>
+                        <span class="all-activity-title">📋 All Activity</span>
+                        <div class="all-activity-placeholder"></div>
+                    </div>
+                    <div class="error-message">Failed to load activity</div>
+                </div>
+            `;
+        });
+}
+
 // ===== PROGRESS FUNCTIONS (PLACEHOLDERS) =====
 function calculateSubjectProgress(subjectId) {
     return { completed: 3, total: 8, percentage: 37.5 };
