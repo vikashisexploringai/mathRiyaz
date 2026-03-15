@@ -525,12 +525,13 @@ body {
 }
 
 .main-content:has(.quiz-header-blue) .quiz-question {
-    flex: 3;  /* Takes more vertical space */
+    flex: 4;  /* Increased from 3 to 4 */
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0;
     padding: 0 16px;
+    min-height: 200px;  /* Minimum height */
 }
 
 .main-content:has(.quiz-header-blue) .quiz-options-large {
@@ -1254,30 +1255,40 @@ body {
 /* ===== LAPTOP OPTIMIZATIONS ===== */
 @media (min-width: 768px) {
     .app-container {
-        max-width: 700px;  /* Slightly wider on laptop */
+        max-width: 800px;  /* Wider on laptop */
     }
     
-    /* Larger question on laptop */
+    /* Make question area much taller */
+    .main-content:has(.quiz-header-blue) {
+        min-height: 90vh;  /* Use most of viewport height */
+    }
+    
+    .main-content:has(.quiz-header-blue) .quiz-question {
+        flex: 6;  /* Much more space for question */
+        min-height: 300px;  /* Minimum height */
+    }
+    
+    /* Larger question text */
     .quiz-question {
-        font-size: 48px !important;
-    }
-    
-    .quiz-question .fraction {
         font-size: 56px !important;
     }
     
-    /* Larger options on laptop */
-    .quiz-option-large {
-        font-size: 40px !important;
+    .quiz-question .fraction {
+        font-size: 64px !important;
     }
     
-    .quiz-option-large .fraction {
+    /* Larger options */
+    .quiz-option-large {
         font-size: 44px !important;
     }
     
-    /* More spacing for question */
-    .main-content:has(.quiz-header-blue) .quiz-question {
-        flex: 4;  /* Even more space on laptop */
+    .quiz-option-large .fraction {
+        font-size: 48px !important;
+    }
+    
+    /* Add some breathing room */
+    .quiz-options-large {
+        padding: 0 40px 40px 40px;
     }
 }
 
